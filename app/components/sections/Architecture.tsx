@@ -4,7 +4,7 @@ import { useRef, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SlideInText } from "../ui/TextAnimations";
+import { SlideInText, GlitchText } from "../ui/TextAnimations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,23 +12,46 @@ const agents = [
     {
         name: "Planner Agents",
         description: "Decide what to teach. Analyze exam weightage and available time (X hours) to create the optimal learning path.",
-        icon: "📋",
-        color: "#00f0ff",
-        gradient: "from-cyan-500/20 to-cyan-500/5"
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <line x1="8" y1="6" x2="16" y2="6" />
+                <line x1="8" y1="10" x2="16" y2="10" />
+                <line x1="8" y1="14" x2="12" y2="14" />
+                <path d="M8 18h2l1-1 2 2 4-4" />
+            </svg>
+        ),
+        color: "#3B82F6",
+        gradient: "from-blue-500/20 to-blue-500/5"
     },
     {
         name: "Meta-Learning Agents",
         description: "Decide how to teach. Adapt content, speed, and complexity based on the learner's style and evolving knowledge graph.",
-        icon: "🧠",
-        color: "#8b5cf6",
-        gradient: "from-violet-500/20 to-violet-500/5"
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12">
+                <path d="M9.5 2h5l.5 6h-6l.5-6Z" />
+                <path d="M12 8v8" />
+                <path d="M12 16a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+                <path d="M5 8l3 4" />
+                <path d="M19 8l-3 4" />
+                <path d="M5 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+                <path d="M19 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+            </svg>
+        ),
+        color: "#FFFFFF",
+        gradient: "from-white/20 to-white/5"
     },
     {
         name: "Evaluation Agents",
         description: "Ensure mastery. Evaluate answers using school-specific marking schemes, not just general correctness.",
-        icon: "✅",
-        color: "#ff00aa",
-        gradient: "from-pink-500/20 to-pink-500/5"
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12">
+                <path d="M12 2L4 6v6c0 5.5 3.5 10 8 11 4.5-1 8-5.5 8-11V6l-8-4z" />
+                <path d="M9 12l2 2 4-4" />
+            </svg>
+        ),
+        color: "#1E40AF",
+        gradient: "from-indigo-500/20 to-indigo-500/5"
     },
 ];
 
@@ -105,12 +128,12 @@ export default function Architecture() {
 
             {/* Heading with slide-in */}
             <SlideInText direction="left" delay={0} className="max-w-4xl mb-24 mx-auto md:mx-0">
-                <p className="eyebrow mb-8">Infrastructure</p>
-                <h2 className="text-3xl md:text-5xl font-bold leading-tight">
-                    Current AI tutors are limited by student motivation. We turn AI into{" "}
-                    <span className="text-gradient">human-like tutors</span> — who tell you what to do,
-                    rather than the other way around.
-                </h2>
+                <div className="text-3xl md:text-5xl font-bold leading-tight mb-8">
+                    <GlitchText text="Current AI tutors are limited by student motivation." className="block" />
+                </div>
+                <p className="text-xl text-white/60 leading-relaxed max-w-2xl">
+                    We turn AI into <span className="text-white font-medium">human-like tutors</span> — who tell you what to do, relative to your goals, rather than the other way around.
+                </p>
             </SlideInText>
 
             {/* Agents Grid */}
@@ -124,23 +147,59 @@ export default function Architecture() {
                     <motion.article
                         key={i}
                         whileHover={{
-                            scale: 1.05,
-                            y: -20,
-                            rotateX: 5,
-                            boxShadow: `0 30px 60px -15px ${agent.color}40`,
-                            zIndex: 10
+                            scale: 1.02,
+                            y: -10,
                         }}
-                        initial={{ transformStyle: "preserve-3d" }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className={`agent-card p-8 rounded-3xl relative z-10 group opacity-0 border border-white/10 bg-gradient-to-br ${agent.gradient} backdrop-blur-xl cursor-pointer overflow-hidden transform-gpu`}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 50 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: i * 0.15 }}
+                        className={`agent-card p-8 rounded-3xl relative group border border-white/10 bg-gradient-to-br ${agent.gradient} backdrop-blur-xl cursor-pointer overflow-hidden`}
                     >
                         {/* Shimmer Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
 
-                        {/* Hover Glow */}
-                        <motion.div
-                            className="absolute -inset-0.5 rounded-[1.6rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg pointer-events-none"
-                            style={{ backgroundColor: agent.color }}
+                        {/* Liquid Wave Glow at Bottom - Enhanced */}
+                        <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none overflow-hidden">
+                            <motion.div
+                                animate={{
+                                    x: ["-30%", "30%", "-30%"],
+                                }}
+                                transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: i * 0.3
+                                }}
+                                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[250%] h-32"
+                                style={{
+                                    background: `radial-gradient(ellipse 80% 60% at center bottom, ${agent.color}60 0%, ${agent.color}30 30%, transparent 60%)`,
+                                    filter: "blur(25px)"
+                                }}
+                            />
+                            {/* Secondary wave for depth */}
+                            <motion.div
+                                animate={{
+                                    x: ["20%", "-20%", "20%"],
+                                }}
+                                transition={{
+                                    duration: 4,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: i * 0.3 + 0.5
+                                }}
+                                className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[180%] h-24"
+                                style={{
+                                    background: `radial-gradient(ellipse 70% 50% at center bottom, ${agent.color}40 0%, transparent 50%)`,
+                                    filter: "blur(15px)"
+                                }}
+                            />
+                        </div>
+
+                        {/* Subtle Top Border Glow on Hover */}
+                        <div
+                            className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-80 transition-opacity duration-500"
+                            style={{ background: `linear-gradient(90deg, transparent, ${agent.color}, transparent)` }}
                         />
 
                         {/* Content Container (to sit above glow) */}
@@ -149,7 +208,8 @@ export default function Architecture() {
                             <motion.div
                                 animate={{ y: [0, -8, 0], rotate: [0, 5, -5, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, delay: i * 0.3 }}
-                                className="text-6xl mb-6 drop-shadow-lg"
+                                className="mb-6 drop-shadow-lg"
+                                style={{ color: agent.color }}
                             >
                                 {agent.icon}
                             </motion.div>

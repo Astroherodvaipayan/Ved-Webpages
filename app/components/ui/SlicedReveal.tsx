@@ -54,7 +54,7 @@ export function SlicedReveal({ text, className = "", delay = 0, trigger = true }
                             <span className="block mt-[-0.52em]">{text}</span>
                         </motion.span>
 
-                        {/* Glitch Overlay - cyan */}
+                        {/* Glitch Overlay - blue */}
                         <motion.span
                             initial={{ opacity: 0, x: 3 }}
                             animate={{
@@ -62,14 +62,14 @@ export function SlicedReveal({ text, className = "", delay = 0, trigger = true }
                                 x: [3, -2, 3, -1, 0]
                             }}
                             transition={{ duration: 0.5, delay: delay + 0.2 }}
-                            className="absolute inset-0 text-cyan-400 mix-blend-screen pointer-events-none"
+                            className="absolute inset-0 text-blue-500 mix-blend-screen pointer-events-none"
                             aria-hidden="true"
-                            style={{ WebkitTextStroke: '0.5px cyan' }}
+                            style={{ WebkitTextStroke: '0.5px #3B82F6' }}
                         >
                             {text}
                         </motion.span>
 
-                        {/* Glitch Overlay - magenta */}
+                        {/* Glitch Overlay - gold */}
                         <motion.span
                             initial={{ opacity: 0, x: -3 }}
                             animate={{
@@ -77,9 +77,9 @@ export function SlicedReveal({ text, className = "", delay = 0, trigger = true }
                                 x: [-3, 2, -3, 1, 0]
                             }}
                             transition={{ duration: 0.5, delay: delay + 0.25 }}
-                            className="absolute inset-0 text-fuchsia-500 mix-blend-screen pointer-events-none"
+                            className="absolute inset-0 text-[#FFFFFF] mix-blend-screen pointer-events-none"
                             aria-hidden="true"
-                            style={{ WebkitTextStroke: '0.5px fuchsia' }}
+                            style={{ WebkitTextStroke: '0.5px #FFFFFF' }}
                         >
                             {text}
                         </motion.span>

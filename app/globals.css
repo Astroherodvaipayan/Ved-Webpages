@@ -12,13 +12,13 @@
   --color-bg-tertiary: #111111;
   --color-bg-card: #0d0d0d;
 
-  /* Accent Colors - Neon & Glow */
-  --color-accent-primary: #00f0ff;
-  /* Cyan Neon */
-  --color-accent-secondary: #ff00aa;
-  /* Magenta Neon */
-  --color-accent-tertiary: #8b5cf6;
-  /* Violet Neon */
+  /* Accent Colors - Premium Blue & Gold */
+  --color-accent-primary: #3B82F6;
+  /* Royal Blue */
+  --color-accent-secondary: #FFFFFF;
+  /* Pure Pearly White */
+  --color-accent-tertiary: #1E40AF;
+  /* Deep Royal Blue */
 
   /* Text Colors */
   --color-text-primary: #ffffff;

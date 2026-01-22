@@ -38,18 +38,28 @@ function SlotMachineText({
     }
 
     return (
-        <span className="inline-block">
-            <AnimatePresence mode="wait">
+        <span
+            className="inline-block overflow-hidden relative"
+            style={{
+                verticalAlign: 'baseline',
+                height: '1.1em',
+                lineHeight: 'inherit'
+            }}
+        >
+            <AnimatePresence mode="popLayout">
                 <motion.span
                     key={currentIndex}
-                    initial={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
-                    animate={trigger ? { opacity: 1, scale: 1, filter: "blur(0px)" } : { opacity: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
+                    initial={{ y: "110%" }}
+                    animate={trigger ? { y: "0%" } : { y: "110%" }}
+                    exit={{ y: "-110%" }}
                     transition={{
-                        duration: 0.4,
-                        ease: [0.16, 1, 0.3, 1]
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 20,
+                        mass: 1
                     }}
-                    className={`inline-block ${className}`}
+                    className={`block ${className}`}
+                    style={{ lineHeight: 'inherit' }}
                 >
                     {words[currentIndex]}
                 </motion.span>
@@ -61,6 +71,7 @@ function SlotMachineText({
 
 export default function Hero({ isActive = true }: { isActive?: boolean }) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [waitlistClicked, setWaitlistClicked] = useState(false);
 
     // Scroll-linked parallax
     const { scrollYProgress } = useScroll({
@@ -115,16 +126,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
             {/* Main Content */}
             <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
 
-                {/* Eyebrow */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                    transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="eyebrow mb-8 relative"
-                >
-                    <span className="relative z-10">Deep-Tech Infrastructure</span>
-                    <div className="absolute inset-0 bg-accent-primary/20 blur-xl -z-10" />
-                </motion.div>
+
 
                 {/* Main Headline */}
                 <motion.h1
@@ -136,17 +138,22 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     <motion.div
                         className="block mb-2 text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                     >
-                        <SlicedReveal text="WE ARE BUILDING" delay={0.4} trigger={isActive} />
+                        <SlicedReveal text="BRING YOUR" delay={0.4} trigger={isActive} />
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : { opacity: 0 }}
                         transition={{ delay: 0.55, duration: 0.5 }}
-                        className="block mb-2"
+                        className="flex items-baseline justify-center mb-2 gap-4"
                     >
-                        <span className="text-white text-[clamp(2.5rem,8vw,5.5rem)] mr-4 leading-[0.9]">THE</span>
+                        <motion.span
+                            layout
+                            className="text-white text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                        >
+                            WAY OF
+                        </motion.span>
                         <SlotMachineText
-                            words={["META-LEARNING", "ADAPTIVE", "INTELLIGENT"]}
+                            words={["LEARNING", "THINKING", "GROWING"]}
                             interval={2500}
                             trigger={isActive}
                             className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
@@ -155,7 +162,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     <motion.div
                         className="block text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                     >
-                        <SlicedReveal text="AGENT." delay={0.7} trigger={isActive} />
+                        <SlicedReveal text="TO LIFE." delay={0.7} trigger={isActive} />
                     </motion.div>
                 </motion.h1>
 
@@ -178,21 +185,27 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     className="flex flex-col sm:flex-row gap-4 justify-center"
                 >
                     <motion.button
-                        whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(0, 240, 255, 0.4)" }}
+                        whileHover={{ scale: waitlistClicked ? 1 : 1.05, boxShadow: waitlistClicked ? "none" : "0 0 40px rgba(59, 130, 246, 0.4)" }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={() => setWaitlistClicked(true)}
                         className="btn-primary group relative px-8 py-4 text-sm sm:text-base cursor-pointer"
                     >
-                        <span className="relative z-10">Get Early Access</span>
+                        <span className="relative z-10">
+                            {waitlistClicked ? (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: [1, 1.02, 1] }}
+                                    transition={{ duration: 0.5, scale: { repeat: Infinity, duration: 1.5 } }}
+                                >
+                                    Will be adding soon! 🚀
+                                </motion.span>
+                            ) : (
+                                "Get Early Access"
+                            )}
+                        </span>
                         <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full opacity-0 group-hover:opacity-20 transition-opacity"
                         />
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ scale: 1.05, borderColor: "rgba(0, 240, 255, 0.5)" }}
-                        whileTap={{ scale: 0.98 }}
-                        className="px-8 py-4 text-sm sm:text-base text-white border border-white/10 rounded-full hover:bg-white/5 transition-all uppercase tracking-widest font-semibold font-montserrat cursor-pointer"
-                    >
-                        View Research
                     </motion.button>
                 </motion.div>
             </div>

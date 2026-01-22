@@ -7,7 +7,6 @@ import { useLenis } from "@studio-freight/react-lenis";
 
 const navLinks = [
     { href: "#hero", label: "Home" },
-    { href: "#schools", label: "Schools" },
     { href: "#mission", label: "Mission" },
 ];
 
@@ -27,13 +26,11 @@ export default function Navigation() {
 
             // Simple Scroll Spy
             const hero = document.getElementById("hero");
-            const schools = document.getElementById("schools");
             const mission = document.getElementById("mission");
 
             const scrollPos = window.scrollY + 300; // Offset for better detection
 
             if (mission && scrollPos >= mission.offsetTop) setActiveSection("mission");
-            else if (schools && scrollPos >= schools.offsetTop) setActiveSection("schools");
             else setActiveSection("hero");
         };
         window.addEventListener("scroll", handleScroll);
@@ -62,19 +59,19 @@ export default function Navigation() {
                 className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? "bg-[var(--bg-primary)]/80 backdrop-blur-lg border-b border-white/5" : ""
                     }`}
             >
-                <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    {/* Logo */}
+                <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
+                    {/* Logo (Empty link wrapper, logo is in Header.tsx which overlays this) */}
                     <Link
                         href="#hero"
                         onClick={(e) => scrollToSection(e, "#hero")}
                         onKeyDown={(e) => e.key === 'Enter' && scrollToSection(e, "#hero")}
-                        className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded"
+                        className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded w-12 h-12"
                     >
-                        <span className="text-2xl font-bold text-gradient">Ved AI</span>
+                        {/* Logo placeholder if needed */}
                     </Link>
 
-                    {/* Desktop Nav Links */}
-                    <div className="hidden md:flex items-center gap-8">
+                    {/* Desktop Nav Links - CENTERED */}
+                    <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
                         {navLinks.map((link) => (
                             <a
                                 key={link.href}
@@ -97,15 +94,6 @@ export default function Navigation() {
                                 )}
                             </a>
                         ))}
-                    </div>
-
-                    {/* CTA Button */}
-                    <div className="hidden md:block">
-                        <button
-                            className="px-6 py-2.5 text-sm font-medium rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
-                        >
-                            Get Access
-                        </button>
                     </div>
 
                     {/* Mobile Menu Button */}

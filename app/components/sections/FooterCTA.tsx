@@ -4,16 +4,20 @@ import { motion } from "framer-motion";
 
 export default function FooterCTA() {
     return (
-        <section className="footer-cta py-32 px-6 max-w-4xl mx-auto text-center">
-            <div className="reveal in-view">
-                <p className="eyebrow mb-6">READY?</p>
-                <h3 className="text-4xl md:text-6xl font-bold mb-10 leading-tight">
-                    Let’s choreograph your own astral bloom.
-                </h3>
-                <button data-cursor="pointer" className="btn primary w-full max-w-[400px]">
-                    Book a timing window
-                </button>
+        <footer className="w-full py-16 px-6 text-center border-t border-white/10">
+            <div className="max-w-4xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="space-y-4"
+                >
+                    <p className="text-sm text-white/40 tracking-widest uppercase">
+                        © 2025 Ved AI Labs. All rights reserved.
+                    </p>
+                </motion.div>
             </div>
-        </section>
+        </footer>
     );
 }

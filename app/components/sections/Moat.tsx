@@ -75,9 +75,9 @@ export default function Moat() {
             <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                 {/* Text Content - Slide from left */}
                 <div>
-                    <SlideInText direction="left" delay={0}>
+                    {/* <SlideInText direction="left" delay={0}>
                         <p className="eyebrow mb-8">Data Network Effect</p>
-                    </SlideInText>
+                    </SlideInText> */}
 
                     <SlideInText direction="left" delay={0.1}>
                         <h2 className="text-4xl md:text-6xl font-bold leading-[0.95] tracking-tight mb-12">
@@ -121,9 +121,14 @@ export default function Moat() {
                             ]
                         }}
                         transition={{ duration: 4, repeat: Infinity }}
-                        className="w-32 h-32 rounded-full bg-bg-tertiary border border-white/10 flex items-center justify-center text-4xl relative z-10"
+                        className="w-32 h-32 rounded-full bg-bg-tertiary border border-white/10 flex items-center justify-center relative z-10"
                     >
-                        🧠
+                        <svg className="w-16 h-16 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2l8.5 5v10L12 22l-8.5-5V7L12 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2v10" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 22v-7" />
+                        </svg>
                     </motion.div>
 
                     {/* Pulse rings */}

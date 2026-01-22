@@ -299,11 +299,24 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
 
                 tl.to(this.material!.uniforms.uTransition, { value: 1, duration: 1.2, ease: "expo.in" });
 
-                // Don't fade to black, keep them white/glowing
-                tl.to(this.material!.uniforms.uTintMix, { value: 0, duration: 1.2, ease: "power2.in" }, "<");
+                // Fade stars as they cluster for subtle transition
+                tl.to(this.material!.uniforms.uOpacity, { value: 0.3, duration: 1.0, ease: "power2.in" }, "<");
 
-                // Keep opacity high so they form a visible "core"
-                tl.to(this.material!.uniforms.uOpacity, { value: 0.8, duration: 0.6, ease: "power1.out" });
+                // Don't fade to black, keep them white/glowing
+                tl.to(this.material!.uniforms.uTintMix, { value: 0, duration: 1.2, ease: "power2.in" }, "<0.2");
+
+                // Show divine halo EARLY - before lotus container appears
+                tl.add(() => {
+                    const halo = document.getElementById("lotus-halo");
+                    if (halo) {
+                        halo.classList.remove("active", "active-zoom");
+                        void halo.offsetWidth;
+                        halo.classList.add("active");
+                    }
+                }, "<0.5");
+
+                // Keep opacity low so they form a subtle "core"
+                tl.to(this.material!.uniforms.uOpacity, { value: 0.2, duration: 0.6, ease: "power1.out" });
 
                 // Reveal lotus container
                 tl.set("#logo-container", { opacity: 0 });
@@ -312,15 +325,9 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
                 // 2. OPEN THE LOTUS
                 tl.add(() => {
                     const cam = document.getElementById("lotus-camera");
-                    const halo = document.getElementById("lotus-halo");
                     if (cam) {
                         cam.style.willChange = "transform";
                         cam.classList.add("to-top");
-                    }
-                    if (halo) {
-                        halo.classList.remove("active", "active-zoom");
-                        void halo.offsetWidth;
-                        halo.classList.add("active");
                     }
                 }, "+=0.1");
 

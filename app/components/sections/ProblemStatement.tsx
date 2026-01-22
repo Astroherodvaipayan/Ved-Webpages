@@ -80,11 +80,6 @@ export default function ProblemStatement() {
             </div>
 
             <div className="relative z-10 max-w-5xl mx-auto">
-                <SlideInText direction="up" delay={0}>
-                    <p className="eyebrow mb-12">
-                        The Problem
-                    </p>
-                </SlideInText>
 
                 <SlideInText direction="up" delay={0.2}>
                     <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-white/90">

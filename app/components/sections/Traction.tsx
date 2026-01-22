@@ -103,19 +103,12 @@ export default function Traction() {
                     </p>
                 </SlideInText>
 
-                <h2
-                    ref={numberRef}
-                    className="text-[clamp(4rem,15vw,12rem)] font-bold tracking-tight leading-none mb-10 opacity-0"
-                >
-                    <span className="text-gradient">
-                        <AnimatedCounter end={10000} shouldStart={startCounter} />
-                    </span>
-                </h2>
-
-                <SlideInText direction="up" delay={0.3}>
-                    <p className="text-2xl md:text-4xl text-white/70 max-w-2xl mx-auto leading-tight">
-                        It powers personal at-home AI tutors for{" "}
-                        <span className="text-white font-semibold">10,000 school students</span>.
+                <SlideInText direction="up" delay={0.2}>
+                    <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-8">
+                        <span className="text-gradient">Trusted by Schools</span>
+                    </h2>
+                    <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                        Partnering with institutions to transform education through AI-powered personalized learning.
                     </p>
                 </SlideInText>
 
