@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "./components/sections/Header";
 import Hero from "./components/sections/Hero";
 import CloudSection from "./components/sections/CloudSection";
+import ImageTransition from "./components/ui/ImageTransition";
 import ProductShowcase from "./components/sections/ProductShowcase";
 import ProblemStatement from "./components/sections/ProblemStatement";
 import Architecture from "./components/sections/Architecture";
@@ -16,40 +17,41 @@ import BackgroundController from "./components/ui/BackgroundController";
 import CloudReveal from "./components/ui/CloudReveal";
 
 export default function Home() {
-  const [showIntro, setShowIntro] = useState(true);
+    const [showIntro, setShowIntro] = useState(true);
 
-  return (
-    <main className="relative">
-      {/* Dynamic Background Controller */}
-      {!showIntro && <BackgroundController />}
+    return (
+        <main className="relative">
+            {/* Dynamic Background Controller */}
+            {!showIntro && <BackgroundController />}
 
-      {/* Cloud Reveal Effect - Rising clouds */}
-      {!showIntro && <CloudReveal />}
+            {/* Cloud Reveal Effect - Rising clouds */}
+            {!showIntro && <CloudReveal />}
 
-      {/* Header with Logo - Always visible */}
-      {!showIntro && <Header />}
+            {/* Header with Logo - Always visible */}
+            {!showIntro && <Header />}
 
-      {/* Intro Animation Layer */}
-      {showIntro && (
-        <CinematicIntro
-          onComplete={() => {
-            setShowIntro(false);
-          }}
-        />
-      )}
+            {/* Intro Animation Layer */}
+            {showIntro && (
+                <CinematicIntro
+                    onComplete={() => {
+                        setShowIntro(false);
+                    }}
+                />
+            )}
 
-      {/* Main Content Sections - Continuous Scroll */}
-      <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
-        <Hero isActive={!showIntro} />
-        <CloudSection />
-        <ProductShowcase />
-        <ProblemStatement />
-        <Architecture />
-        <Moat />
-        <Roadmap />
-        <Mission />
-        <FooterCTA />
-      </div>
-    </main>
-  );
+            {/* Main Content Sections - Continuous Scroll */}
+            <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
+                <Hero isActive={!showIntro} />
+                <CloudSection />
+                <ImageTransition />
+                <ProductShowcase />
+                <ProblemStatement />
+                <Architecture />
+                <Moat />
+                <Roadmap />
+                <Mission />
+                <FooterCTA />
+            </div>
+        </main>
+    );
 }
