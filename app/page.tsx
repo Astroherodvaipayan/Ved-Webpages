@@ -4,13 +4,14 @@ import { useState } from "react";
 import Header from "./components/sections/Header";
 import Hero from "./components/sections/Hero";
 import CloudSection from "./components/sections/CloudSection";
-import ImageTransition from "./components/ui/ImageTransition";
+
 import ProductShowcase from "./components/sections/ProductShowcase";
 import ProblemStatement from "./components/sections/ProblemStatement";
 import Architecture from "./components/sections/Architecture";
 import Moat from "./components/sections/Moat";
 import Roadmap from "./components/sections/Roadmap";
 import Mission from "./components/sections/Mission";
+import JoinRevolution from "./components/sections/JoinRevolution";
 import FooterCTA from "./components/sections/FooterCTA";
 import CinematicIntro from "./components/CinematicIntro";
 import BackgroundController from "./components/ui/BackgroundController";
@@ -43,13 +44,16 @@ export default function Home() {
             <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
                 <Hero isActive={!showIntro} />
                 <CloudSection />
-                <ImageTransition />
+                <Mission />
+
                 <ProductShowcase />
                 <ProblemStatement />
                 <Architecture />
                 <Moat />
                 <Roadmap />
-                <Mission />
+
+
+                <JoinRevolution />
                 <FooterCTA />
             </div>
         </main>

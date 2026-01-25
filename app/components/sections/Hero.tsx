@@ -107,11 +107,11 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <motion.div
                     style={{ y: glowY1, x: springX }}
-                    className="absolute top-[-10%] left-[10%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-accent-primary/15 rounded-full blur-[150px]"
+                    className="absolute top-[42%] left-[10%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-accent-primary/15 rounded-full blur-[150px]"
                 />
                 <motion.div
                     style={{ y: glowY2, x: springY }}
-                    className="absolute bottom-[-10%] right-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-accent-secondary/15 rounded-full blur-[150px]"
+                    className="absolute bottom-[-45%] right-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-accent-secondary/15 rounded-full blur-[150px]"
                 />
             </div>
 
@@ -135,12 +135,12 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     animate={isActive ? { opacity: 1 } : { opacity: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                    <motion.div
+                    <motion.span
                         className="block mb-2 text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                     >
                         <SlicedReveal text="BRING YOUR" delay={0.4} trigger={isActive} />
-                    </motion.div>
-                    <motion.div
+                    </motion.span>
+                    <motion.span
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : { opacity: 0 }}
                         transition={{ delay: 0.55, duration: 0.5 }}
@@ -158,12 +158,12 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                             trigger={isActive}
                             className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                         />
-                    </motion.div>
-                    <motion.div
+                    </motion.span>
+                    <motion.span
                         className="block text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                     >
                         <SlicedReveal text="TO LIFE." delay={0.7} trigger={isActive} />
-                    </motion.div>
+                    </motion.span>
                 </motion.h1>
 
                 {/* Subheadline */}
