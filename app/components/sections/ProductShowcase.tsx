@@ -89,16 +89,19 @@ export default function ProductShowcase() {
 
     return (
         <section
+            id="product-showcase"
             ref={sectionRef}
-            className="relative w-full h-screen bg-bg-primary overflow-hidden flex items-center justify-center"
+            className="relative w-full h-screen overflow-hidden flex items-center justify-center"
         >
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-bg-secondary to-bg-primary pointer-events-none" />
 
-            {/* Punchline Text */}
+            {/* Punchline Text - Netflix zoom effect */}
             <h2
                 ref={textRef}
                 className="absolute z-20 text-4xl md:text-7xl font-black text-center text-white text-gradient tracking-tighter w-full px-4"
+                style={{
+                    transform: 'scale(0.2)',
+                    opacity: 0,
+                }}
             >
                 THE FUTURE OF LEARNING IS HERE
             </h2>
@@ -107,7 +110,12 @@ export default function ProductShowcase() {
             <div
                 ref={containerRef}
                 className="absolute inset-0 z-10 overflow-hidden flex items-center justify-center"
-                style={{ transformOrigin: "center center" }}
+                style={{
+                    transformOrigin: "center center",
+                    transform: 'scale(0.1)',
+                    opacity: 0,
+                    borderRadius: '24px',
+                }}
             >
                 {/* Mac-style Window Frame */}
                 <div className="relative w-full h-full max-w-[95vw] max-h-[90vh] bg-[#0a0a0a] rounded-xl overflow-hidden shadow-2xl border border-white/10">

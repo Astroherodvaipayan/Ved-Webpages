@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function FooterCTA() {
     return (
-        <footer className="w-full py-16 px-6 text-center border-t border-white/10">
+        <footer id="footer-cta" className="w-full py-16 px-6 text-center border-t border-white/10">
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

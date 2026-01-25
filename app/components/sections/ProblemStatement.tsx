@@ -35,8 +35,9 @@ export default function ProblemStatement() {
 
     return (
         <section
+            id="problem-statement"
             ref={containerRef}
-            className="relative w-full py-40 px-6 overflow-hidden flex flex-col items-center justify-center text-center bg-bg-secondary"
+            className="relative w-full py-40 px-6 overflow-hidden flex flex-col items-center justify-center text-center"
         >
             {/* Animated Background Elements */}
             <div className="absolute inset-0 pointer-events-none">

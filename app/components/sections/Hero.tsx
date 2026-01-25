@@ -99,7 +99,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
     return (
         <section
             id="hero"
-            className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden bg-bg-primary perspective-1000"
+            className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden perspective-1000"
             onMouseMove={handleMouseMove}
             ref={containerRef}
         >

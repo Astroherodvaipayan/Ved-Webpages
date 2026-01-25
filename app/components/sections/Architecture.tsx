@@ -111,7 +111,7 @@ export default function Architecture() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full py-40 px-6 max-w-7xl mx-auto overflow-hidden text-center md:text-left" style={{ perspective: "1000px" }}>
+        <section id="architecture" ref={sectionRef} className="relative w-full py-40 px-6 max-w-7xl mx-auto overflow-hidden text-center md:text-left" style={{ perspective: "1000px" }}>
             {/* Background Elements */}
             <div className="absolute inset-0 pointer-events-none">
                 <motion.div

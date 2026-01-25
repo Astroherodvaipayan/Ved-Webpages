@@ -40,7 +40,7 @@ export default function Moat() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden bg-bg-secondary">
+        <section id="moat" ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden">
             {/* Background Orbital Animation */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <motion.div
