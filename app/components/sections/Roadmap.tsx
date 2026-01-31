@@ -1,253 +1,302 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 
+// Feature Data
 const features = [
     {
         title: "Personalized Pedagogy",
-        description: "AI system that adapts to each learner's unique needs, learning style, and pace for truly personalized education.",
+        description: "AI system that adapts to each learner's unique needs, learning style, and pace for truly personalized education. It builds a psychological profile of the learner to understand what motivates them.",
         color: "#8b5cf6", // Violet
         icon: "brain",
     },
     {
         title: "Teacher-AI Symbiosis",
-        description: "Creating a personalized tutoring experience that reaches beyond geographic and socioeconomic boundaries.",
+        description: "Creating a personalized tutoring experience that reaches beyond geographic and socioeconomic boundaries. Teachers are empowered with real-time insights into student comprehension.",
         color: "#00f0ff", // Cyan
         icon: "voice",
     },
     {
         title: "Dynamic Curriculum",
-        description: "Course materials continuously adapted by AI, generating custom quizzes, mind maps, and explanations.",
+        description: "Course materials continuously adapted by AI, generating custom quizzes, mind maps, and explanations. The content evolves as the world changes, ensuring relevance.",
         color: "#d4af37", // Gold
         icon: "gear",
     },
     {
         title: "Inclusive Learning",
-        description: "Support for multiple languages, including regional Indian dialects, making learning accessible to diverse populations.",
+        description: "Support for multiple languages, including regional Indian dialects, making learning accessible to diverse populations. Breaking down language barriers in real-time.",
         color: "#ec4899", // Pink
         icon: "language",
     },
 ];
 
-// Abstract animated visual component - Dynamic Waves
-function AbstractVisual({ color, type }: { color: string; type: string }) {
-    return (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[inherit]">
-            <svg className="absolute w-[200%] h-[200%] opacity-40" viewBox="0 0 200 200">
-                <defs>
-                    <linearGradient id={`grad-${type}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor={color} stopOpacity="0" />
-                        <stop offset="50%" stopColor={color} stopOpacity="0.5" />
-                        <stop offset="100%" stopColor={color} stopOpacity="0" />
-                    </linearGradient>
-                </defs>
-
-                {/* Dynamic Wave 1 */}
-                <motion.path
-                    d="M0,100 C50,80 80,120 100,100 C120,80 150,120 200,100"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="1"
-                    strokeOpacity="0.5"
-                    animate={{
-                        d: [
-                            "M0,100 C50,80 80,120 100,100 C120,80 150,120 200,100",
-                            "M0,100 C50,120 80,80 100,100 C120,120 150,80 200,100",
-                            "M0,100 C50,80 80,120 100,100 C120,80 150,120 200,100"
-                        ]
-                    }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                />
-
-                {/* Dynamic Wave 2 - Offset */}
-                <motion.path
-                    d="M0,100 C40,110 90,90 100,100 C110,110 160,90 200,100"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="1"
-                    strokeOpacity="0.3"
-                    animate={{
-                        d: [
-                            "M0,100 C40,110 90,90 100,100 C110,110 160,90 200,100",
-                            "M0,100 C40,90 90,110 100,100 C110,90 160,110 200,100",
-                            "M0,100 C40,110 90,90 100,100 C110,110 160,90 200,100"
-                        ]
-                    }}
-                    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                />
-
-                {/* Rotating Ring */}
-                <motion.circle
-                    cx="100"
-                    cy="100"
-                    r="40"
-                    fill="none"
-                    stroke={`url(#grad-${type})`}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeDasharray="20 100"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.circle
-                    cx="100"
-                    cy="100"
-                    r="40"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="0.5"
-                    strokeOpacity="0.2"
-                />
-            </svg>
-        </div>
-    );
-}
-
 export default function Roadmap() {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Track scroll progress within this specific section
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    // Smooth out the scroll value for smoother animations
+    const smoothProgress = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
+
     return (
-        <section id="roadmap" className="relative w-full py-40 px-6 max-w-7xl mx-auto overflow-hidden">
-            {/* Background */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-[150px]" />
-            </div>
+        <section
+            id="roadmap"
+            ref={containerRef}
+            className="relative w-full h-[400vh] bg-black"
+        >
+            <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
 
-            {/* Heading */}
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-center mb-32"
-            >
-                <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
-                    <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-white/60 font-medium">Future Capabilities</p>
+                {/* Background Ambient Neon Effects */}
+                <BackgroundNeonLines />
+
+                {/* Main Heading */}
+                <motion.div
+                    className="absolute top-12 md:top-16 z-20 text-center pointer-events-none"
+                    style={{
+                        opacity: useTransform(smoothProgress, [0, 0.1], [1, 0.5])
+                    }}
+                >
+                    <div className="inline-block mb-2 md:mb-4 px-3 py-1 md:px-4 md:py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+                        <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-white/60 font-medium">Future Capabilities</p>
+                    </div>
+                    <h2 className="text-3xl md:text-6xl font-bold tracking-tight text-white drop-shadow-2xl">
+                        System <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-white/80">Roadmap</span>
+                    </h2>
+                </motion.div>
+
+                {/* The Path and Cards Container 
+                    Adjusted MT to fix overlap.
+                    Previous: mt-32/mt-40.
+                    New: mt-48/md:mt-56 (+~64px/1.5cm).
+                */}
+                <div className="relative w-full max-w-6xl h-[65vh] flex items-center justify-center mt-48 md:mt-56">
+
+                    {/* The Connecting Neon Wire */}
+                    <NeonPath progress={smoothProgress} />
+
+                    {/* The Interactivity Layer (Cards) */}
+                    <div className="relative w-full h-full">
+                        {features.map((feature, index) => {
+                            // Centers: 12.5%, 37.5%, 62.5%, 87.5%
+                            const center = 0.125 + (index * 0.25);
+                            const startRange = center - 0.1;
+                            const endRange = center + 0.1;
+
+                            return (
+                                <RoadmapCard
+                                    key={index}
+                                    feature={feature}
+                                    index={index}
+                                    globalProgress={smoothProgress}
+                                    startRange={startRange}
+                                    endRange={endRange}
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white drop-shadow-2xl">
-                    System <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-white/80">Roadmap</span>
-                </h2>
-            </motion.div>
 
-            {/* Expansive Circle Grid */}
-            <motion.div className="flex flex-wrap justify-center gap-12 md:gap-16 items-start h-[500px]" layoutRoot>
-                {features.map((feature, index) => (
-                    <ExpandableCircleCard key={index} feature={feature} index={index} />
-                ))}
-            </motion.div>
-
-            {/* Bottom CTA */}
-            <motion.div className="text-center mt-32">
-                <button className="group relative px-8 py-4 bg-transparent overflow-hidden rounded-full border border-white/20 transition-all duration-300 hover:border-white/50 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <span className="relative text-xs uppercase tracking-[0.3em] text-white group-hover:text-cyan-200 transition-colors">Initialize Systems</span>
-                </button>
-            </motion.div>
+                {/* Progress Indicator */}
+                <motion.div
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/30 text-[10px] tracking-widest uppercase animate-pulse"
+                    style={{ opacity: useTransform(smoothProgress, [0.95, 1], [1, 0]) }}
+                >
+                    Scroll to Initialize
+                </motion.div>
+            </div>
         </section>
     );
 }
 
-function ExpandableCircleCard({ feature, index }: { feature: typeof features[0], index: number }) {
-    const [isHovered, setIsHovered] = useState(false);
+function NeonPath({ progress }: { progress: any }) {
+    // Organic Curve Path
+    const pathD = `
+        M 50,0 
+        C 50,5 45,8 42,12.5              
+        C 35,22 65,28 58,37.5            
+        C 52,48 48,52 42,62.5            
+        C 35,75 62,80 58,87.5            
+        C 55,92 50,95 50,100             
+    `;
+
+    return (
+        <div className="absolute inset-0 pointer-events-none z-0">
+            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="50%" stopColor="#00f0ff" />
+                        <stop offset="100%" stopColor="#ec4899" />
+                    </linearGradient>
+
+                    {/* Blur Filter for Glow */}
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+
+                    {/* Mask to fade ends smoothly - Smoother gradient */}
+                    <mask id="fade-ends">
+                        <linearGradient id="fade-mask-gradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="white" stopOpacity="0" />
+                            <stop offset="25%" stopColor="white" stopOpacity="1" />
+                            <stop offset="75%" stopColor="white" stopOpacity="1" />
+                            <stop offset="100%" stopColor="white" stopOpacity="0" />
+                        </linearGradient>
+                        <rect x="0" y="0" width="100" height="100" fill="url(#fade-mask-gradient)" />
+                    </mask>
+                </defs>
+
+                {/* Apply mask to the entire group of paths */}
+                <g mask="url(#fade-ends)">
+                    <path
+                        d={pathD}
+                        fill="none"
+                        stroke="rgba(255,255,255,0.02)"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                    />
+
+                    <path
+                        d={pathD}
+                        fill="none"
+                        stroke="rgba(255,255,255,0.05)"
+                        strokeWidth="1"
+                    />
+
+                    <motion.path
+                        d={pathD}
+                        fill="none"
+                        stroke="url(#neonGradient)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        filter="url(#glow)"
+                        style={{
+                            pathLength: useTransform(progress, [0, 0.95], [0, 1])
+                        }}
+                    />
+                </g>
+            </svg>
+        </div>
+    )
+}
+
+function RoadmapCard({ feature, index, globalProgress, startRange, endRange }: any) {
+    const isLeft = index % 2 === 0;
+
+    const opacity = useTransform(globalProgress, [startRange - 0.1, startRange, endRange, endRange + 0.1], [0.3, 1, 1, 0.3]);
+    const scale = useTransform(globalProgress, [startRange - 0.1, startRange, endRange, endRange + 0.1], [0.85, 1, 1, 0.85]);
+    const blur = useTransform(globalProgress, [startRange - 0.1, startRange, endRange, endRange + 0.1], ["blur(2px)", "blur(0px)", "blur(0px)", "blur(2px)"]);
+
+    const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = globalProgress.on("change", (latest: number) => {
+            setIsActive(latest >= startRange && latest <= endRange);
+        });
+        return () => unsubscribe();
+    }, [globalProgress, startRange, endRange]);
 
     return (
         <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.5 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ layout: { duration: 0.4, type: "spring", bounce: 0.2 } }}
-            viewport={{ once: true }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            className="relative z-10"
-            style={{ zIndex: isHovered ? 50 : 10 }}
+            className={`absolute w-[40%] md:w-[35%] flex flex-col ${isLeft ? 'items-end text-right' : 'items-start text-left'}`}
+            style={{
+                top: `${12.5 + (index * 25)}%`,
+                left: isLeft ? '7.5%' : 'auto',
+                right: isLeft ? 'auto' : '7.5%',
+                y: "-50%",
+                opacity,
+                scale,
+                filter: blur,
+                zIndex: isActive ? 10 : 0
+            }}
         >
+            {/* Connection Dot */}
+            <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-black border-2 border-[${feature.color}] shadow-[0_0_10px_${feature.color}] z-20
+                ${isLeft ? '-right-1.5' : '-left-1.5'} 
+            `}
+                style={{ borderColor: feature.color, boxShadow: `0 0 10px ${feature.color}` }}
+            />
+
             <motion.div
-                animate={{
-                    width: isHovered ? 320 : 140, // Base size reduced to 140px
-                    height: isHovered ? 420 : 140,
-                    borderRadius: isHovered ? 30 : 100,
-                    backgroundColor: isHovered ? "#0a0a0a" : "rgba(255,255,255,0.05)"
-                }}
-                className="
-                    relative flex items-center justify-center 
-                    backdrop-blur-md border border-white/10 overflow-hidden
-                "
+                layout
+                className={`
+                    relative p-6 rounded-2xl border backdrop-blur-md transition-colors duration-500 w-full
+                    ${isActive
+                        ? `bg-white/10 border-${feature.color}/50`
+                        : 'bg-white/5 border-white/10'
+                    }
+                `}
                 style={{
-                    borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
-                    // High Intensity Glow
-                    boxShadow: isHovered
-                        ? `0 20px 60px rgba(0,0,0,0.5), 0 0 50px ${feature.color}30`
-                        : `0 0 50px ${feature.color}60, 0 0 20px ${feature.color}80, inset 0 0 20px ${feature.color}20`, // Intense layered glow
+                    borderColor: isActive ? feature.color : 'rgba(255,255,255,0.1)',
+                    boxShadow: isActive ? `0 0 30px -5px ${feature.color}20` : 'none'
                 }}
             >
-                {/* Restored Waves / Abstract Visual */}
-                <AbstractVisual color={feature.color} type={feature.icon} />
-
-                {/* Icon Layer (Center) - Fades OUT on hover */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{
-                        opacity: isHovered ? 0 : 1,
-                        scale: isHovered ? 0.5 : 1
-                    }}
-                >
-                    <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center relative"
-                        style={{
-                            background: `linear-gradient(135deg, ${feature.color}30, ${feature.color}10)`,
-                            border: `1px solid ${feature.color}40`,
-                            // Inner icon glow
-                            boxShadow: `0 0 30px ${feature.color}40`
-                        }}
-                    >
-                        <IconSvg feature={feature} className="w-8 h-8 text-white drop-shadow-[0_0_15px_rgba(255,255,255,1)]" />
-                    </div>
-                </motion.div>
-
-                {/* Content Layer (Title & Description) - Fades IN on hover */}
-                <motion.div
-                    className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{
-                        opacity: isHovered ? 1 : 0,
-                        scale: isHovered ? 1 : 0.8
-                    }}
-                    transition={{ duration: 0.3, delay: isHovered ? 0.1 : 0 }}
-                >
-                    {/* Mini Icon at top of card */}
-                    <div
-                        className="mb-8 w-12 h-12 rounded-xl flex items-center justify-center border border-white/10"
-                        style={{ background: `linear-gradient(135deg, ${feature.color}20, transparent)` }}
-                    >
+                <div className={`flex items-center gap-4 mb-2 ${isLeft ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-white/10 border border-white/10 text-white">
                         <IconSvg feature={feature} className="w-5 h-5" />
                     </div>
+                    <h3 className="text-lg md:text-xl font-bold text-white leading-tight">{feature.title}</h3>
+                </div>
 
-                    <h3 className="text-2xl font-bold text-white mb-4 leading-tight">{feature.title}</h3>
-                    <p className="text-white/60 text-sm leading-relaxed mb-6">{feature.description}</p>
-
-                    <button className="px-6 py-2 rounded-full bg-white/10 text-xs font-bold uppercase tracking-widest text-white hover:bg-white hover:text-black transition-colors duration-300">
-                        Explore
-                    </button>
+                <motion.div
+                    initial={false}
+                    animate={{
+                        height: isActive ? "auto" : 0,
+                        opacity: isActive ? 1 : 0,
+                        marginTop: isActive ? 12 : 0
+                    }}
+                    className="overflow-hidden"
+                >
+                    <p className="text-sm text-white/70 leading-relaxed">
+                        {feature.description}
+                    </p>
                 </motion.div>
-
             </motion.div>
         </motion.div>
     );
 }
 
-// Icon Helper
+function BackgroundNeonLines() {
+    return (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(5)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute w-[1px] h-[150px] bg-gradient-to-b from-transparent via-blue-500/20 to-transparent"
+                    style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                        y: [-150, 1000],
+                        opacity: [0, 1, 0]
+                    }}
+                    transition={{
+                        duration: 3 + Math.random() * 5,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: Math.random() * 2
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
+
 function IconSvg({ feature, className }: { feature: any, className?: string }) {
-    if (feature.icon === 'voice') {
-        return <svg className={className || "w-8 h-8"} fill="none" stroke={feature.color} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-    }
-    if (feature.icon === 'brain') {
-        return <svg className={className || "w-8 h-8"} fill="none" stroke={feature.color} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.5 2h5l.5 6h-6l.5-6Z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v8" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" /></svg>
-    }
-    if (feature.icon === 'gear') {
-        return <svg className={className || "w-8 h-8"} fill="none" stroke={feature.color} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-    }
-    if (feature.icon === 'language') {
-        return <svg className={className || "w-8 h-8"} fill="none" stroke={feature.color} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
-    }
+    if (feature.icon === 'voice') return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>;
+    if (feature.icon === 'brain') return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.5 2h5l.5 6h-6l.5-6Z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v8" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" /></svg>;
+    if (feature.icon === 'gear') return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+    if (feature.icon === 'language') return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>;
     return null;
 }
