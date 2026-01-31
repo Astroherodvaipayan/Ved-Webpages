@@ -74,11 +74,11 @@ export default function Roadmap() {
                 </motion.div>
 
                 {/* The Path and Cards Container 
-                    Adjusted MT to fix overlap.
-                    Previous: mt-32/mt-40.
-                    New: mt-48/md:mt-56 (+~64px/1.5cm).
+                    Increased top margin significantly to create the "5cm" gap (~200px).
+                    mt-80 is 20rem = 320px. 
+                    Previous was mt-40 (160px). adding ~150px gap.
                 */}
-                <div className="relative w-full max-w-6xl h-[65vh] flex items-center justify-center mt-48 md:mt-56">
+                <div className="relative w-full max-w-6xl h-[65vh] flex items-center justify-center mt-80 md:mt-96">
 
                     {/* The Connecting Neon Wire */}
                     <NeonPath progress={smoothProgress} />
@@ -137,54 +137,38 @@ function NeonPath({ progress }: { progress: any }) {
                         <stop offset="50%" stopColor="#00f0ff" />
                         <stop offset="100%" stopColor="#ec4899" />
                     </linearGradient>
-
-                    {/* Blur Filter for Glow */}
                     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="3" result="blur" />
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
-
-                    {/* Mask to fade ends smoothly - Smoother gradient */}
-                    <mask id="fade-ends">
-                        <linearGradient id="fade-mask-gradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="white" stopOpacity="0" />
-                            <stop offset="25%" stopColor="white" stopOpacity="1" />
-                            <stop offset="75%" stopColor="white" stopOpacity="1" />
-                            <stop offset="100%" stopColor="white" stopOpacity="0" />
-                        </linearGradient>
-                        <rect x="0" y="0" width="100" height="100" fill="url(#fade-mask-gradient)" />
-                    </mask>
                 </defs>
 
-                {/* Apply mask to the entire group of paths */}
-                <g mask="url(#fade-ends)">
-                    <path
-                        d={pathD}
-                        fill="none"
-                        stroke="rgba(255,255,255,0.02)"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                    />
+                <path
+                    d={pathD}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.02)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                />
 
-                    <path
-                        d={pathD}
-                        fill="none"
-                        stroke="rgba(255,255,255,0.05)"
-                        strokeWidth="1"
-                    />
+                <path
+                    d={pathD}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.05)"
+                    strokeWidth="1"
+                />
 
-                    <motion.path
-                        d={pathD}
-                        fill="none"
-                        stroke="url(#neonGradient)"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        filter="url(#glow)"
-                        style={{
-                            pathLength: useTransform(progress, [0, 0.95], [0, 1])
-                        }}
-                    />
-                </g>
+                <motion.path
+                    d={pathD}
+                    fill="none"
+                    stroke="url(#neonGradient)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    filter="url(#glow)"
+                    style={{
+                        pathLength: useTransform(progress, [0, 0.95], [0, 1])
+                    }}
+                />
             </svg>
         </div>
     )

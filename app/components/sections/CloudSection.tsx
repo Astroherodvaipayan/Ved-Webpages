@@ -5,7 +5,7 @@ export default function CloudSection() {
     return (
         <section
             id="cloud-transition"
-            className="relative w-full h-[120vh] overflow-hidden"
+            className="relative w-full h-[80vh] overflow-hidden"
         >
             {/* This section provides breathing room for the cloud reveal effect */}
             {/* The clouds float up through this section as user scrolls */}

@@ -33,9 +33,9 @@ export default function CloudReveal() {
                     }
                 });
 
-                // Initial set - Shifted down by ~500px (13cm total)
+                // Initial set
                 gsap.set(layer, {
-                    y: window.innerHeight * 1.0 + 500, // Start lower
+                    y: window.innerHeight * 0.5 + 570, // Shift down 15cm total
                     opacity: 1, // Start opaque
                     x: 0
                 });
@@ -43,14 +43,14 @@ export default function CloudReveal() {
                 // Animation steps
                 tl.to(layer, {
                     opacity: 1, // Stay opaque
-                    y: window.innerHeight * 0.2 + 500, // Peak position lower
+                    y: window.innerHeight * 0.1 + 570, // Rise to visible (shifted down)
                     duration: 1,
                     ease: "none"
                 })
                     .to(layer, {
-                        y: (-window.innerHeight * 1.5 * speedMultiplier), // Continue rising high and away
+                        y: (-window.innerHeight * 1.5 * speedMultiplier) + 570, // Continue rising high (shifted down)
                         x: xDrift,
-                        opacity: 0, // Fade out at end
+                        opacity: 0, // Fade out at end as requested ("go away")
                         duration: 3, // Long rise duration
                         ease: "none"
                     });

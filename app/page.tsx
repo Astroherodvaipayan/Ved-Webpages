@@ -46,13 +46,7 @@ export default function Home() {
                 <CloudSection />
                 <Mission />
 
-                {/* Wrapped in div to isolate GSAP pinning from React reconciliation 
-                    This prevents 'insertBefore' errors when GSAP modifies the DOM structure
-                */}
-                <div>
-                    <ProductShowcase />
-                </div>
-
+                <ProductShowcase />
                 <ProblemStatement />
                 <Architecture />
                 <Moat />

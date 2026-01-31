@@ -56,8 +56,7 @@ export default function Navigation() {
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? "bg-[var(--bg-primary)]/80 backdrop-blur-lg border-b border-white/5" : ""
-                    }`}
+                className="fixed top-0 left-0 right-0 z-[100] transition-all duration-500"
             >
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
                     {/* Logo (Empty link wrapper, logo is in Header.tsx which overlays this) */}

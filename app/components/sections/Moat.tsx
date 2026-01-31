@@ -40,7 +40,6 @@ export default function Moat() {
         return () => ctx.revert();
     }, []);
 
-    // Hydration fix: Calculate positions on client
     useEffect(() => {
         const users = [1, 2, 3, 4, 5, 6].map((i) => ({
             id: i,
