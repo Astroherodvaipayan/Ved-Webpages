@@ -267,25 +267,38 @@ function RoadmapCard({ feature, index, globalProgress, startRange, endRange }: a
 }
 
 function BackgroundNeonLines() {
+    const [lines, setLines] = useState<any[]>([]);
+
+    useEffect(() => {
+        const newLines = [...Array(5)].map((_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            duration: 3 + Math.random() * 5,
+            delay: Math.random() * 2
+        }));
+        setLines(newLines);
+    }, []);
+
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(5)].map((_, i) => (
+            {lines.map((line) => (
                 <motion.div
-                    key={i}
+                    key={line.id}
                     className="absolute w-[1px] h-[150px] bg-gradient-to-b from-transparent via-blue-500/20 to-transparent"
                     style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
+                        left: line.left,
+                        top: line.top,
                     }}
                     animate={{
                         y: [-150, 1000],
                         opacity: [0, 1, 0]
                     }}
                     transition={{
-                        duration: 3 + Math.random() * 5,
+                        duration: line.duration,
                         repeat: Infinity,
                         ease: "linear",
-                        delay: Math.random() * 2
+                        delay: line.delay
                     }}
                 />
             ))}

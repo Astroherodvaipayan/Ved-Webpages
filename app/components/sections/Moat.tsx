@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useLayoutEffect } from "react";
+import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Moat() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const visualRef = useRef<HTMLDivElement>(null);
+    const [orbitingUsers, setOrbitingUsers] = useState<any[]>([]);
 
     const points = [
         "Every interaction builds a detailed learner profile.",
@@ -37,6 +38,17 @@ export default function Moat() {
         }, sectionRef);
 
         return () => ctx.revert();
+    }, []);
+
+    // Hydration fix: Calculate positions on client
+    useEffect(() => {
+        const users = [1, 2, 3, 4, 5, 6].map((i) => ({
+            id: i,
+            left: `calc(50% - 24px + ${Math.cos((i * 60) * Math.PI / 180) * 180}px)`,
+            top: `calc(50% - 24px + ${Math.sin((i * 60) * Math.PI / 180) * 180}px)`,
+            duration: 30 + i * 5
+        }));
+        setOrbitingUsers(users);
     }, []);
 
     return (
@@ -142,17 +154,17 @@ export default function Moat() {
                     ))}
 
                     {/* Orbiting Users */}
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                    {orbitingUsers.map((user) => (
                         <motion.div
-                            key={i}
+                            key={user.id}
                             className="absolute w-12 h-12 rounded-full bg-bg-card border border-white/10 flex items-center justify-center text-lg shadow-lg"
                             animate={{ rotate: 360 }}
                             style={{
-                                left: `calc(50% - 24px + ${Math.cos((i * 60) * Math.PI / 180) * 180}px)`,
-                                top: `calc(50% - 24px + ${Math.sin((i * 60) * Math.PI / 180) * 180}px)`,
+                                left: user.left,
+                                top: user.top,
                             }}
                             whileHover={{ scale: 1.3, zIndex: 20 }}
-                            transition={{ duration: 30 + i * 5, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: user.duration, repeat: Infinity, ease: "linear" }}
                         >
                             👤
                         </motion.div>
