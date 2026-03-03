@@ -31,8 +31,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
 
     return (
         <AnimatePresence>
-            {phase !== "done" && (
-                <motion.div
+            <motion.div
                     id="preloader"
                     className="fixed inset-0 z-[10000] flex flex-col items-center justify-center gap-8 uppercase tracking-[0.4rem] font-extrabold overflow-hidden"
                     initial={{ opacity: 1 }}
@@ -81,7 +80,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             }
           `}</style>
                 </motion.div>
-            )}
         </AnimatePresence>
     );
 }
