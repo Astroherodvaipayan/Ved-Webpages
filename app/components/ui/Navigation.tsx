@@ -9,7 +9,7 @@ import { useLenis } from "@studio-freight/react-lenis";
 
 const navLinks = [
     { href: "#hero", label: "Home" },
-    { href: "#mission", label: "Mission" },
+    { href: "#join-revolution", label: "Mission" },
 ];
 
 export default function Navigation() {
@@ -27,10 +27,10 @@ export default function Navigation() {
             setIsScrolled(window.scrollY > 50);
 
             // Simple Scroll Spy
-            const mission = document.getElementById("mission");
+            const mission = document.getElementById("join-revolution");
             const scrollPos = window.scrollY + 300;
 
-            if (mission && scrollPos >= mission.offsetTop) setActiveSection("mission");
+            if (mission && scrollPos >= mission.offsetTop) setActiveSection("join-revolution");
             else setActiveSection("hero");
         };
         window.addEventListener("scroll", handleScroll);
@@ -140,7 +140,7 @@ export default function Navigation() {
                                     letterSpacing: "0.08em",
                                     textTransform: "uppercase",
                                     textDecoration: "none",
-                                    color: activeSection === link.href.substring(1)
+                                    color: activeSection === link.href.replace('#', '')
                                         ? "#1E3A8A"
                                         : "rgba(10,15,46,0.55)",
                                     transition: "color 0.3s ease",
@@ -149,13 +149,13 @@ export default function Navigation() {
                                 onMouseEnter={(e) => (e.currentTarget.style.color = "#1E3A8A")}
                                 onMouseLeave={(e) =>
                                 (e.currentTarget.style.color =
-                                    activeSection === link.href.substring(1)
+                                    activeSection === link.href.replace('#', '')
                                         ? "#1E3A8A"
                                         : "rgba(10,15,46,0.55)")
                                 }
                             >
                                 {link.label}
-                                {activeSection === link.href.substring(1) && (
+                                {activeSection === link.href.replace('#', '') && (
                                     <motion.div
                                         layoutId="activeNav"
                                         style={{
@@ -176,7 +176,10 @@ export default function Navigation() {
 
                     {/* ── Desktop "Join Beta" CTA ── */}
                     <div className="hidden md:inline-block">
-                        <GradientButton label="Join Beta" />
+                        <GradientButton
+                            label="Join Beta"
+                            style={{ padding: "10px 24px", fontSize: "0.85rem" }}
+                        />
                     </div>
 
                     {/* ── Mobile Hamburger ── */}
@@ -240,7 +243,7 @@ export default function Navigation() {
                                         display: "block",
                                         padding: "16px 24px",
                                         color:
-                                            activeSection === link.href.substring(1)
+                                            activeSection === link.href.replace('#', '')
                                                 ? "#1E3A8A"
                                                 : "rgba(10,15,46,0.7)",
                                         textDecoration: "none",
@@ -268,7 +271,10 @@ export default function Navigation() {
                                     margin: "12px 16px 16px",
                                 }}
                             >
-                                <GradientButton label="Join Beta" />
+                                <GradientButton
+                                    label="Join Beta"
+                                    style={{ padding: "14px 24px", width: "100%" }}
+                                />
                             </motion.div>
                         </div>
                     </motion.div>

@@ -44,7 +44,7 @@ export default function JoinRevolution() {
                             exit={{ opacity: 0, scale: 0.9 }}
                             className="relative"
                         >
-                            <GradientButton label="Join the Revolution" onClick={() => setIsClicked(true)} />
+                            <GradientButton label="Join Beta" onClick={() => setIsClicked(true)} />
                         </motion.div>
                     ) : (
                         <motion.div

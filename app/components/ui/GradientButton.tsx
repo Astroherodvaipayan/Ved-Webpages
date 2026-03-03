@@ -5,9 +5,11 @@ import { useRef, useState, useCallback } from "react";
 interface GradientButtonProps {
     label?: string;
     onClick?: () => void;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
-export default function GradientButton({ label = "Experience Sarvam", onClick }: GradientButtonProps) {
+export default function GradientButton({ label = "Experience Sarvam", onClick, className, style: propStyle }: GradientButtonProps) {
     const btnRef = useRef<HTMLButtonElement>(null);
     const [gradientPos, setGradientPos] = useState({ x: 50, y: 50 });
     const [isHovered, setIsHovered] = useState(false);
@@ -55,7 +57,9 @@ export default function GradientButton({ label = "Experience Sarvam", onClick }:
                 boxShadow: isHovered
                     ? "0 8px 32px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.2)"
                     : "0 4px 16px rgba(0,0,0,0.25), inset 0 0 0 1.5px rgba(255,255,255,0.2), inset 0 2px 10px rgba(255,255,255,0.15)",
+                ...propStyle,
             }}
+            className={className}
         >
             {label}
         </button>
