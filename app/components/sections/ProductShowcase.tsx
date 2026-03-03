@@ -25,7 +25,6 @@ export default function ProductShowcase() {
         if (!sectionRef.current || !windowRef.current || !textRef.current) return;
 
         const ctx = gsap.context(() => {
-            // Set initial states via GSAP
             gsap.set(windowRef.current, {
                 scale: 0.1,
                 opacity: 0
@@ -44,15 +43,13 @@ export default function ProductShowcase() {
                     pinSpacing: true,
                     scrub: 0.5,
                     onUpdate: (self) => {
-                        // Phase 4 - Snap Trigger: AT 75% scroll progress, auto-complete Phase 5
                         if (self.progress >= 0.75 && self.progress < 0.95 && self.direction === 1) {
                             if (!isSnapping.current && lenis) {
                                 isSnapping.current = true;
-                                // Smooth programmatic scroll to the end of the section
                                 lenis.scrollTo(self.end, {
                                     duration: 0.8,
                                     force: true,
-                                    easing: (t: number) => 1 - Math.pow(1 - t, 4), // Quartic ease out
+                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
                                     onComplete: () => {
                                         isSnapping.current = false;
                                     }
@@ -108,13 +105,22 @@ export default function ProductShowcase() {
                 duration: 0.20
             }, 0.55);
 
-            // Phase 5 — Mac window fills screen (snap → 80%)
-            // Driven by the Lenis auto-scroll snap
+            // Phase 5 — Mac window fills screen
             tl.to(windowRef.current, {
                 scale: 0.8,
                 ease: "power2.inOut",
                 duration: 0.25
             }, 0.75);
+
+            // ✅ FIX: setTimeout instead of double-RAF.
+            // FeatureShowcase also waits for lenis before registering its trigger,
+            // so both useEffects fire in the same microtask queue when lenis resolves.
+            // React processes child effects in tree order (ProductShowcase first, then
+            // FeatureShowcase), so by 300ms both are registered and the DOM has settled.
+            // This refresh recalculates all trigger positions with the correct page height.
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 300);
 
         }, sectionRef);
 

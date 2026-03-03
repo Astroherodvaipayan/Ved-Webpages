@@ -96,7 +96,7 @@ export default function Home() {
                         <Mission />
                         <ProductShowcase />
                         <ProblemStatement />
-                        {/* <FeatureShowcase /> */}
+                        <FeatureShowcase />
                         <Moat />
                         <JoinRevolution />
                         <FooterCTA />

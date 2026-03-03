@@ -89,7 +89,7 @@ export default function ProblemStatement() {
             id="problem-statement"
             ref={containerRef}
             className="relative w-full py-40 px-6 overflow-hidden flex flex-col items-center justify-center text-center bg-transparent z-10"
-            style={{ minHeight: 'calc(100vh + 200px)' }}
+            style={{ minHeight: 'calc(100vh + 100px)' }}
         >
             {/* Animated Background Elements */}
             <div className="absolute inset-0 pointer-events-none">

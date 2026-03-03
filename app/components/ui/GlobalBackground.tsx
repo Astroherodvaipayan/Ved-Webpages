@@ -35,7 +35,7 @@ export default function GlobalBackground({ containerRef }: { containerRef?: Reac
     const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
 
     return (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#FAFBFF]">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-[#FAFBFF]">
             {/* Vertical Gradient Background */}
             <div
                 className="absolute inset-0 z-0"

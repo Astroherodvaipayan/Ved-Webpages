@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import GradientButton from "./GradientButton";
 import { useLenis } from "@studio-freight/react-lenis";
 
 const navLinks = [
@@ -84,7 +85,7 @@ export default function Navigation() {
                         alignItems: "center",
                         justifyContent: "space-between",
                         width: "100%",
-                        maxWidth: "720px",
+                        maxWidth: "820px",
                         padding: "12px 28px",
                         background: "rgba(255, 255, 255, 0.75)",
                         backdropFilter: "blur(12px)",
@@ -174,38 +175,9 @@ export default function Navigation() {
                     </div>
 
                     {/* ── Desktop "Join Beta" CTA ── */}
-                    <a
-                        href="#"
-                        className="hidden md:inline-block"
-                        style={{
-                            padding: "10px 24px",
-                            background: "rgba(10, 15, 46, 0.85)",
-                            backdropFilter: "blur(12px)",
-                            WebkitBackdropFilter: "blur(12px)",
-                            color: "#FFFFFF",
-                            fontSize: "0.82rem",
-                            fontWeight: 600,
-                            fontFamily: "var(--font-montserrat), sans-serif",
-                            border: "1px solid rgba(255,255,255,0.15)",
-                            borderRadius: "999px",
-                            textDecoration: "none",
-                            cursor: "pointer",
-                            boxShadow: "0 4px 20px rgba(10,15,46,0.25)",
-                            transition: "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = "rgba(30,58,138,0.90)";
-                            e.currentTarget.style.transform = "translateY(-1px)";
-                            e.currentTarget.style.boxShadow = "0 6px 24px rgba(10,15,46,0.35)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "rgba(10, 15, 46, 0.85)";
-                            e.currentTarget.style.transform = "translateY(0)";
-                            e.currentTarget.style.boxShadow = "0 4px 20px rgba(10,15,46,0.25)";
-                        }}
-                    >
-                        Join Beta
-                    </a>
+                    <div className="hidden md:inline-block">
+                        <GradientButton label="Join Beta" />
+                    </div>
 
                     {/* ── Mobile Hamburger ── */}
                     <button
@@ -285,32 +257,19 @@ export default function Navigation() {
                             ))}
 
                             {/* Mobile "Join Beta" */}
-                            <motion.a
-                                href="#"
+                            <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 10 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
                                 style={{
-                                    display: "block",
+                                    display: "flex",
+                                    justifyContent: "center",
                                     margin: "12px 16px 16px",
-                                    padding: "14px 24px",
-                                    background: "rgba(10, 15, 46, 0.85)",
-                                    backdropFilter: "blur(12px)",
-                                    color: "#FFFFFF",
-                                    fontWeight: 600,
-                                    fontFamily: "var(--font-montserrat), sans-serif",
-                                    fontSize: "0.95rem",
-                                    borderRadius: "999px",
-                                    border: "1px solid rgba(255,255,255,0.15)",
-                                    boxShadow: "0 4px 20px rgba(10,15,46,0.25)",
-                                    textAlign: "center",
-                                    textDecoration: "none",
-                                    cursor: "pointer",
                                 }}
                             >
-                                Join Beta
-                            </motion.a>
+                                <GradientButton label="Join Beta" />
+                            </motion.div>
                         </div>
                     </motion.div>
                 )}

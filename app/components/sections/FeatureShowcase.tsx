@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "@studio-freight/react-lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,18 +13,21 @@ const features = [
         headline: "[Feature headline goes here]",
         subtext:
             "[Feature description goes here — 2 to 3 sentences about what this feature does and why it matters to the learner.]",
+        color: "#E8855A",
         imageLabel: "Image Placeholder",
     },
     {
         eyebrow: "ADAPTIVE INTELLIGENCE",
         headline: "[Feature headline goes here]",
         subtext: "[Feature description goes here — 2 to 3 sentences.]",
+        color: "#5A8AE8",
         imageLabel: "Image Placeholder",
     },
     {
         eyebrow: "MASTERY EVALUATION",
         headline: "[Feature headline goes here]",
         subtext: "[Feature description goes here — 2 to 3 sentences.]",
+        color: "#5AE8A0",
         imageLabel: "Image Placeholder",
     },
 ];
@@ -65,61 +69,86 @@ export function OrnateShape({ color = "#E8855A", className = "", children }: { c
 
 export default function FeatureShowcase() {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+    const textRefsRef = useRef<(HTMLDivElement | null)[]>([]);
+    const shapeRefsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted || !lenis) return;
         const section = sectionRef.current;
         if (!section) return;
 
         const ctx = gsap.context(() => {
-            // Initial setup: hide all but the first item
-            itemsRef.current.forEach((item, i) => {
-                if (!item) return;
-                if (i !== 0) {
-                    gsap.set(item, { opacity: 0, y: 100 });
-                }
+            // Hide all text + shapes except the first
+            textRefsRef.current.forEach((el, i) => {
+                if (i !== 0 && el) gsap.set(el, { opacity: 0, y: 40 });
+            });
+            shapeRefsRef.current.forEach((el, i) => {
+                if (i !== 0 && el) gsap.set(el, { opacity: 0, scale: 0.8, y: 30 });
             });
 
-            // Create ScrollTrigger timeline
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: section,
-                    start: "center center",
-                    end: "+=250%", // Scroll distance for 3 items
+                    start: "top top",
+                    end: "+=250%",
                     pin: true,
                     scrub: 1,
                 }
             });
 
-            // Animate transition between features
             features.forEach((_, i) => {
-                if (i === features.length - 1) return; // Don't animate out the last item
+                if (i === features.length - 1) return;
 
-                const currentItem = itemsRef.current[i];
-                const nextItem = itemsRef.current[i + 1];
+                const currentText = textRefsRef.current[i];
+                const nextText = textRefsRef.current[i + 1];
+                const currentShape = shapeRefsRef.current[i];
+                const nextShape = shapeRefsRef.current[i + 1];
 
-                // Add animations to timeline
-                tl.to(currentItem, {
+                // Fade out current text
+                tl.to(currentText, {
                     opacity: 0,
-                    y: -100,
-                    duration: 1,
+                    y: -40,
+                    duration: 0.8,
                     ease: "power2.inOut"
-                }, `+=${0.5}`) // add a little pause before animating out
-                    .to(nextItem, {
+                }, "+=0.5")
+                    // Shape transitions slightly after text starts
+                    .to(currentShape, {
+                        opacity: 0,
+                        scale: 0.75,
+                        y: -50,
+                        duration: 0.8,
+                        ease: "power2.inOut"
+                    }, "<+0.1")
+                    // Bring in next shape
+                    .to(nextShape, {
+                        opacity: 1,
+                        scale: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: "power2.out"
+                    }, "<+0.2")
+                    // Bring in next text
+                    .to(nextText, {
                         opacity: 1,
                         y: 0,
-                        duration: 1,
+                        duration: 0.8,
                         ease: "power2.out"
-                    }, "<+0.2"); // Start fading in slightly after current starts fading out
+                    }, "<");
             });
 
-            // Add a small pause at the end of the timeline to hold the last frame
             tl.to({}, { duration: 0.5 });
 
         }, section);
 
         return () => ctx.revert();
-    }, []);
+    }, [isMounted, lenis]);
 
     return (
         <section
@@ -127,22 +156,22 @@ export default function FeatureShowcase() {
             ref={sectionRef}
             className="relative w-full min-h-screen py-12 sm:py-24 px-4 sm:px-6 flex items-center justify-center bg-transparent z-10"
         >
+            {/* ✅ Card is completely static — never moves or animates */}
             <div
-                className="relative w-full max-w-6xl h-[75vh] sm:h-[80vh] bg-white rounded-[32px] overflow-hidden shadow-2xl"
+                className="relative w-full max-w-6xl h-[75vh] sm:h-[80vh] bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between p-8 sm:p-12 md:p-16 gap-8 md:gap-16"
                 style={{
                     border: "1px solid rgba(30, 58, 138, 0.12)",
                     boxShadow: "0 30px 60px -15px rgba(30, 58, 138, 0.15), 0 0 0 1px rgba(30, 58, 138, 0.05)",
                 }}
             >
-                {features.map((feature, i) => (
-                    <div
-                        key={i}
-                        ref={(el) => { itemsRef.current[i] = el; }}
-                        className="absolute inset-0 w-full h-full flex flex-col md:flex-row items-center justify-between p-8 sm:p-12 md:p-16 gap-8 md:gap-16"
-                    >
-                        {/* Text Content */}
-                        <div className="w-full md:w-[45%] flex flex-col justify-center h-full">
-                            {/* Eyebrow */}
+                {/* Left — Text stack: each feature's text positioned absolute, only one visible */}
+                <div className="relative w-full md:w-[45%] h-full flex flex-col justify-center">
+                    {features.map((feature, i) => (
+                        <div
+                            key={i}
+                            ref={(el) => { textRefsRef.current[i] = el; }}
+                            className="absolute inset-0 flex flex-col justify-center"
+                        >
                             <span
                                 className="block mb-3"
                                 style={{
@@ -156,8 +185,6 @@ export default function FeatureShowcase() {
                             >
                                 {feature.eyebrow}
                             </span>
-
-                            {/* Headline */}
                             <h3
                                 className="mb-4"
                                 style={{
@@ -170,8 +197,6 @@ export default function FeatureShowcase() {
                             >
                                 {feature.headline}
                             </h3>
-
-                            {/* Subtext */}
                             <p
                                 style={{
                                     fontFamily: "var(--font-inter), Inter, sans-serif",
@@ -183,19 +208,28 @@ export default function FeatureShowcase() {
                                 {feature.subtext}
                             </p>
                         </div>
+                    ))}
+                </div>
 
-                        {/* Image Placeholder Shape */}
-                        <div className="w-full md:w-[50%] flex items-center justify-center relative h-full bg-[#E8EEFF]/30 rounded-[24px]">
-                            <OrnateShape color="#E8855A" className="w-[180px] h-[240px] sm:w-[240px] sm:h-[320px]">
-                                <span
-                                    className="text-white text-sm sm:text-base font-medium px-4 opacity-90 text-center"
-                                >
+                {/* Right — Shape stack: ONLY the shapes animate, background panel is static */}
+                <div className="relative w-full md:w-[50%] h-full flex items-center justify-center bg-[#E8EEFF]/30 rounded-[24px]">
+                    {features.map((feature, i) => (
+                        <div
+                            key={i}
+                            ref={(el) => { shapeRefsRef.current[i] = el; }}
+                            className="absolute inset-0 flex items-center justify-center"
+                        >
+                            <OrnateShape
+                                color={feature.color}
+                                className="w-[180px] h-[240px] sm:w-[240px] sm:h-[320px]"
+                            >
+                                <span className="text-white text-sm sm:text-base font-medium px-4 opacity-90 text-center">
                                     {feature.imageLabel}
                                 </span>
                             </OrnateShape>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </section>
     );

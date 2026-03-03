@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useLayoutEffect, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "@studio-freight/react-lenis";
 import { SlideInText } from "../ui/TextAnimations";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,15 +14,19 @@ export default function Moat() {
     const visualRef = useRef<HTMLDivElement>(null);
     const [orbitingUsers, setOrbitingUsers] = useState<any[]>([]);
 
-    const points = [
-        "Every interaction builds a detailed learner profile.",
-        "Profiles are compared with similar learners across the network.",
-        "The system predicts how to best teach the next concept to this user.",
-    ];
+    // ✅ Same lenis-gate pattern — waits until ProductShowcase has injected
+    // its 250% spacer and called ScrollTrigger.refresh() before we register.
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted || !lenis) return;
+
         const ctx = gsap.context(() => {
-            // Animate visual from right with rotation
             gsap.fromTo(visualRef.current,
                 { opacity: 0, x: 100, rotateY: -20, scale: 0.8 },
                 {
@@ -38,7 +43,7 @@ export default function Moat() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [isMounted, lenis]); // ✅ Gated on lenis
 
     useEffect(() => {
         const users = [1, 2, 3, 4, 5, 6].map((i) => ({
@@ -49,6 +54,12 @@ export default function Moat() {
         }));
         setOrbitingUsers(users);
     }, []);
+
+    const points = [
+        "Every interaction builds a detailed learner profile.",
+        "Profiles are compared with similar learners across the network.",
+        "The system predicts how to best teach the next concept to this user.",
+    ];
 
     return (
         <section id="moat" ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden bg-transparent z-10">
@@ -84,12 +95,8 @@ export default function Moat() {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                {/* Text Content - Slide from left */}
+                {/* Text Content */}
                 <div>
-                    {/* <SlideInText direction="left" delay={0}>
-                        <p className="eyebrow mb-8">Data Network Effect</p>
-                    </SlideInText> */}
-
                     <SlideInText direction="left" delay={0.1}>
                         <h2 className="text-4xl md:text-6xl font-bold leading-[0.95] tracking-tight mb-12">
                             Intelligence that <br />
@@ -119,9 +126,9 @@ export default function Moat() {
                     </div>
                 </div>
 
-                {/* Visual: Feedback Loop - Slide from right */}
+                {/* Visual: Feedback Loop */}
                 <div ref={visualRef} className="relative flex items-center justify-center aspect-square md:aspect-auto h-[500px] opacity-0" style={{ perspective: "1000px" }}>
-                    {/* Central Node with pulse */}
+                    {/* Central Node */}
                     <motion.div
                         animate={{
                             scale: [1, 1.1, 1],
@@ -158,10 +165,7 @@ export default function Moat() {
                             key={user.id}
                             className="absolute w-12 h-12 rounded-full bg-white border border-accent-primary/10 flex items-center justify-center text-lg shadow-lg"
                             animate={{ rotate: 360 }}
-                            style={{
-                                left: user.left,
-                                top: user.top,
-                            }}
+                            style={{ left: user.left, top: user.top }}
                             whileHover={{ scale: 1.3, zIndex: 20 }}
                             transition={{ duration: user.duration, repeat: Infinity, ease: "linear" }}
                         >

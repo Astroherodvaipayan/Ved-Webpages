@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { SlicedReveal } from "../ui/SlicedReveal";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -78,6 +79,19 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
             className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden perspective-1000 z-10 bg-transparent"
             ref={containerRef}
         >
+            {/* Background Logo */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-3 flex items-center justify-center p-4">
+                <div className="relative w-full max-w-[1200px] aspect-[16/9] md:aspect-square md:max-h-[90vh]">
+                    <Image
+                        src="/logo-light.png"
+                        alt="Ved AI Background Logo"
+                        fill
+                        className="object-contain"
+                        priority
+                    />
+                </div>
+            </div>
+
             {/* Main Content */}
             <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center mt-25">
 
