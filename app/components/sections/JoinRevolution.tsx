@@ -47,30 +47,13 @@ export default function JoinRevolution() {
                 transition={{ duration: 1 }}
                 className="relative z-10 max-w-4xl mx-auto px-6 mb-20"
             >
-                <p className="eyebrow mb-8">Our Mission</p>
 
-                {/* WE ARE BUILDING section - Hero Style Animation */}
-                <div className="my-10 flex flex-col items-center space-y-4">
-                    <p className="text-2xl md:text-4xl font-bold tracking-tight text-white/90">
-                        WE ARE BUILDING
-                    </p>
-                    <div className="flex flex-wrap items-baseline justify-center gap-2 text-2xl md:text-4xl font-bold">
-                        <span className="text-white/90">THE</span>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">
-                            META-LEARNING ADAPTIVE INTELLIGENT
-                        </span>
-                    </div>
-                    <p className="text-2xl md:text-4xl font-bold tracking-tight text-white/90">
-                        AGENT.
-                    </p>
-                </div>
-
-                <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-tight mb-12">
+                <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-tight mb-12 text-[#0A0F2E]">
                     To enable <br />
                     <span className="text-gradient">A BILLION GENIUSES</span>.
                 </h2>
 
-                <p className="text-xl text-white/60 leading-relaxed max-w-2xl mx-auto mb-16">
+                <p className="text-xl text-[#2D3A6B] leading-relaxed max-w-2xl mx-auto mb-16">
                     We believe intelligence is evenly distributed, but opportunity is not.
                     Ved AI democratizes elite-level personalized education for everyone on Earth.
                 </p>

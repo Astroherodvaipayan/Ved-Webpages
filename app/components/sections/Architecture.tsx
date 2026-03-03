@@ -131,8 +131,8 @@ export default function Architecture() {
                 <div className="text-3xl md:text-5xl font-bold leading-tight mb-8">
                     <GlitchText text="Current AI tutors are limited by student motivation." className="block" />
                 </div>
-                <p className="text-xl text-white/60 leading-relaxed max-w-2xl">
-                    We turn AI into <span className="text-white font-medium">human-like tutors</span> — who tell you what to do, relative to your goals, rather than the other way around.
+                <p className="text-xl text-[#2D3A6B] leading-relaxed max-w-2xl">
+                    We turn AI into <span className="text-[#0A0F2E] font-medium">human-like tutors</span> — who tell you what to do, relative to your goals, rather than the other way around.
                 </p>
             </SlideInText>
 
@@ -140,7 +140,7 @@ export default function Architecture() {
             <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 relative perspective-1000">
                 {/* Connection Lines (Desktop) */}
                 <div className="hidden md:block absolute top-[40%] left-[15%] right-[15%] h-[2px] z-0 pointer-events-none">
-                    <div className="connection-line w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent origin-left scale-x-0" />
+                    <div className="connection-line w-full h-full bg-gradient-to-r from-transparent via-accent-primary/20 to-transparent origin-left scale-x-0" />
                 </div>
 
                 {agents.map((agent, i) => (
@@ -154,10 +154,10 @@ export default function Architecture() {
                         initial={{ opacity: 0, y: 50 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: i * 0.15 }}
-                        className={`agent-card p-8 rounded-3xl relative group border border-white/10 bg-gradient-to-br ${agent.gradient} backdrop-blur-xl cursor-pointer overflow-hidden`}
+                        className={`agent-card p-8 rounded-3xl relative group border border-accent-primary/10 bg-gradient-to-br ${agent.gradient} backdrop-blur-xl cursor-pointer overflow-hidden`}
                     >
                         {/* Shimmer Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-accent-primary/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
 
                         {/* Liquid Wave Glow at Bottom - Enhanced */}
                         <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none overflow-hidden">
@@ -203,7 +203,7 @@ export default function Architecture() {
                         />
 
                         {/* Content Container (to sit above glow) */}
-                        <div className="relative z-10 bg-bg-card/40 rounded-2xl p-6 h-full flex flex-col items-center text-center">
+                        <div className="relative z-10 bg-white/40 rounded-2xl p-6 h-full flex flex-col items-center text-center">
                             {/* Icon with float animation */}
                             <motion.div
                                 animate={{ y: [0, -8, 0], rotate: [0, 5, -5, 0] }}
@@ -220,14 +220,14 @@ export default function Architecture() {
                             >
                                 {agent.name}
                             </h3>
-                            <p className="text-white/60 group-hover:text-white/90 leading-relaxed text-sm transition-colors duration-300">
+                            <p className="text-[#2D3A6B] group-hover:text-[#0A0F2E] leading-relaxed text-sm transition-colors duration-300">
                                 {agent.description}
                             </p>
 
                             {/* Interactive Arrow Button */}
                             <div className="mt-8">
                                 <span
-                                    className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold py-2 px-4 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 group-hover:border-white/20 transition-all"
+                                    className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold py-2 px-4 rounded-full bg-accent-primary/5 border border-accent-primary/10 group-hover:bg-accent-primary/10 group-hover:border-accent-primary/20 transition-all"
                                     style={{ color: agent.color }}
                                 >
                                     Learn more

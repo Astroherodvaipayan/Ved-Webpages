@@ -4,17 +4,36 @@ import { useRef, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SlideInText } from "../ui/TextAnimations";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function ProblemStatement() {
     const containerRef = useRef<HTMLDivElement>(null);
     const statRef = useRef<HTMLSpanElement>(null);
+    const headlineRef = useRef<HTMLHeadingElement>(null);
+    const subtitleRef = useRef<HTMLSpanElement>(null);
 
     useLayoutEffect(() => {
+        const isMobile = window.innerWidth <= 768;
+
         const ctx = gsap.context(() => {
-            // Animate the 98% stat with scale
+            // Stage 1 — Headline slides up on viewport entry
+            gsap.fromTo(headlineRef.current,
+                { y: isMobile ? 40 : 60, opacity: 0 },
+                {
+                    y: 0, opacity: 1,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top 70%",
+                        scrub: false,
+                        once: true,
+                    }
+                }
+            );
+
+            // Animate the 98% stat with elastic bounce (fires with headline)
             gsap.fromTo(statRef.current,
                 { scale: 0.5, opacity: 0, rotateY: -30 },
                 {
@@ -24,7 +43,25 @@ export default function ProblemStatement() {
                     scrollTrigger: {
                         trigger: containerRef.current,
                         start: "top 70%",
-                        toggleActions: "play none none reverse"
+                        scrub: false,
+                        once: true,
+                    }
+                }
+            );
+
+            // Stage 2 — Subtitle slides up 300px later
+            gsap.fromTo(subtitleRef.current,
+                { y: isMobile ? 50 : 80, opacity: 0, visibility: "hidden" as any },
+                {
+                    y: 0, opacity: 0.4, visibility: "visible" as any,
+                    duration: 0.6,
+                    delay: 0.15,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top 70% -= 300",
+                        scrub: false,
+                        once: true,
                     }
                 }
             );
@@ -44,12 +81,12 @@ export default function ProblemStatement() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-white/5 rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-accent-primary/5 rounded-full"
                 />
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-accent-primary/5 rounded-full"
                 />
             </div>
 
@@ -81,24 +118,23 @@ export default function ProblemStatement() {
             </div>
 
             <div className="relative z-10 max-w-5xl mx-auto">
-
-                <SlideInText direction="up" delay={0.2}>
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-white/90">
-                        Personal tutoring improves learning outcomes by{" "}
-                        <span ref={statRef} className="text-gradient inline-block opacity-0">98%</span>.
-                        <br />
-                        <motion.span
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 0.4, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.8, duration: 1 }}
-                            className="text-white/40 block mt-4"
-                        >
-                            But having 8 billion teachers is impossible.
-                        </motion.span>
-                    </h2>
-                </SlideInText>
+                <h2
+                    ref={headlineRef}
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-[#0A0F2E]"
+                    style={{ opacity: 0 }}
+                >
+                    Personal tutoring improves learning outcomes by{" "}
+                    <span ref={statRef} className="text-gradient inline-block opacity-0">98%</span>.
+                </h2>
+                <span
+                    ref={subtitleRef}
+                    className="text-[#6B7AA1] block mt-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
+                    style={{ opacity: 0, visibility: "hidden" }}
+                >
+                    But having 8 billion teachers is impossible.
+                </span>
             </div>
         </section>
     );
 }
+

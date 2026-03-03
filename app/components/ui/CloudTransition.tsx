@@ -8,13 +8,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Cloud transition configurations for each section boundary
 const transitionConfigs = [
-    { triggerId: "hero", nextId: "product-showcase", color: "rgba(59, 130, 246, 0.3)" },
-    { triggerId: "product-showcase", nextId: "problem-statement", color: "rgba(99, 102, 241, 0.25)" },
-    { triggerId: "problem-statement", nextId: "architecture", color: "rgba(239, 68, 68, 0.2)" },
-    { triggerId: "architecture", nextId: "moat", color: "rgba(59, 130, 246, 0.25)" },
-    { triggerId: "moat", nextId: "roadmap", color: "rgba(139, 92, 246, 0.25)" },
-    { triggerId: "roadmap", nextId: "mission", color: "rgba(212, 175, 55, 0.2)" },
-    { triggerId: "mission", nextId: "footer-cta", color: "rgba(255, 255, 255, 0.15)" },
+    { triggerId: "hero", nextId: "product-showcase", color: "rgba(30, 58, 138, 0.15)" },
+    { triggerId: "product-showcase", nextId: "problem-statement", color: "rgba(99, 102, 241, 0.12)" },
+    { triggerId: "problem-statement", nextId: "architecture", color: "rgba(220, 38, 38, 0.10)" },
+    { triggerId: "architecture", nextId: "moat", color: "rgba(30, 58, 138, 0.12)" },
+    { triggerId: "moat", nextId: "roadmap", color: "rgba(212, 175, 55, 0.15)" },
+    { triggerId: "roadmap", nextId: "mission", color: "rgba(212, 175, 55, 0.12)" },
+    { triggerId: "mission", nextId: "footer-cta", color: "rgba(30, 58, 138, 0.10)" },
 ];
 
 export default function CloudTransition() {

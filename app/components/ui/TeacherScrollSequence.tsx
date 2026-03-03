@@ -1,26 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 40;
+// Extra scroll distance (px) to hold the last frame after iteration completes
+const HOLD_DISTANCE = 2000;
 
 export default function TeacherScrollSequence() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [images, setImages] = useState<HTMLImageElement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
-    // Map scroll (0 to 1) to frame index (0 to 39)
-    const frameIndex = useTransform(scrollYProgress, [0, 1], [0, FRAME_COUNT - 1]);
-
-    // Smooth out the index slightly for fluid playback
-    const smoothFrameIndex = useSpring(frameIndex, { stiffness: 200, damping: 30 });
+    const [showSubtitle, setShowSubtitle] = useState(false);
+    const currentFrame = useRef(0);
+    const subtitleRef = useRef<HTMLDivElement>(null);
 
     // Preload images
     useEffect(() => {
@@ -29,15 +26,14 @@ export default function TeacherScrollSequence() {
             const promises = [];
 
             for (let i = 1; i <= FRAME_COUNT; i++) {
-                const promise = new Promise<void>((resolve, reject) => {
+                const promise = new Promise<void>((resolve) => {
                     const img = new Image();
-                    // Pad with leading zeros (001, 002... 040)
                     const paddedIndex = i.toString().padStart(3, '0');
-                    img.src = `/images/teacher-sequence/ezgif-frame-${paddedIndex}.jpg`;
+                    img.src = `/images/teacher-sequence/ezgif-frame-${paddedIndex}.png`;
                     img.onload = () => resolve();
                     img.onerror = () => {
                         console.error(`Failed to load frame ${i}`);
-                        resolve(); // Resolve anyway to continue
+                        resolve();
                     };
                     loadedImages[i - 1] = img;
                 });
@@ -52,82 +48,116 @@ export default function TeacherScrollSequence() {
         loadImages();
     }, []);
 
-    // Draw frame to canvas
-    useEffect(() => {
-        if (isLoading || images.length === 0) return;
+    // Render a specific frame onto the canvas
+    const renderFrame = (index: number) => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext("2d");
+        if (!canvas || !ctx) return;
 
-        const render = (index: number) => {
-            const canvas = canvasRef.current;
-            const ctx = canvas?.getContext("2d");
-            if (!canvas || !ctx) return;
+        const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(index)));
+        const img = images[idx];
+        if (!img) return;
 
-            // Ensure index is valid integer
-            const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(index)));
-            const img = images[idx];
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const imgRatio = img.width / img.height;
+        const canvasRatio = canvasWidth / canvasHeight;
 
-            if (!img) return;
+        let drawWidth, drawHeight, offsetX, offsetY;
 
-            // Maintain aspect ratio cover
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const imgRatio = img.width / img.height;
-            const canvasRatio = canvasWidth / canvasHeight;
+        if (imgRatio > canvasRatio) {
+            drawHeight = canvasHeight;
+            drawWidth = canvasHeight * imgRatio;
+            offsetY = 0;
+            offsetX = (canvasWidth - drawWidth) / 2;
+        } else {
+            drawWidth = canvasWidth;
+            drawHeight = canvasWidth / imgRatio;
+            offsetX = 0;
+            offsetY = (canvasHeight - drawHeight) / 2;
+        }
 
-            let drawWidth, drawHeight, offsetX, offsetY;
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    };
 
-            if (imgRatio > canvasRatio) {
-                // Image is wider than canvas
-                drawHeight = canvasHeight;
-                drawWidth = canvasHeight * imgRatio;
-                offsetY = 0;
-                offsetX = (canvasWidth - drawWidth) / 2;
-            } else {
-                // Image is taller than canvas
-                drawWidth = canvasWidth;
-                drawHeight = canvasWidth / imgRatio;
-                offsetX = 0;
-                offsetY = (canvasHeight - drawHeight) / 2;
-            }
+    // Set canvas resolution to match viewport
+    const syncCanvasSize = () => {
+        if (canvasRef.current) {
+            canvasRef.current.width = window.innerWidth;
+            canvasRef.current.height = window.innerHeight;
+        }
+    };
 
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-        };
+    // Pin the section, scrub through frames, hold last frame for 300px
+    useLayoutEffect(() => {
+        if (isLoading || images.length === 0 || !containerRef.current) return;
 
-        // Subscribe to changes
-        const unsubscribe = smoothFrameIndex.on("change", (latest) => {
-            render(latest);
+        syncCanvasSize();
+        renderFrame(0);
+
+        // Shorter scroll distance on mobile for better UX
+        const isMobile = window.innerWidth < 768;
+        const pxPerFrame = isMobile ? 40 : 60;
+        const holdDistance = isMobile ? Math.round(HOLD_DISTANCE * 0.6) : HOLD_DISTANCE;
+        const frameScrollDistance = FRAME_COUNT * pxPerFrame;
+        const totalScrollDistance = frameScrollDistance + holdDistance;
+
+        const st = ScrollTrigger.create({
+            trigger: containerRef.current,
+            start: "top top",
+            end: `+=${totalScrollDistance}`,
+            pin: true,
+            pinSpacing: true,
+            scrub: true,
+            onUpdate: (self) => {
+                const frameFraction = frameScrollDistance / totalScrollDistance;
+                const frameProgress = Math.min(self.progress / frameFraction, 1);
+                const idx = Math.round(frameProgress * (FRAME_COUNT - 1));
+                if (idx !== currentFrame.current) {
+                    currentFrame.current = idx;
+                    renderFrame(idx);
+                }
+
+                // Show subtitle when hold phase begins (all frames done)
+                if (frameProgress >= 1 && !showSubtitle) {
+                    setShowSubtitle(true);
+                }
+            },
+            onLeave: () => {
+                // Fade out subtitle when section exits
+                if (subtitleRef.current) {
+                    gsap.to(subtitleRef.current, {
+                        opacity: 0,
+                        duration: 0.4,
+                        ease: "power2.in",
+                    });
+                }
+            },
+            onLeaveBack: () => {
+                setShowSubtitle(false);
+            },
         });
 
-        // Initial render
-        render(smoothFrameIndex.get());
-
-        // Handle resize (set canvas internal resolution)
         const handleResize = () => {
-            if (canvasRef.current && containerRef.current) {
-                // We want to fit the viewport or container width
-                const rect = containerRef.current.getBoundingClientRect();
-                // Set resolution higher for crispness
-                canvasRef.current.width = window.innerWidth;
-                canvasRef.current.height = window.innerHeight; // Or specific height
-                render(smoothFrameIndex.get());
-            }
+            syncCanvasSize();
+            renderFrame(currentFrame.current);
         };
-
         window.addEventListener("resize", handleResize);
-        handleResize();
 
         return () => {
-            unsubscribe();
+            st.kill();
             window.removeEventListener("resize", handleResize);
         };
-    }, [isLoading, images, smoothFrameIndex]);
+    }, [isLoading, images]);
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[300vh] bg-black" // Tall container for scroll space
+            className="relative w-full bg-black"
+            style={{ height: "100vh", zIndex: 20 }}
         >
-            <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+            <div className="w-full h-screen overflow-hidden flex items-center justify-center">
                 <canvas
                     ref={canvasRef}
                     className="w-full h-full object-cover"
@@ -138,16 +168,39 @@ export default function TeacherScrollSequence() {
                 />
 
                 {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center text-white/50 text-sm tracking-widest uppercase">
+                    <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs sm:text-sm tracking-widest uppercase">
                         Loading Sequence...
                     </div>
                 )}
             </div>
 
-            {/* Optional Overlay Text or Gradient */}
+            {/* Bottom gradient overlay */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="sticky top-0 w-full h-screen bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                <div className="w-full h-screen bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
             </div>
+
+            {/* Cinematic subtitle overlay — appears during hold phase */}
+            {showSubtitle && (
+                <div
+                    ref={subtitleRef}
+                    className="absolute z-30 left-1/2 bottom-[10%] -translate-x-1 pointer-events-none w-full px-4"
+                    style={{
+                        animation: 'subtitleFadeIn 600ms ease-out forwards',
+                    }}
+                >
+                    <p
+                        className="text-white font-black tracking-widest uppercase text-center w-full drop-shadow-2xl"
+                        style={{
+                            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                            fontSize: window.innerWidth <= 768
+                                ? 'clamp(1.25rem, 4vw, 2rem)'
+                                : 'clamp(2rem, 4vw, 4rem)',
+                        }}
+                    >
+                        Building the greatest teacher ever.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

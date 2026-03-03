@@ -57,7 +57,7 @@ export default function Moat() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="relative w-[800px] h-[800px] border border-white/5 rounded-full opacity-30"
+                    className="relative w-[800px] h-[800px] border border-accent-primary/5 rounded-full opacity-30"
                 >
                     <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
@@ -68,7 +68,7 @@ export default function Moat() {
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute w-[600px] h-[600px] border border-white/5 rounded-full opacity-30"
+                    className="absolute w-[600px] h-[600px] border border-accent-primary/5 rounded-full opacity-30"
                 >
                     <motion.div
                         animate={{ scale: [1, 1.3, 1] }}
@@ -79,7 +79,7 @@ export default function Moat() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute w-[400px] h-[400px] border border-white/5 rounded-full opacity-20"
+                    className="absolute w-[400px] h-[400px] border border-accent-primary/5 rounded-full opacity-20"
                 />
             </div>
 
@@ -106,11 +106,11 @@ export default function Moat() {
                                 >
                                     <motion.div
                                         whileHover={{ scale: 1.2, borderColor: "var(--color-accent-primary)" }}
-                                        className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs font-mono transition-colors duration-300 shrink-0"
+                                        className="w-8 h-8 rounded-full border border-accent-primary/10 flex items-center justify-center text-xs font-mono transition-colors duration-300 shrink-0"
                                     >
                                         {i + 1}
                                     </motion.div>
-                                    <p className="text-xl text-white/60 group-hover:text-white transition-colors duration-300">
+                                    <p className="text-xl text-[#2D3A6B] group-hover:text-[#0A0F2E] transition-colors duration-300">
                                         {point}
                                     </p>
                                 </motion.div>
@@ -132,7 +132,7 @@ export default function Moat() {
                             ]
                         }}
                         transition={{ duration: 4, repeat: Infinity }}
-                        className="w-32 h-32 rounded-full bg-bg-tertiary border border-white/10 flex items-center justify-center relative z-10"
+                        className="w-32 h-32 rounded-full bg-white border border-accent-primary/10 flex items-center justify-center relative z-10"
                     >
                         <svg className="w-16 h-16 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2l8.5 5v10L12 22l-8.5-5V7L12 2z" />
@@ -156,7 +156,7 @@ export default function Moat() {
                     {orbitingUsers.map((user) => (
                         <motion.div
                             key={user.id}
-                            className="absolute w-12 h-12 rounded-full bg-bg-card border border-white/10 flex items-center justify-center text-lg shadow-lg"
+                            className="absolute w-12 h-12 rounded-full bg-white border border-accent-primary/10 flex items-center justify-center text-lg shadow-lg"
                             animate={{ rotate: 360 }}
                             style={{
                                 left: user.left,

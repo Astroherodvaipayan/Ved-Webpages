@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function FooterCTA() {
     return (
-        <footer id="footer-cta" className="w-full py-16 px-6 text-center border-t border-white/10">
+        <footer id="footer-cta" className="w-full py-16 px-6 text-center border-t border-accent-primary/10">
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -13,7 +13,7 @@ export default function FooterCTA() {
                     transition={{ duration: 0.8 }}
                     className="space-y-4"
                 >
-                    <p className="text-sm text-white/40 tracking-widest uppercase">
+                    <p className="text-sm text-[#6B7AA1] tracking-widest uppercase">
                         © 2025 Ved AI Labs. All rights reserved.
                     </p>
                 </motion.div>

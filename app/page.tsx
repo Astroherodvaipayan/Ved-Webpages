@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Header from "./components/sections/Header";
 import Hero from "./components/sections/Hero";
-import CloudSection from "./components/sections/CloudSection";
 
 import ProductShowcase from "./components/sections/ProductShowcase";
 import ProblemStatement from "./components/sections/ProblemStatement";
 import Architecture from "./components/sections/Architecture";
+import FeatureShowcase from "./components/sections/FeatureShowcase";
 import Moat from "./components/sections/Moat";
 import Roadmap from "./components/sections/Roadmap";
 import Mission from "./components/sections/Mission";
@@ -25,13 +24,10 @@ export default function Home() {
             {/* Dynamic Background Controller */}
             {!showIntro && <BackgroundController />}
 
-            {/* Cloud Reveal Effect - Rising clouds */}
-            {!showIntro && <CloudReveal />}
+            {/* Removed CloudReveal */}
 
-            {/* Header with Logo - Always visible */}
-            {!showIntro && <Header />}
 
-            {/* Intro Animation Layer */}
+
             {showIntro && (
                 <CinematicIntro
                     onComplete={() => {
@@ -39,18 +35,25 @@ export default function Home() {
                     }}
                 />
             )}
-
             {/* Main Content Sections - Continuous Scroll */}
             <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
                 <Hero isActive={!showIntro} />
-                <CloudSection />
+
+                {/* Seamless transition gradient between Hero and Teacher sequence */}
+                <div className="relative w-full z-[35] pointer-events-none" style={{ height: 0 }}>
+                    <div
+                        className="absolute top-0 left-0 w-full h-[30vh]"
+                        style={{ background: 'linear-gradient(to bottom, #E8EEFF 0%, transparent 100%)' }}
+                    />
+                </div>
+
                 <Mission />
 
                 <ProductShowcase />
                 <ProblemStatement />
                 <Architecture />
+                <FeatureShowcase />
                 <Moat />
-                <Roadmap />
 
 
                 <JoinRevolution />

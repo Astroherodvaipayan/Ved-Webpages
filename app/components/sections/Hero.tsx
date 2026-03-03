@@ -71,7 +71,6 @@ function SlotMachineText({
 
 export default function Hero({ isActive = true }: { isActive?: boolean }) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [waitlistClicked, setWaitlistClicked] = useState(false);
 
     // Scroll-linked parallax
     const { scrollYProgress } = useScroll({
@@ -103,6 +102,14 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
             onMouseMove={handleMouseMove}
             ref={containerRef}
         >
+            {/* Vertical Gradient Background */}
+            <div
+                className="absolute inset-0 z-0 pointer-events-none"
+                style={{
+                    background: 'linear-gradient(to bottom, #EEF3FF 0%, #FAFBFF 45%, #F0F4FF 75%, #E8EEFF 100%)',
+                }}
+            />
+
             {/* Ambient Background Glows */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <motion.div
@@ -118,7 +125,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
             {/* Grid Pattern */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
                 style={{
-                    backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                    backgroundImage: `linear-gradient(rgba(30,58,138,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,138,0.08) 1px, transparent 1px)`,
                     backgroundSize: '60px 60px'
                 }}
             />
@@ -130,7 +137,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
 
                 {/* Main Headline */}
                 <motion.h1
-                    className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.05] font-black tracking-tighter text-white mb-8 w-full max-w-5xl"
+                    className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.05] font-black tracking-tighter text-[#0A0F2E] mb-8 w-full max-w-5xl"
                     initial={{ opacity: 0 }}
                     animate={isActive ? { opacity: 1 } : { opacity: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
@@ -148,7 +155,7 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     >
                         <motion.span
                             layout
-                            className="text-white text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            className="text-[#0A0F2E] text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                         >
                             WAY OF
                         </motion.span>
@@ -171,43 +178,13 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     initial={{ opacity: 0, y: 30 }}
                     animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                     transition={{ delay: 0.9, duration: 0.8 }}
-                    className="text-base sm:text-lg md:text-xl text-text-secondary max-w-xl mx-auto mb-12 font-light leading-relaxed"
+                    className="text-base sm:text-lg md:text-xl text-[#2D3A6B] max-w-xl mx-auto mb-12 font-light leading-relaxed"
                 >
                     Learns how you learn, and teaches you to mastery. <br className="hidden sm:block" />
                     Enabling a billion geniuses through adaptive AI.
                 </motion.p>
 
-                {/* CTA Buttons */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                    transition={{ delay: 1.1, duration: 0.8 }}
-                    className="flex flex-col sm:flex-row gap-4 justify-center"
-                >
-                    <motion.button
-                        whileHover={{ scale: waitlistClicked ? 1 : 1.05, boxShadow: waitlistClicked ? "none" : "0 0 40px rgba(59, 130, 246, 0.4)" }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setWaitlistClicked(true)}
-                        className="btn-primary group relative px-8 py-4 text-sm sm:text-base cursor-pointer"
-                    >
-                        <span className="relative z-10">
-                            {waitlistClicked ? (
-                                <motion.span
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: [1, 1.02, 1] }}
-                                    transition={{ duration: 0.5, scale: { repeat: Infinity, duration: 1.5 } }}
-                                >
-                                    Will be adding soon! 🚀
-                                </motion.span>
-                            ) : (
-                                "Get Early Access"
-                            )}
-                        </span>
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full opacity-0 group-hover:opacity-20 transition-opacity"
-                        />
-                    </motion.button>
-                </motion.div>
+
             </div>
 
             {/* Scroll Indicator */}
@@ -217,11 +194,11 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                 transition={{ delay: 2, duration: 1 }}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             >
-                <span className="text-xs uppercase tracking-widest text-white/40">Scroll</span>
+                <span className="text-xs uppercase tracking-widest text-[#6B7AA1]">Scroll</span>
                 <motion.div
                     animate={{ y: [0, 8, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center pt-2"
+                    className="w-6 h-10 rounded-full border-2 border-[#B0B8D1] flex items-start justify-center pt-2"
                 >
                     <motion.div
                         animate={{ opacity: [1, 0.3, 1] }}

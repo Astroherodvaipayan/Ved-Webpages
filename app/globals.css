@@ -1,30 +1,30 @@
 @import "tailwindcss";
 
 /* ============================================
-   VED AI - DARK SCI-FI REALISM THEME
-   Inspired by Workoholics & Cinematic Intro
+   VED AI - LIGHT PREMIUM THEME
+   Navy & Gold Elegance
    ============================================ */
 
 @theme {
-  /* Core Colors */
-  --color-bg-primary: #050505;
-  --color-bg-secondary: #0a0a0a;
-  --color-bg-tertiary: #111111;
-  --color-bg-card: #0d0d0d;
+  /* Core Colors — Light */
+  --color-bg-primary: #FAFBFF;
+  --color-bg-secondary: #F0F4FF;
+  --color-bg-tertiary: #E8EEFF;
+  --color-bg-card: #FFFFFF;
 
-  /* Accent Colors - Premium Blue & Gold */
-  --color-accent-primary: #3B82F6;
-  /* Royal Blue */
-  --color-accent-secondary: #FFFFFF;
-  /* Pure Pearly White */
-  --color-accent-tertiary: #1E40AF;
-  /* Deep Royal Blue */
+  /* Accent Colors — Navy & Gold */
+  --color-accent-primary: #1E3A8A;
+  /* Deep Navy */
+  --color-accent-secondary: #D4AF37;
+  /* Rich Gold */
+  --color-accent-tertiary: #0F1F4D;
+  /* Midnight Navy */
 
-  /* Text Colors */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #cccccc;
-  --color-text-muted: #666666;
-  --color-text-dim: #333333;
+  /* Text Colors — Dark on Light */
+  --color-text-primary: #0A0F2E;
+  --color-text-secondary: #2D3A6B;
+  --color-text-muted: #6B7AA1;
+  --color-text-dim: #B0B8D1;
 
   /* Fonts */
   --font-montserrat: var(--font-montserrat);
@@ -34,7 +34,7 @@
 :root {
   /* Gradients */
   --gradient-neon: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
-  --gradient-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gradient-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 100%);
 
   /* Animation Easings */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -57,7 +57,7 @@ body {
 
 ::selection {
   background: var(--color-accent-primary);
-  color: var(--color-bg-primary);
+  color: #ffffff;
 }
 
 /* ============================================
@@ -95,10 +95,10 @@ h6 {
    Glassmorphism & Cards
    ============================================ */
 .glass-panel {
-  background: rgba(13, 13, 13, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(30, 58, 138, 0.08);
+  box-shadow: 0 4px 30px rgba(30, 58, 138, 0.06);
 }
 
 .card-hover {
@@ -107,8 +107,8 @@ h6 {
 
 .card-hover:hover {
   transform: translateY(-5px);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.1);
+  border-color: rgba(30, 58, 138, 0.15);
+  box-shadow: 0 20px 40px -10px rgba(30, 58, 138, 0.12), 0 0 20px rgba(212, 175, 55, 0.08);
 }
 
 /* ============================================
@@ -131,8 +131,8 @@ h6 {
 .btn-primary {
   position: relative;
   overflow: hidden;
-  background: var(--color-text-primary);
-  color: var(--color-bg-primary);
+  background: var(--color-accent-primary);
+  color: #ffffff;
   font-family: var(--font-montserrat);
   font-weight: 700;
   text-transform: uppercase;
@@ -173,7 +173,7 @@ h6 {
 }
 
 .neon-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), 0 0 40px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 20px rgba(30, 58, 138, 0.2), 0 0 40px rgba(212, 175, 55, 0.12);
 }
 
 /* Scan Line Effect (Overlay) */
@@ -228,7 +228,7 @@ h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -277,13 +277,26 @@ html.lenis {
   perspective: 1000px;
 }
 
-/* Force Header Transparency - Ultimate Override */
-#main-header,
-nav#main-header {
-  background: transparent !important;
-  background-color: rgba(0, 0, 0, 0) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  border: none !important;
+/* Cinematic subtitle fade-in for TeacherScrollSequence */
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Wave drift animation for JoinRevolution */
+@keyframes waveFlow {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50px);
+  }
 }

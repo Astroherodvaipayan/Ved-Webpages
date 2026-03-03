@@ -10,51 +10,51 @@ gsap.registerPlugin(ScrollTrigger);
 const sectionConfigs = [
     {
         id: "hero",
-        backgroundColor: "#050505",
-        gradientColors: ["rgba(59, 130, 246, 0.08)", "rgba(139, 92, 246, 0.05)"],
-        particleColor: "#3B82F6",
+        backgroundColor: "#FAFBFF",
+        gradientColors: ["rgba(30, 58, 138, 0.06)", "rgba(212, 175, 55, 0.04)"],
+        particleColor: "#1E3A8A",
     },
     {
         id: "product-showcase",
-        backgroundColor: "#030308",
-        gradientColors: ["rgba(59, 130, 246, 0.1)", "rgba(99, 102, 241, 0.08)"],
+        backgroundColor: "#F5F8FF",
+        gradientColors: ["rgba(30, 58, 138, 0.08)", "rgba(99, 102, 241, 0.05)"],
         particleColor: "#6366F1",
     },
     {
         id: "problem-statement",
-        backgroundColor: "#0a0a0a",
-        gradientColors: ["rgba(239, 68, 68, 0.06)", "rgba(220, 38, 38, 0.04)"],
+        backgroundColor: "#FAFBFF",
+        gradientColors: ["rgba(220, 38, 38, 0.05)", "rgba(239, 68, 68, 0.03)"],
         particleColor: "#EF4444",
     },
     {
         id: "architecture",
-        backgroundColor: "#050510",
-        gradientColors: ["rgba(59, 130, 246, 0.1)", "rgba(30, 64, 175, 0.08)"],
-        particleColor: "#3B82F6",
+        backgroundColor: "#F0F4FF",
+        gradientColors: ["rgba(30, 58, 138, 0.08)", "rgba(15, 31, 77, 0.05)"],
+        particleColor: "#1E3A8A",
     },
     {
         id: "moat",
-        backgroundColor: "#0a0a0f",
-        gradientColors: ["rgba(139, 92, 246, 0.1)", "rgba(109, 40, 217, 0.06)"],
-        particleColor: "#8B5CF6",
+        backgroundColor: "#FAFBFF",
+        gradientColors: ["rgba(212, 175, 55, 0.08)", "rgba(180, 140, 20, 0.05)"],
+        particleColor: "#D4AF37",
     },
     {
         id: "roadmap",
-        backgroundColor: "#050508",
-        gradientColors: ["rgba(212, 175, 55, 0.08)", "rgba(245, 158, 11, 0.05)"],
+        backgroundColor: "#F5F8FF",
+        gradientColors: ["rgba(212, 175, 55, 0.10)", "rgba(245, 200, 80, 0.06)"],
         particleColor: "#D4AF37",
     },
     {
         id: "mission",
-        backgroundColor: "#030305",
-        gradientColors: ["rgba(59, 130, 246, 0.1)", "rgba(255, 255, 255, 0.05)"],
-        particleColor: "#FFFFFF",
+        backgroundColor: "#F0F4FF",
+        gradientColors: ["rgba(30, 58, 138, 0.07)", "rgba(212, 175, 55, 0.04)"],
+        particleColor: "#1E3A8A",
     },
     {
         id: "footer-cta",
-        backgroundColor: "#050505",
-        gradientColors: ["rgba(59, 130, 246, 0.05)", "rgba(139, 92, 246, 0.03)"],
-        particleColor: "#3B82F6",
+        backgroundColor: "#FAFBFF",
+        gradientColors: ["rgba(30, 58, 138, 0.04)", "rgba(212, 175, 55, 0.02)"],
+        particleColor: "#1E3A8A",
     },
 ];
 
@@ -139,8 +139,8 @@ export default function BackgroundController() {
                 className="absolute inset-0 pointer-events-none opacity-[0.015]"
                 style={{
                     backgroundImage: `
-                        linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                        linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px)
                     `,
                     backgroundSize: '80px 80px',
                 }}
@@ -150,7 +150,7 @@ export default function BackgroundController() {
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                    background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+                    background: 'radial-gradient(ellipse at center, transparent 40%, rgba(250,251,255,0.3) 100%)',
                 }}
             />
         </div>
