@@ -27,7 +27,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         return () => timers.forEach(clearTimeout);
     }, [onComplete]);
 
-    if (phase === "done") return null;
 
     return (
         <AnimatePresence>

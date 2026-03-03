@@ -51,9 +51,9 @@ export default function Moat() {
     }, []);
 
     return (
-        <section id="moat" ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden">
+        <section id="moat" ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden bg-transparent z-10">
             {/* Background Orbital Animation */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10">
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 40, repeat: Infinity, ease: "linear" }}

@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { SlicedReveal } from "../ui/SlicedReveal";
-import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Slot machine text component - vertical rolling effect
 function SlotMachineText({
@@ -70,87 +70,35 @@ function SlotMachineText({
 
 
 export default function Hero({ isActive = true }: { isActive?: boolean }) {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // Scroll-linked parallax
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end start"]
-    });
-
-    const glowY1 = useTransform(scrollYProgress, [0, 1], [0, -150]);
-    const glowY2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-
-    // Mouse Parallax
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        const { clientX, clientY } = e;
-        const { innerWidth, innerHeight } = window;
-        mouseX.set((clientX / innerWidth - 0.5) * 30);
-        mouseY.set((clientY / innerHeight - 0.5) * 30);
-    };
-
-    const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-    const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+    const containerRef = useRef<HTMLElement>(null);
 
     return (
         <section
             id="hero"
-            className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden perspective-1000"
-            onMouseMove={handleMouseMove}
+            className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden perspective-1000 z-10 bg-transparent"
             ref={containerRef}
         >
-            {/* Vertical Gradient Background */}
-            <div
-                className="absolute inset-0 z-0 pointer-events-none"
-                style={{
-                    background: 'linear-gradient(to bottom, #EEF3FF 0%, #FAFBFF 45%, #F0F4FF 75%, #E8EEFF 100%)',
-                }}
-            />
-
-            {/* Ambient Background Glows */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <motion.div
-                    style={{ y: glowY1, x: springX }}
-                    className="absolute top-[42%] left-[10%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-accent-primary/15 rounded-full blur-[150px]"
-                />
-                <motion.div
-                    style={{ y: glowY2, x: springY }}
-                    className="absolute bottom-[-45%] right-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-accent-secondary/15 rounded-full blur-[150px]"
-                />
-            </div>
-
-            {/* Grid Pattern */}
-            <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(30,58,138,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,138,0.08) 1px, transparent 1px)`,
-                    backgroundSize: '60px 60px'
-                }}
-            />
-
             {/* Main Content */}
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
+            <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center mt-25">
 
 
 
                 {/* Main Headline */}
                 <motion.h1
-                    className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.05] font-black tracking-tighter text-[#0A0F2E] mb-8 w-full max-w-5xl"
-                    initial={{ opacity: 0 }}
-                    animate={isActive ? { opacity: 1 } : { opacity: 0 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.05] font-black tracking-tighter text-[#0A0F2E] mb-8 w-full max-w-5xl overflow-hidden"
                 >
                     <motion.span
                         className="block mb-2 text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                        initial={{ opacity: 0, y: "100%" }}
+                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: "100%" }}
+                        transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <SlicedReveal text="BRING YOUR" delay={0.4} trigger={isActive} />
+                        BRING YOUR
                     </motion.span>
                     <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={isActive ? { opacity: 1 } : { opacity: 0 }}
-                        transition={{ delay: 0.55, duration: 0.5 }}
+                        initial={{ opacity: 0, y: "100%" }}
+                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: "100%" }}
+                        transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className="flex items-baseline justify-center mb-2 gap-4"
                     >
                         <motion.span
@@ -168,8 +116,11 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
                     </motion.span>
                     <motion.span
                         className="block text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                        initial={{ opacity: 0, y: "100%" }}
+                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: "100%" }}
+                        transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <SlicedReveal text="TO LIFE." delay={0.7} trigger={isActive} />
+                        TO LIFE.
                     </motion.span>
                 </motion.h1>
 
@@ -186,27 +137,6 @@ export default function Hero({ isActive = true }: { isActive?: boolean }) {
 
 
             </div>
-
-            {/* Scroll Indicator */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={isActive ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ delay: 2, duration: 1 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-            >
-                <span className="text-xs uppercase tracking-widest text-[#6B7AA1]">Scroll</span>
-                <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-6 h-10 rounded-full border-2 border-[#B0B8D1] flex items-start justify-center pt-2"
-                >
-                    <motion.div
-                        animate={{ opacity: [1, 0.3, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className="w-1.5 h-1.5 rounded-full bg-accent-primary"
-                    />
-                </motion.div>
-            </motion.div>
         </section >
     );
 }

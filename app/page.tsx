@@ -1,32 +1,64 @@
 "use client";
 
-import { useState } from "react";
-import Hero from "./components/sections/Hero";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import Hero from "./components/sections/Hero";
 import ProductShowcase from "./components/sections/ProductShowcase";
 import ProblemStatement from "./components/sections/ProblemStatement";
 import Architecture from "./components/sections/Architecture";
 import FeatureShowcase from "./components/sections/FeatureShowcase";
 import Moat from "./components/sections/Moat";
-import Roadmap from "./components/sections/Roadmap";
 import Mission from "./components/sections/Mission";
 import JoinRevolution from "./components/sections/JoinRevolution";
 import FooterCTA from "./components/sections/FooterCTA";
 import CinematicIntro from "./components/CinematicIntro";
 import BackgroundController from "./components/ui/BackgroundController";
-import CloudReveal from "./components/ui/CloudReveal";
+import GlobalBackground from "./components/ui/GlobalBackground";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-    const [showIntro, setShowIntro] = useState(true);
+    const [showIntro, setShowIntro] = useState(false);
+    const heroPinnedRef = useRef<HTMLDivElement>(null);
+    const heroClipRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!heroPinnedRef.current || !heroClipRef.current) return;
+
+        heroClipRef.current.style.setProperty("--hole-size", "0vw");
+
+        const st = ScrollTrigger.create({
+            trigger: heroPinnedRef.current,
+            start: "top top",
+            end: "+=800",
+            pin: true,
+            pinSpacing: false, // Prevents pushing the underlying content down
+            scrub: true,
+            animation: gsap.fromTo(
+                heroClipRef.current,
+                { "--hole-size": "0vw" },
+                {
+                    "--hole-size": "150vw",
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.set(heroClipRef.current, { pointerEvents: "none" });
+                    },
+                    onReverseComplete: () => {
+                        gsap.set(heroClipRef.current, { pointerEvents: "auto" });
+                    }
+                }
+            )
+        });
+
+        return () => st.kill();
+    }, []);
 
     return (
-        <main className="relative">
+        <main className="relative bg-black">
             {/* Dynamic Background Controller */}
             {!showIntro && <BackgroundController />}
-
-            {/* Removed CloudReveal */}
-
-
 
             {showIntro && (
                 <CinematicIntro
@@ -35,29 +67,41 @@ export default function Home() {
                     }}
                 />
             )}
-            {/* Main Content Sections - Continuous Scroll */}
+
             <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
-                <Hero isActive={!showIntro} />
 
-                {/* Seamless transition gradient between Hero and Teacher sequence */}
-                <div className="relative w-full z-[35] pointer-events-none" style={{ height: 0 }}>
+                <div className="relative w-full">
+                    {/* Hero is absolutely positioned on top. The mask creates a growing hole revealing the normal flow below. */}
                     <div
-                        className="absolute top-0 left-0 w-full h-[30vh]"
-                        style={{ background: 'linear-gradient(to bottom, #E8EEFF 0%, transparent 100%)' }}
-                    />
+                        ref={heroPinnedRef}
+                        className="absolute top-0 left-0 w-full h-[100vh] z-30 pointer-events-none"
+                    >
+                        <div
+                            ref={heroClipRef}
+                            className="w-full h-full pointer-events-auto bg-[#FAFBFF]"
+                            style={{
+                                maskImage: "radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)",
+                                WebkitMaskImage: "radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)"
+                            }}
+                        >
+                            <Hero isActive={!showIntro} />
+                        </div>
+                    </div>
+
+                    {/* Normal Document Flow Begins Here */}
+                    {/* Because Hero is absolute, Mission starts at scroll Y = 0 naturally. */}
+                    <div className="relative z-20 w-full bg-transparent">
+                        <GlobalBackground />
+
+                        <Mission />
+                        <ProductShowcase />
+                        <ProblemStatement />
+                        {/* <FeatureShowcase /> */}
+                        <Moat />
+                        <JoinRevolution />
+                        <FooterCTA />
+                    </div>
                 </div>
-
-                <Mission />
-
-                <ProductShowcase />
-                <ProblemStatement />
-                <Architecture />
-                <FeatureShowcase />
-                <Moat />
-
-
-                <JoinRevolution />
-                <FooterCTA />
             </div>
         </main>
     );

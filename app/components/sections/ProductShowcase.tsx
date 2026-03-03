@@ -21,7 +21,7 @@ export default function ProductShowcase() {
     }, []);
 
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || !lenis) return;
         if (!sectionRef.current || !windowRef.current || !textRef.current) return;
 
         const ctx = gsap.context(() => {
@@ -102,16 +102,16 @@ export default function ProductShowcase() {
 
             // Phase 3 — Mac window appears from tiny (55% → 75%)
             tl.to(windowRef.current, {
-                scale: 0.6,
+                scale: 0.7,
                 opacity: 1,
                 ease: "power2.out",
                 duration: 0.20
             }, 0.55);
 
-            // Phase 5 — Mac window fills screen (snap → 100%)
+            // Phase 5 — Mac window fills screen (snap → 80%)
             // Driven by the Lenis auto-scroll snap
             tl.to(windowRef.current, {
-                scale: 1,
+                scale: 0.8,
                 ease: "power2.inOut",
                 duration: 0.25
             }, 0.75);
@@ -119,13 +119,13 @@ export default function ProductShowcase() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [isMounted]);
+    }, [isMounted, lenis]);
 
     return (
         <section
             id="product-showcase"
             ref={sectionRef}
-            className="relative w-full h-screen overflow-hidden flex items-center justify-center bg-[#FAFBFF]"
+            className="relative w-full h-screen overflow-hidden flex items-center justify-center -z-10 bg-transparent"
         >
             {/* Punchline Text */}
             <h2
@@ -139,19 +139,17 @@ export default function ProductShowcase() {
             {/* Mac Window — animated via GSAP */}
             <div
                 ref={windowRef}
-                className="absolute z-10 bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-[#B0B8D1]/20"
+                className="absolute z-10 bg-[#0A0F2E] rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-[#B0B8D1]/20 flex flex-col"
                 style={{
                     width: '92vw',
-                    height: '75vh',
-                    maxWidth: '1400px',
-                    maxHeight: '900px',
+                    maxWidth: '1200px',
                     transformOrigin: 'center center',
                     opacity: 0,
                     transform: 'scale(0.1)',
                 }}
             >
                 {/* Mac Title Bar */}
-                <div className="absolute top-0 left-0 right-0 h-8 sm:h-10 bg-gradient-to-b from-[#f0f0f0] to-[#e0e0e0] border-b border-[#B0B8D1]/10 flex items-center px-3 sm:px-4 z-10">
+                <div className="h-8 sm:h-10 w-full bg-gradient-to-b from-[#f0f0f0] to-[#e0e0e0] border-b border-[#B0B8D1]/10 flex items-center px-3 sm:px-4 shrink-0">
                     <div className="flex items-center gap-1.5 sm:gap-2">
                         <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57] shadow-inner" />
                         <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e] shadow-inner" />
@@ -164,19 +162,21 @@ export default function ProductShowcase() {
                 </div>
 
                 {/* Video */}
-                <video
-                    ref={videoRef}
-                    src="/product-demo.mp4"
-                    className="absolute top-8 sm:top-10 left-0 w-full h-[calc(100%-32px)] sm:h-[calc(100%-40px)]"
-                    style={{
-                        objectFit: 'contain',
-                        objectPosition: 'center top',
-                    }}
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                />
+                <div className="w-full relative aspect-video bg-black">
+                    <video
+                        ref={videoRef}
+                        src="/product-demo.mp4"
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                        }}
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                    />
+                </div>
             </div>
         </section>
     );

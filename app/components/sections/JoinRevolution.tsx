@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlicedReveal } from "../ui/SlicedReveal";
 import { SlotMachineText } from "../ui/SlotMachineText";
 
 export default function JoinRevolution() {
+    const sectionRef = useRef<HTMLElement>(null);
     const [isClicked, setIsClicked] = useState(false);
     const [showComingSoon, setShowComingSoon] = useState(false);
     const [isInView, setIsInView] = useState(false);
@@ -33,11 +34,7 @@ export default function JoinRevolution() {
     ];
 
     return (
-        <section id="join-revolution" className="relative w-full py-40 text-center overflow-hidden">
-            {/* Background Glow */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[800px] h-[800px] bg-accent-primary/5 rounded-full blur-[150px]" />
-            </div>
+        <section id="join-revolution" ref={sectionRef} className="relative w-full py-40 text-center overflow-hidden bg-transparent z-10">
 
             <motion.div
                 initial={{ opacity: 0 }}
