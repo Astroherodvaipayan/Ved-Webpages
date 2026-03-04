@@ -34,9 +34,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         touchMultiplier: 2,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (
         <ReactLenis root ref={lenisRef} autoRaf={false} options={options}>
-            {children}
+            {children as any}
         </ReactLenis>
     );
 }

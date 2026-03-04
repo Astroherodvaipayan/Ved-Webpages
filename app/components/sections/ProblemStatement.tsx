@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useLayoutEffect } from "react";
-import { motion } from "framer-motion";
+import { useRef, useLayoutEffect, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CountUp from "react-countup";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,16 @@ export default function ProblemStatement() {
     const headlineRef = useRef<HTMLHeadingElement>(null);
     const subtitleRef = useRef<HTMLSpanElement>(null);
     const pathRef = useRef<SVGPathElement>(null);
+    const [startCount, setStartCount] = useState(false);
+
+    const isHeadlineInView = useInView(headlineRef, { once: true, margin: "-20%" });
+
+    // Start countup when headline comes into view
+    useLayoutEffect(() => {
+        if (isHeadlineInView) {
+            setTimeout(() => setStartCount(true), 500);
+        }
+    }, [isHeadlineInView]);
 
     useLayoutEffect(() => {
         const isMobile = window.innerWidth <= 768;
@@ -21,39 +32,30 @@ export default function ProblemStatement() {
             // Stage 1 — Headline & Path slides up on viewport entry
             const tl = gsap.timeline({
                 scrollTrigger: {
-                    trigger: headlineRef.current, // Start when the headline itself gets on screen
+                    trigger: headlineRef.current,
                     start: "top 80%",
                     once: true,
                 }
             });
 
             // 1. Headline Fade/Slide
-            tl.fromTo(headlineRef.current,
-                { y: isMobile ? 40 : 60, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }
-            );
+            if (headlineRef.current) {
+                tl.fromTo(headlineRef.current,
+                    { y: isMobile ? 40 : 60, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }
+                );
+            }
 
-            // 2. The Stat Pop & Counting Effect (starts right after headline begins)
-            tl.fromTo(statRef.current,
-                { scale: 0.5, opacity: 0, rotateY: -30 },
-                { scale: 1, opacity: 1, rotateY: 0, duration: 1, ease: "elastic.out(1, 0.5)" },
-                "-=0.4"
-            );
+            // 2. The Stat Pop Effect (elastic animation)
+            if (statRef.current) {
+                tl.fromTo(statRef.current,
+                    { scale: 0.5, opacity: 0, rotateY: -30 },
+                    { scale: 1, opacity: 1, rotateY: 0, duration: 1, ease: "elastic.out(1, 0.5)" },
+                    "-=0.4"
+                );
+            }
 
-            // Counter object mapping
-            const counter = { val: 0 };
-            tl.to(counter, {
-                val: 98,
-                duration: 2,
-                ease: "power2.out", // smooth deceleration counting up
-                onUpdate: () => {
-                    if (statRef.current) {
-                        statRef.current.innerHTML = Math.round(counter.val) + "%";
-                    }
-                }
-            }, "-=1"); // overlapping over the elastic pop
-
-            // 3. SVG Background Curve (At the same time as the headline begins)
+            // 3. SVG Background Curve
             if (pathRef.current) {
                 const pathLength = pathRef.current.getTotalLength() || 1500;
                 gsap.set(pathRef.current, { strokeDasharray: pathLength, strokeDashoffset: pathLength, opacity: 1 });
@@ -62,27 +64,29 @@ export default function ProblemStatement() {
                     strokeDashoffset: 0,
                     duration: 2.5,
                     ease: "power2.inOut",
-                }, 0); // Absolute 0 start time on this timeline so it perfectly syncs with the headline entry
+                }, 0);
             }
 
-            // Stage 2 — Subtitle smooth scrubs in "after certain scroll"
-            gsap.fromTo(subtitleRef.current,
-                { y: isMobile ? 50 : 80, opacity: 0, visibility: "hidden" as any },
-                {
-                    y: 0, opacity: 0.8, visibility: "visible" as any,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: subtitleRef.current,
-                        start: "top 95%", // Starts right when subtitle comes into the very bottom of the screen
-                        end: "top 50%",    // Finishes scrub when subtitle hits the middle
-                        scrub: 1,
+            // Stage 2 — Subtitle smooth scrubs in
+            if (subtitleRef.current) {
+                gsap.fromTo(subtitleRef.current,
+                    { y: isMobile ? 50 : 80, opacity: 0, visibility: "hidden" as const },
+                    {
+                        y: 0, opacity: 0.8, visibility: "visible" as const,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: subtitleRef.current,
+                            start: "top 95%",
+                            end: "top 50%",
+                            scrub: 1,
+                        }
                     }
-                }
-            );
+                );
+            }
         }, containerRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [isHeadlineInView]);
 
     return (
         <section
@@ -118,7 +122,7 @@ export default function ProblemStatement() {
                         d="M0,350 Q250,350 500,50 T1000,350"
                         stroke="url(#curve-gradient)"
                         strokeWidth="3"
-                        style={{ opacity: 0 }} // Initially hidden, GSAP reveals and strokes it
+                        style={{ opacity: 0 }}
                     />
                     <defs>
                         <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -137,7 +141,13 @@ export default function ProblemStatement() {
                     style={{ opacity: 0 }}
                 >
                     Personal tutoring improves learning outcomes by{" "}
-                    <span ref={statRef} className="text-gradient inline-block opacity-0">0%</span>.
+                    <span ref={statRef} className="text-gradient inline-block">
+                        {startCount ? (
+                            <CountUp end={98} duration={2} suffix="%" />
+                        ) : (
+                            <span className="opacity-0">0%</span>
+                        )}
+                    </span>.
                 </h2>
                 <span
                     ref={subtitleRef}
@@ -150,4 +160,3 @@ export default function ProblemStatement() {
         </section>
     );
 }
-
