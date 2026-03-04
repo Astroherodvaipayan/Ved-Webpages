@@ -6,19 +6,24 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FRAME_COUNT = 40;
-// Extra scroll distance (px) to hold the last frame after iteration completes
-const HOLD_DISTANCE = 1200;
+const FRAME_COUNT = 41;
+const HOLD_DISTANCE = 600;
+const IRIS_WIPE_DISTANCE = 250;
 
 export default function TeacherScrollSequence() {
     const containerRef = useRef<HTMLDivElement>(null);
     const outerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
     const [images, setImages] = useState<HTMLImageElement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showSubtitle, setShowSubtitle] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(false);
     const currentFrame = useRef(0);
     const subtitleRef = useRef<HTMLDivElement>(null);
+    const irisWipeRef = useRef<HTMLDivElement>(null);
+    const overlayShownRef = useRef(false); // Track overlay state synchronously
+    const atMaxFrameRef = useRef(false); // Track if we've reached max frame
 
     // Preload images
     useEffect(() => {
@@ -50,8 +55,8 @@ export default function TeacherScrollSequence() {
     }, []);
 
     // Render a specific frame onto the canvas
-    const renderFrame = (index: number) => {
-        const canvas = canvasRef.current;
+    const renderFrame = (index: number, isOverlay = false) => {
+        const canvas = isOverlay ? canvasOverlayRef.current : canvasRef.current;
         const ctx = canvas?.getContext("2d");
         if (!canvas || !ctx) return;
 
@@ -88,49 +93,119 @@ export default function TeacherScrollSequence() {
             canvasRef.current.width = window.innerWidth;
             canvasRef.current.height = window.innerHeight;
         }
+        if (canvasOverlayRef.current) {
+            canvasOverlayRef.current.width = window.innerWidth;
+            canvasOverlayRef.current.height = window.innerHeight;
+        }
     };
 
-    // Pin the section, scrub through frames, hold last frame for 300px
+    // Pin the section, scrub through frames, hold last frame for subtitle + iris wipe
     useLayoutEffect(() => {
-        if (isLoading || images.length === 0 || !containerRef.current || !outerRef.current) return;
+        if (isLoading || images.length === 0 || !containerRef.current || !outerRef.current || !irisWipeRef.current) return;
 
         syncCanvasSize();
         renderFrame(0);
 
+        // Initialize iris wipe CSS variable
+        irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+
         // Shorter scroll distance on mobile for better UX
         const isMobile = window.innerWidth < 768;
         const pxPerFrame = isMobile ? 40 : 60;
-        const holdDistance = isMobile ? Math.round(HOLD_DISTANCE * 0.6) : HOLD_DISTANCE;
+        const holdDistance = isMobile ? Math.round(HOLD_DISTANCE * 0.5) : HOLD_DISTANCE;
+        // Iris wipe distance proportional on mobile
+        const irisWipeDistance = isMobile ? Math.round(IRIS_WIPE_DISTANCE * 0.5) : IRIS_WIPE_DISTANCE;
         const frameScrollDistance = FRAME_COUNT * pxPerFrame;
-        const totalScrollDistance = frameScrollDistance + holdDistance;
+        const totalScrollDistance = frameScrollDistance + holdDistance + irisWipeDistance;
 
-        // ✅ KEY CHANGE: Set height synchronously on the wrapper BEFORE
-        // ScrollTrigger.create() — no async pin-spacer injection means
-        // ProductShowcase always sees the correct DOM height immediately
+        // Set height synchronously on the wrapper BEFORE
         outerRef.current.style.height = `${totalScrollDistance + window.innerHeight}px`;
 
+        // Calculate phase boundaries
+        const framePhaseEnd = frameScrollDistance / totalScrollDistance;
+        const subtitlePhaseEnd = (frameScrollDistance + holdDistance) / totalScrollDistance;
+
         const st = ScrollTrigger.create({
-            trigger: outerRef.current,   // ← trigger on the OUTER tall div
+            trigger: outerRef.current,
             start: "top top",
             end: `+=${totalScrollDistance}`,
-            // ✅ NO pin, NO pinSpacing — CSS sticky handles this below
             scrub: true,
             onUpdate: (self) => {
-                const frameFraction = frameScrollDistance / totalScrollDistance;
-                const frameProgress = Math.min(self.progress / frameFraction, 1);
-                const idx = Math.round(frameProgress * (FRAME_COUNT - 1));
-                if (idx !== currentFrame.current) {
-                    currentFrame.current = idx;
-                    renderFrame(idx);
+                const progress = self.progress;
+
+                // Phase 1: Frame sequence (0 to 40)
+                if (progress <= framePhaseEnd) {
+                    const frameProgress = progress / framePhaseEnd;
+                    // Cap at frame 40 (index 39) - lock it, don't cycle back
+                    const idx = Math.min(Math.floor(frameProgress * FRAME_COUNT), FRAME_COUNT - 2);
+
+                    // Check if at max frame
+                    const isAtMaxFrame = idx === FRAME_COUNT - 2;
+                    atMaxFrameRef.current = isAtMaxFrame;
+
+                    // Always render when idx changes or when at final frame
+                    if (idx !== currentFrame.current || isAtMaxFrame) {
+                        currentFrame.current = idx;
+                        renderFrame(idx);
+                    }
+
+                    // Show overlay frame 41 (index 40) when frame 40 (index 39) is reached
+                    if (isAtMaxFrame) {
+                        if (!overlayShownRef.current) {
+                            overlayShownRef.current = true;
+                            setShowOverlay(true);
+                        }
+                        renderFrame(FRAME_COUNT - 1, true); // Render frame 41 on overlay
+                    } else if (overlayShownRef.current) {
+                        overlayShownRef.current = false;
+                        setShowOverlay(false);
+                    }
                 }
 
-                // Show subtitle when hold phase begins (all frames done)
-                if (frameProgress >= 1 && !showSubtitle) {
-                    setShowSubtitle(true);
+                // Phase 2: Hold for subtitle (frame 40-41 stacked)
+                if (progress > framePhaseEnd && progress <= subtitlePhaseEnd) {
+                    // Keep both frames stacked - ensure frame 40 on base, frame 41 on overlay
+                    if (!overlayShownRef.current) {
+                        overlayShownRef.current = true;
+                        setShowOverlay(true);
+                        renderFrame(FRAME_COUNT - 2, false); // Ensure frame 40 on base canvas
+                    }
+                    // Always re-render both frames to ensure they stay correct
+                    renderFrame(FRAME_COUNT - 2, false); // Frame 40 on base
+                    renderFrame(FRAME_COUNT - 1, true);  // Frame 41 on overlay
+
+                    // Show subtitle when entering hold phase
+                    if (!showSubtitle) {
+                        setShowSubtitle(true);
+                    }
+                }
+
+                // Phase 3: Iris wipe animation
+                if (progress > subtitlePhaseEnd) {
+                    // Hide subtitle during iris wipe
+                    if (showSubtitle) {
+                        setShowSubtitle(false);
+                    }
+
+                    // Always render correct frames during iris wipe
+                    renderFrame(FRAME_COUNT - 2, false); // Frame 40 on base (index 39)
+                    renderFrame(FRAME_COUNT - 1, true);  // Frame 41 on overlay (index 40)
+
+                    // Calculate iris wipe progress (0 to 1)
+                    const irisProgress = (progress - subtitlePhaseEnd) / (1 - subtitlePhaseEnd);
+                    const holeSize = irisProgress * 150; // 0 to 150vw
+
+                    if (irisWipeRef.current) {
+                        irisWipeRef.current.style.setProperty("--hole-size", `${holeSize}vw`);
+                    }
+                } else {
+                    // Reset iris wipe when going back
+                    if (irisWipeRef.current) {
+                        irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+                    }
                 }
             },
             onLeave: () => {
-                // Fade out subtitle when section exits
                 if (subtitleRef.current) {
                     gsap.to(subtitleRef.current, {
                         opacity: 0,
@@ -141,16 +216,23 @@ export default function TeacherScrollSequence() {
             },
             onLeaveBack: () => {
                 setShowSubtitle(false);
+                setShowOverlay(false);
+                overlayShownRef.current = false;
+                atMaxFrameRef.current = false;
+                if (irisWipeRef.current) {
+                    irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+                }
             },
         });
 
-        // ✅ Refresh AFTER height is committed to DOM so ProductShowcase
-        // recalculates against the correct page height
         ScrollTrigger.refresh();
 
         const handleResize = () => {
             syncCanvasSize();
             renderFrame(currentFrame.current);
+            if (showOverlay) {
+                renderFrame(40, true);
+            }
         };
         window.addEventListener("resize", handleResize);
 
@@ -158,55 +240,73 @@ export default function TeacherScrollSequence() {
             st.kill();
             window.removeEventListener("resize", handleResize);
         };
-    }, [isLoading, images]);
+    }, [isLoading, images, showSubtitle, showOverlay]);
 
     return (
-        // Outer div gets explicit height set via JS above — this is what
-        // gives the page its scrollable distance with no GSAP pin-spacer
         <div ref={outerRef}>
-            {/* CSS sticky replaces GSAP pin — stays at top while outer div scrolls */}
             <div
-                ref={containerRef}
+                ref={irisWipeRef}
                 className="sticky top-0 w-full bg-transparent"
-                style={{ height: "100vh", zIndex: 20 }}
+                style={{
+                    height: "100vh",
+                    zIndex: 20,
+                    maskImage: 'radial-gradient(circle at center, transparent var(--hole-size), black var(--hole-size), black 100%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, transparent var(--hole-size), black var(--hole-size), black 100%)',
+                }}
             >
-                <div className="w-full h-screen overflow-hidden flex items-center justify-center">
-                    <canvas
-                        ref={canvasRef}
-                        className="w-full h-full object-cover"
-                        style={{
-                            maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
-                        }}
-                    />
-                    {isLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs sm:text-sm tracking-widest uppercase">
-                            Loading Sequence...
+                <div
+                    ref={containerRef}
+                    className="w-full bg-transparent"
+                    style={{ height: "100vh" }}
+                >
+                    <div className="w-full h-screen overflow-hidden flex items-center justify-center">
+                        <canvas
+                            ref={canvasRef}
+                            className="w-full h-full object-cover"
+                            style={{
+                                maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
+                            }}
+                        />
+                        {showOverlay && (
+                            <canvas
+                                ref={canvasOverlayRef}
+                                className="w-full h-full absolute inset-0 z-10"
+                                style={{
+                                    maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                                    WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
+                                }}
+                            />
+                        )}
+                        {isLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs sm:text-sm tracking-widest uppercase">
+                                Loading Sequence...
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="w-full h-screen bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                    </div>
+
+                    {showSubtitle && (
+                        <div
+                            ref={subtitleRef}
+                            className="absolute z-30 left-1/2 bottom-[10%] -translate-x-1/2 pointer-events-none w-full px-4"
+                            style={{ animation: 'subtitleFadeIn 600ms ease-out forwards' }}
+                        >
+                            <p
+                                className="text-white font-black tracking-widest uppercase text-center w-full drop-shadow-2xl"
+                                style={{
+                                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                                    fontSize: 'clamp(1.25rem, 4vw, 2rem)',
+                                }}
+                            >
+                                Building the greatest teacher ever.
+                            </p>
                         </div>
                     )}
                 </div>
-
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="w-full h-screen bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                </div>
-
-                {showSubtitle && (
-                    <div
-                        ref={subtitleRef}
-                        className="absolute z-30 left-1/2 bottom-[10%] -translate-x-1 pointer-events-none w-full px-4"
-                        style={{ animation: 'subtitleFadeIn 600ms ease-out forwards' }}
-                    >
-                        <p
-                            className="text-white font-black tracking-widest uppercase text-center w-full drop-shadow-2xl"
-                            style={{
-                                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                                fontSize: window.innerWidth <= 768 ? 'clamp(1.25rem, 4vw, 2rem)' : 'clamp(2rem, 4vw, 4rem)',
-                            }}
-                        >
-                            Building the greatest teacher ever.
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );
