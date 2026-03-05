@@ -129,65 +129,70 @@ export default function Hero() {
 
     return (
         <section ref={heroRef} className="relative h-[200vh] w-full">
-            <div className="sticky top-0 h-screen overflow-hidden">
+            {/* Sticky container with overflow visible so clouds extend into next section */}
+            <div className="sticky top-0 h-screen overflow-visible">
 
-                {/* L1: Background clouds - positioned at bottom, filling upward */}
+                {/* L1: Background haze layers - using img tags with negative margin */}
                 <div
                     ref={cloudBgLeftRef}
-                    className="absolute bottom-0 left-0 w-full h-[50%] will-change-transform mix-blend-screen opacity-30"
-                    style={{ animation: "cloudDriftLeft 20s ease-in-out infinite alternate" }}
+                    className="absolute left-0 w-full h-[60%] will-change-transform mix-blend-screen opacity-20"
+                    style={{
+                        bottom: '10%',
+                        animation: "cloudDriftLeft 20s ease-in-out infinite alternate",
+                    }}
                 >
-                    <Image
-                        src="/images/cloud_left_2.webp"
+                    <img
+                        src="/images/cloud_left.png"
                         alt=""
-                        fill
-                        className="object-cover"
-                        aria-hidden="true"
-                        unoptimized
+                        className="w-full h-full object-cover block"
+                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
                     />
                 </div>
                 <div
                     ref={cloudBgRightRef}
-                    className="absolute bottom-0 right-0 w-full h-[50%] will-change-transform mix-blend-screen opacity-30"
-                    style={{ animation: "cloudDriftRight 20s ease-in-out infinite alternate" }}
+                    className="absolute right-0 w-full h-[60%] will-change-transform mix-blend-screen opacity-20"
+                    style={{
+                        bottom: '10%',
+                        animation: "cloudDriftRight 20s ease-in-out infinite alternate",
+                    }}
                 >
-                    <Image
-                        src="/images/cloud_right_2.webp"
+                    <img
+                        src="/images/cloud_right.png"
                         alt=""
-                        fill
-                        className="object-cover"
-                        aria-hidden="true"
-                        unoptimized
+                        className="w-full h-full object-cover block"
+                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
                     />
                 </div>
 
-                {/* L2: Foreground clouds - positioned at bottom, slide apart on scroll */}
+                {/* L2: Foreground cloud panels - using img tags with negative margin */}
                 <div
                     ref={cloudLeftRef}
-                    className="absolute bottom-0 left-0 w-[60%] h-[60%] will-change-transform mix-blend-screen opacity-35"
-                    style={{ transformOrigin: "left bottom" }}
+                    className="absolute left-0 w-[55%] h-[50%] will-change-transform mix-blend-screen opacity-35"
+                    style={{
+                        bottom: '5%',
+                        transformOrigin: "left bottom",
+                    }}
                 >
-                    <Image
-                        src="/images/cloud_left.webp"
+                    <img
+                        src="/images/cloud_left.png"
                         alt=""
-                        fill
-                        className="object-contain"
-                        aria-hidden="true"
-                        unoptimized
+                        className="w-full h-full object-contain block"
+                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
                     />
                 </div>
                 <div
                     ref={cloudRightRef}
-                    className="absolute bottom-0 right-0 w-[60%] h-[60%] will-change-transform mix-blend-screen opacity-35"
-                    style={{ transformOrigin: "right bottom" }}
+                    className="absolute right-0 w-[55%] h-[50%] will-change-transform mix-blend-screen opacity-35"
+                    style={{
+                        bottom: '5%',
+                        transformOrigin: "right bottom",
+                    }}
                 >
-                    <Image
-                        src="/images/cloud_right.webp"
+                    <img
+                        src="/images/cloud_right.png"
                         alt=""
-                        fill
-                        className="object-contain"
-                        aria-hidden="true"
-                        unoptimized
+                        className="w-full h-full object-contain block"
+                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
                     />
                 </div>
 

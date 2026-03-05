@@ -39,8 +39,8 @@ export default function Home() {
                         <Hero />
                     </div>
 
-                    {/* Normal Document Flow Continues Here */}
-                    <div className="relative z-10 w-full bg-transparent">
+                    {/* Normal Document Flow Continues Here - padding-top for overlapping clouds */}
+                    <div className="relative z-10 w-full bg-transparent pt-32">
                         <GlobalBackground />
 
                         <Mission />

@@ -91,6 +91,30 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fix inline image spacing issues */
+img {
+  display: block;
+  vertical-align: bottom;
+  line-height: 0;
+  font-size: 0;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+/* Ensure all image containers have no borders */
+* {
+  box-sizing: border-box;
+}
+
+div, section, article, main, header, footer {
+  border: none !important;
+  outline: none !important;
+}
+
 ::selection {
   background: var(--color-accent-primary);
   color: #ffffff;
