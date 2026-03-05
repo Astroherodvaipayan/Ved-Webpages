@@ -190,9 +190,10 @@ export default function Navigation() {
                     {/* ── Mobile: Full-width GlassSurface bar ── */}
                     <div className="md:hidden">
                         <GlassSurface
-                            width="100%"
+                            width={200}
                             height={58}
                             className="md:hidden"
+                            style={{ width: '100%' }}
                         >
                             <div
                                 className="flex items-center justify-between w-full px-4"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, ReactNode } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
@@ -32,36 +33,16 @@ const features = [
     },
 ];
 
-export function OrnateShape({ color = "#E8855A", className = "", children }: { color?: string, className?: string, children?: ReactNode }) {
+export function OrnateShape({ className = "", children }: { className?: string, children?: ReactNode }) {
     return (
         <div className={`relative inline-flex items-center justify-center ${className}`}>
-            <svg
-                viewBox="0 0 200 240"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute inset-0 w-full h-full"
-            >
-                <path
-                    fill={color}
-                    d="
-            M 100,8
-            C 115,6 145,14 160,26
-            C 172,16 184,22 182,34
-            C 194,50 198,80 196,100
-            C 206,112 206,128 196,140
-            C 198,160 194,190 182,206
-            C 184,218 172,224 160,214
-            C 145,226 115,234 100,232
-            C 85,234 55,226 40,214
-            C 28,224 16,218 18,206
-            C 6,190 2,160 4,140
-            C -6,128 -6,112 4,100
-            C 2,80 6,50 18,34
-            C 16,22 28,16 40,26
-            C 55,14 85,6 100,8
-            Z
-          "
-                />
-            </svg>
+            <Image
+                src="/images/imaq_golden_v2.svg"
+                alt="Decorative shape"
+                fill
+                className="object-contain"
+                priority
+            />
             <div className="relative z-10">{children}</div>
         </div>
     );
@@ -241,8 +222,7 @@ export default function FeatureShowcase() {
                             className="absolute inset-0 flex items-center justify-center"
                         >
                             <OrnateShape
-                                color={feature.color}
-                                className="w-[180px] h-[240px] sm:w-[240px] sm:h-[320px]"
+                                className="w-[300px] h-[380px] sm:w-[420px] sm:h-[520px]"
                             >
                                 <span className="text-white text-sm sm:text-base font-medium px-4 opacity-90 text-center">
                                     {feature.imageLabel}

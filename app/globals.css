@@ -150,6 +150,26 @@ h6 {
 /* ============================================
    Animations & Transitions
    ============================================ */
+
+/* Cloud drift animations for Hero section */
+@keyframes cloudDriftLeft {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    transform: translateX(-3%) scale(1.02);
+  }
+}
+
+@keyframes cloudDriftRight {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    transform: translateX(3%) scale(1.02);
+  }
+}
+
 .reveal-up {
   opacity: 0;
   transform: translateY(30px);
