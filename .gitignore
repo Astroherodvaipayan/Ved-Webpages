@@ -40,8 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.agent
-.agents
+# .agent
+# .agents
 
 kd/
 old/
+/lib/generated/prisma

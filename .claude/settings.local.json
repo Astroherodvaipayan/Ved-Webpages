@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(npx shadcn@latest:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(curl:*)",
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com)",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)"
     ]
   }
 }

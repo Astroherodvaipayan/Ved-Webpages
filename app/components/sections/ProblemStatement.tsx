@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useLayoutEffect, useState } from "react";
+import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "@studio-freight/react-lenis";
 import CountUp from "react-countup";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -15,6 +16,13 @@ export default function ProblemStatement() {
     const subtitleRef = useRef<HTMLSpanElement>(null);
     const pathRef = useRef<SVGPathElement>(null);
     const [startCount, setStartCount] = useState(false);
+    const isSnapping = useRef(false);
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const isHeadlineInView = useInView(headlineRef, { once: true, margin: "-20%" });
 
@@ -87,6 +95,42 @@ export default function ProblemStatement() {
 
         return () => ctx.revert();
     }, [isHeadlineInView]);
+
+    // Scroll snap to next section at 90% progress
+    useLayoutEffect(() => {
+        if (!isMounted || !lenis) return;
+        if (!containerRef.current) return;
+
+        const ctx = gsap.context(() => {
+            ScrollTrigger.create({
+                trigger: containerRef.current,
+                start: "top bottom",
+                end: "bottom bottom",
+                onUpdate: (self) => {
+                    if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
+                        if (!isSnapping.current && lenis) {
+                            isSnapping.current = true;
+                            const nextSection = document.getElementById('feature-showcase');
+                            if (nextSection) {
+                                const rect = nextSection.getBoundingClientRect();
+                                const targetY = rect.top + window.scrollY;
+                                lenis.scrollTo(targetY, {
+                                    duration: 0.8,
+                                    force: true,
+                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
+                                    onComplete: () => {
+                                        isSnapping.current = false;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+        }, containerRef);
+
+        return () => ctx.revert();
+    }, [isMounted, lenis]);
 
     return (
         <section

@@ -43,17 +43,23 @@ export default function ProductShowcase() {
                     pinSpacing: true,
                     scrub: 0.5,
                     onUpdate: (self) => {
-                        if (self.progress >= 0.75 && self.progress < 0.95 && self.direction === 1) {
+                        if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
                             if (!isSnapping.current && lenis) {
                                 isSnapping.current = true;
-                                lenis.scrollTo(self.end, {
-                                    duration: 0.8,
-                                    force: true,
-                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
-                                    onComplete: () => {
-                                        isSnapping.current = false;
-                                    }
-                                });
+                                // Get the next section using getBoundingClientRect for accurate position
+                                const nextSection = document.getElementById('problem-statement');
+                                if (nextSection) {
+                                    const rect = nextSection.getBoundingClientRect();
+                                    const targetY = rect.top + window.scrollY;
+                                    lenis.scrollTo(targetY, {
+                                        duration: 0.8,
+                                        force: true,
+                                        easing: (t: number) => 1 - Math.pow(1 - t, 4),
+                                        onComplete: () => {
+                                            isSnapping.current = false;
+                                        }
+                                    });
+                                }
                             }
                         }
                     },
@@ -131,7 +137,7 @@ export default function ProductShowcase() {
         <section
             id="product-showcase"
             ref={sectionRef}
-            className="relative w-full h-screen overflow-hidden flex items-center justify-center -z-10 bg-transparent"
+            className="relative w-full h-screen overflow-hidden flex items-center justify-center z-10 bg-transparent"
         >
             {/* Punchline Text */}
             <h2

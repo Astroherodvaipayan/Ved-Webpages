@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import GradientButton from "./GradientButton";
 import { useLenis } from "@studio-freight/react-lenis";
+import GlassSurface from "../../../components/GlassSurface";
 
 const navLinks = [
     { href: "#hero", label: "Home" },
@@ -13,6 +15,8 @@ const navLinks = [
 ];
 
 export default function Navigation() {
+    const pathname = usePathname();
+    const isWaitlistPage = pathname === "/waitlist";
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("hero");
@@ -67,6 +71,10 @@ export default function Navigation() {
         }
     };
 
+    if (isWaitlistPage) {
+        return null;
+    }
+
     return (
         <>
             {/* ═══ Floating Pill Navbar ═══ */}
@@ -77,135 +85,173 @@ export default function Navigation() {
                 className="fixed top-0 left-0 right-0 z-[100] flex justify-center"
                 style={{ padding: "18px 20px 0", pointerEvents: "none" }}
             >
-                <nav
-                    className="nav-floating-pill"
-                    style={{
-                        pointerEvents: "auto",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        maxWidth: "820px",
-                        padding: "12px 28px",
-                        background: "rgba(255, 255, 255, 0.75)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
-                        borderRadius: "50px",
-                        boxShadow: "0 4px 24px rgba(30, 58, 138, 0.10)",
-                        border: "1px solid rgba(30, 58, 138, 0.12)",
-                        transition: "box-shadow 0.35s cubic-bezier(0.22,1,0.36,1)",
-                    }}
+                <div
+                    className="mx-auto w-full max-w-[1220px]"
+                    style={{ pointerEvents: "auto" }}
                 >
-                    {/* ── Logo ── */}
-                    <Link
-                        href="#hero"
-                        onClick={(e) => scrollToSection(e, "#hero")}
-                        onKeyDown={(e) => e.key === "Enter" && scrollToSection(e, "#hero")}
-                        className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded"
-                        style={{ textDecoration: "none" }}
-                    >
-                        <Image
-                            src="/logo.png"
-                            alt="Ved AI Labs"
-                            width={36}
-                            height={36}
-                            className="drop-shadow-lg"
-                        />
-                        <span
-                            style={{
-                                fontSize: "1.05rem",
-                                fontWeight: 800,
-                                color: "#0A0F2E",
-                                letterSpacing: "0.12em",
-                                textTransform: "uppercase",
-                            }}
+                    {/* ── Desktop: 3-Column Grid ── */}
+                    <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center gap-5">
+                        {/* Logo - left */}
+                        <Link
+                            href="#hero"
+                            onClick={(e) => scrollToSection(e, "#hero")}
+                            onKeyDown={(e) => e.key === "Enter" && scrollToSection(e, "#hero")}
+                            className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded"
+                            style={{ textDecoration: "none" }}
                         >
-                            Ved AI
-                        </span>
-                    </Link>
-
-                    {/* ── Desktop Nav Links (centered) ── */}
-                    <div className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.href}
-                                href={link.href}
-                                onClick={(e) => scrollToSection(e, link.href)}
-                                onKeyDown={(e) => e.key === "Enter" && scrollToSection(e, link.href)}
-                                tabIndex={0}
+                            <Image
+                                src="/logo.png"
+                                alt="Ved AI Labs"
+                                width={36}
+                                height={36}
+                                className="drop-shadow-lg"
+                            />
+                            <span
                                 style={{
-                                    position: "relative",
-                                    fontSize: "0.85rem",
-                                    fontWeight: 500,
-                                    letterSpacing: "0.08em",
+                                    fontSize: "1.05rem",
+                                    fontWeight: 800,
+                                    color: "#ffffff",
+                                    letterSpacing: "0.12em",
                                     textTransform: "uppercase",
-                                    textDecoration: "none",
-                                    color: activeSection === link.href.replace('#', '')
-                                        ? "#1E3A8A"
-                                        : "rgba(10,15,46,0.55)",
-                                    transition: "color 0.3s ease",
-                                    cursor: "pointer",
+                                    textShadow: "0 2px 8px rgba(0,0,0,0.3)",
                                 }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = "#1E3A8A")}
-                                onMouseLeave={(e) =>
-                                (e.currentTarget.style.color =
-                                    activeSection === link.href.replace('#', '')
-                                        ? "#1E3A8A"
-                                        : "rgba(10,15,46,0.55)")
-                                }
                             >
-                                {link.label}
-                                {activeSection === link.href.replace('#', '') && (
-                                    <motion.div
-                                        layoutId="activeNav"
+                                Ved AI
+                            </span>
+                        </Link>
+
+                        {/* Center: GlassSurface navbar with nav links */}
+                        <GlassSurface
+                            width={380}
+                            height={62}
+                        >
+                            <div className="flex items-center justify-center gap-8 px-6">
+                                {navLinks.map((link) => (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={(e) => scrollToSection(e, link.href)}
+                                        onKeyDown={(e) => e.key === "Enter" && scrollToSection(e, link.href)}
+                                        tabIndex={0}
                                         style={{
-                                            position: "absolute",
-                                            bottom: "-4px",
-                                            left: 0,
-                                            right: 0,
-                                            height: "2px",
-                                            background: "#1E3A8A",
-                                            borderRadius: "1px",
+                                            position: "relative",
+                                            fontSize: "0.85rem",
+                                            fontWeight: 600,
+                                            letterSpacing: "0.08em",
+                                            textTransform: "uppercase",
+                                            textDecoration: "none",
+                                            color: activeSection === link.href.replace('#', '')
+                                                ? "#ffffff"
+                                                : "rgba(255,255,255,0.55)",
+                                            transition: "color 0.3s ease",
+                                            cursor: "pointer",
                                         }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                                        onMouseLeave={(e) =>
+                                        (e.currentTarget.style.color =
+                                            activeSection === link.href.replace('#', '')
+                                                ? "#ffffff"
+                                                : "rgba(255,255,255,0.55)")
+                                        }
+                                    >
+                                        {link.label}
+                                        {activeSection === link.href.replace('#', '') && (
+                                            <motion.div
+                                                layoutId="activeNav"
+                                                style={{
+                                                    position: "absolute",
+                                                    bottom: "-6px",
+                                                    left: 0,
+                                                    right: 0,
+                                                    height: "2px",
+                                                    background: "linear-gradient(90deg, rgba(212,175,55,0.8), rgba(30,58,138,0.8))",
+                                                    borderRadius: "1px",
+                                                    boxShadow: "0 0 8px rgba(212,175,55,0.3)",
+                                                }}
+                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                            />
+                                        )}
+                                    </a>
+                                ))}
+                            </div>
+                        </GlassSurface>
+
+                        {/* Right: Join Beta - using GradientButton */}
+                        <div className="flex justify-end">
+                            <Link href="/waitlist" className="inline-block">
+                                <GradientButton
+                                    label="Join Beta"
+                                    style={{ padding: "10px 24px", fontSize: "0.85rem" }}
+                                />
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* ── Mobile: Full-width GlassSurface bar ── */}
+                    <div className="md:hidden">
+                        <GlassSurface
+                            width="100%"
+                            height={58}
+                            className="md:hidden"
+                        >
+                            <div
+                                className="flex items-center justify-between w-full px-4"
+                                style={{ height: "100%" }}
+                            >
+                                {/* Mobile Logo */}
+                                <Link
+                                    href="#hero"
+                                    onClick={(e) => scrollToSection(e, "#hero")}
+                                    className="flex items-center gap-2"
+                                    style={{ textDecoration: "none" }}
+                                >
+                                    <Image
+                                        src="/logo.png"
+                                        alt="Ved AI Labs"
+                                        width={28}
+                                        height={28}
+                                        className="drop-shadow-lg"
                                     />
-                                )}
-                            </a>
-                        ))}
-                    </div>
+                                    <span
+                                        style={{
+                                            fontSize: "0.9rem",
+                                            fontWeight: 800,
+                                            color: "#ffffff",
+                                            letterSpacing: "0.1em",
+                                            textTransform: "uppercase",
+                                        }}
+                                    >
+                                        Ved AI
+                                    </span>
+                                </Link>
 
-                    {/* ── Desktop "Join Beta" CTA ── */}
-                    <div className="hidden md:inline-block">
-                        <GradientButton
-                            label="Join Beta"
-                            style={{ padding: "10px 24px", fontSize: "0.85rem" }}
-                        />
+                                {/* Mobile Hamburger */}
+                                <button
+                                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                    className="flex flex-col gap-1.5 p-2 cursor-pointer focus:outline-none"
+                                    aria-label="Toggle menu"
+                                    aria-expanded={isMobileMenuOpen}
+                                >
+                                    <motion.span
+                                        animate={{ rotate: isMobileMenuOpen ? 45 : 0, y: isMobileMenuOpen ? 6 : 0 }}
+                                        transition={{ duration: 0.25 }}
+                                        className="w-6 h-0.5 bg-white block"
+                                    />
+                                    <motion.span
+                                        animate={{ opacity: isMobileMenuOpen ? 0 : 1 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="w-6 h-0.5 bg-white block"
+                                    />
+                                    <motion.span
+                                        animate={{ rotate: isMobileMenuOpen ? -45 : 0, y: isMobileMenuOpen ? -6 : 0 }}
+                                        transition={{ duration: 0.25 }}
+                                        className="w-6 h-0.5 bg-white block"
+                                    />
+                                </button>
+                            </div>
+                        </GlassSurface>
                     </div>
-
-                    {/* ── Mobile Hamburger ── */}
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden flex flex-col gap-1.5 p-2 cursor-pointer focus:outline-none"
-                        aria-label="Toggle menu"
-                        aria-expanded={isMobileMenuOpen}
-                    >
-                        <motion.span
-                            animate={{ rotate: isMobileMenuOpen ? 45 : 0, y: isMobileMenuOpen ? 6 : 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="w-6 h-0.5 bg-[#0A0F2E] block"
-                        />
-                        <motion.span
-                            animate={{ opacity: isMobileMenuOpen ? 0 : 1 }}
-                            transition={{ duration: 0.2 }}
-                            className="w-6 h-0.5 bg-[#0A0F2E] block"
-                        />
-                        <motion.span
-                            animate={{ rotate: isMobileMenuOpen ? -45 : 0, y: isMobileMenuOpen ? -6 : 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="w-6 h-0.5 bg-[#0A0F2E] block"
-                        />
-                    </button>
-                </nav>
+                </div>
             </motion.header>
 
             {/* ═══ Mobile Slide-Down Menu ═══ */}
@@ -220,12 +266,12 @@ export default function Navigation() {
                         style={{
                             top: "80px",
                             margin: "0 20px",
-                            background: "rgba(250, 251, 255, 0.98)",
+                            background: "rgba(10, 15, 46, 0.92)",
                             backdropFilter: "blur(20px)",
                             WebkitBackdropFilter: "blur(20px)",
                             borderRadius: "16px",
-                            boxShadow: "0 12px 40px rgba(30,58,138,0.12)",
-                            border: "1px solid rgba(30,58,138,0.08)",
+                            boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+                            border: "1px solid rgba(255,255,255,0.1)",
                             overflow: "hidden",
                         }}
                     >
@@ -244,13 +290,13 @@ export default function Navigation() {
                                         padding: "16px 24px",
                                         color:
                                             activeSection === link.href.replace('#', '')
-                                                ? "#1E3A8A"
-                                                : "rgba(10,15,46,0.7)",
+                                                ? "#ffffff"
+                                                : "rgba(255,255,255,0.6)",
                                         textDecoration: "none",
                                         fontSize: "1rem",
                                         fontWeight: 500,
                                         letterSpacing: "0.04em",
-                                        borderBottom: "1px solid rgba(30,58,138,0.08)",
+                                        borderBottom: "1px solid rgba(255,255,255,0.08)",
                                         transition: "color 0.2s, background 0.2s",
                                         cursor: "pointer",
                                     }}
@@ -271,10 +317,12 @@ export default function Navigation() {
                                     margin: "12px 16px 16px",
                                 }}
                             >
-                                <GradientButton
-                                    label="Join Beta"
-                                    style={{ padding: "14px 24px", width: "100%" }}
-                                />
+                                <Link href="/waitlist" className="w-full">
+                                    <GradientButton
+                                        label="Join Beta"
+                                        style={{ padding: "14px 24px", width: "100%" }}
+                                    />
+                                </Link>
                             </motion.div>
                         </div>
                     </motion.div>

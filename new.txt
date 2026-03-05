@@ -1,0 +1,182 @@
+Here are the components and files involved in the navbar and glass surface:
+
+---
+
+## 1. **Navigation** (`app/components/ui/Navigation.tsx`)
+
+```1:336:app/components/ui/Navigation.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { useLenis } from "@studio-freight/react-lenis";
+import GlassSurface from "./GlassSurface";
+
+const navLinks = [
+    { href: "#hero", label: "Home" },
+    { href: "#mission", label: "Mission" },
+];
+
+export default function Navigation() {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState("hero");
+    // ... scroll spy, resize, keyboard handlers ...
+    return (
+        <>
+            <motion.header ...>
+                <div className="mx-auto w-full max-w-[1220px]">
+                    <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center gap-5">
+                        {/* Logo - left */}
+                        <Link href="#hero" ...>
+                        {/* Center: GlassSurface navbar */}
+                        <GlassSurface width={380} height={62} ... />
+                        {/* Right: Join Beta */}
+                        <a className="glass-join-beta" ...>Join Beta</a>
+                    </div>
+                    {/* Mobile: GlassSurface bar */}
+                    <GlassSurface width="100%" height={58} ... className="md:hidden" />
+                </div>
+            </motion.header>
+            {/* Mobile slide-down menu */}
+            <AnimatePresence>...</AnimatePresence>
+        </>
+    );
+}
+```
+
+---
+
+## 2. **GlassSurface** (`app/components/ui/GlassSurface.tsx`)
+
+```1:273:app/components/ui/GlassSurface.tsx
+"use client";
+
+import React, { useEffect, useRef, useId, useCallback } from "react";
+
+export interface GlassSurfaceProps {
+    children?: React.ReactNode;
+    width?: number | string;
+    height?: number | string;
+    borderRadius?: number;
+    borderWidth?: number;
+    brightness?: number;
+    opacity?: number;
+    blur?: number;
+    displace?: number;
+    backgroundOpacity?: number;
+    saturation?: number;
+    distortionScale?: number;
+    redOffset?: number;
+    greenOffset?: number;
+    blueOffset?: number;
+    xChannel?: "R" | "G" | "B";
+    yChannel?: "R" | "G" | "B";
+    mixBlendMode?: "normal" | "multiply" | "screen" | ...;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+const GlassSurface: React.FC<GlassSurfaceProps> = ({
+    children,
+    width = 200,
+    height = 80,
+    borderRadius = 20,
+    // ... SVG displacement map filter for glass effect ...
+}) => {
+    // Uses SVG feDisplacementMap with R/G/B channels for chromatic aberration
+    return (
+        <div ref={containerRef} className={...} style={getContainerStyles()}>
+            <svg>...</svg>
+            <div className="w-full h-full ...">{children}</div>
+        </div>
+    );
+};
+```
+
+---
+
+## 3. **AppWrapper** (`app/components/AppWrapper.tsx`)
+
+```1:24:app/components/AppWrapper.tsx
+"use client";
+
+import { useEffect } from "react";
+import CustomCursor from "./ui/CustomCursor";
+import SmoothScroll from "./ui/SmoothScroll";
+import Navigation from "./ui/Navigation";
+import ScrollProgress from "./ui/ScrollProgress";
+
+export default function AppWrapper({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        window.history.scrollRestoration = "manual";
+        window.scrollTo(0, 0);
+    }, []);
+
+    return (
+        <>
+            <ScrollProgress />
+            <CustomCursor />
+            <Navigation />
+            <SmoothScroll>{children}</SmoothScroll>
+        </>
+    );
+}
+```
+
+---
+
+## 4. **Layout** (`app/layout.tsx`)
+
+```50:61:app/layout.tsx
+export default function RootLayout({ children }: ...) {
+  return (
+    <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
+      <body className="antialiased">
+        <AppWrapper>{children}</AppWrapper>
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+## 5. **Glass styles in globals.css** (`app/globals.css`)
+
+```351:369:app/globals.css
+.glass-join-beta {
+  padding: 10px 26px;
+  border-radius: 999px;
+  background: rgba(10, 15, 46, 0.86);
+  color: #ffffff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  font-family: var(--font-montserrat), sans-serif;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(10, 15, 46, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.glass-join-beta:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 58, 138, 0.92);
+  box-shadow: 0 10px 26px rgba(10, 15, 46, 0.32);
+}
+```
+
+---
+
+## File connection overview
+
+| File | Role |
+|------|------|
+| `app/components/ui/Navigation.tsx` | Main navbar; uses `GlassSurface` and `glass-join-beta` |
+| `app/components/ui/GlassSurface.tsx` | Glass effect component with SVG displacement |
+| `app/components/AppWrapper.tsx` | Renders `Navigation` |
+| `app/layout.tsx` | Root layout; wraps app in `AppWrapper` |
+| `app/globals.css` | `.glass-join-beta` styles for the Join Beta button |
+
+Dependencies: `framer-motion`, `@studio-freight/react-lenis`, `next/image`, `next/link`.

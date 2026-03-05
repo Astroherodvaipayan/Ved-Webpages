@@ -11,7 +11,6 @@ const HOLD_DISTANCE = 600;
 const IRIS_WIPE_DISTANCE = 250;
 
 export default function TeacherScrollSequence() {
-    const containerRef = useRef<HTMLDivElement>(null);
     const outerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
@@ -21,7 +20,8 @@ export default function TeacherScrollSequence() {
     const [showOverlay, setShowOverlay] = useState(false);
     const currentFrame = useRef(0);
     const subtitleRef = useRef<HTMLDivElement>(null);
-    const irisWipeRef = useRef<HTMLDivElement>(null);
+    const irisContainerRef = useRef<HTMLDivElement>(null); // Main container for iris reveal
+    const frame41OverlayRef = useRef<HTMLDivElement>(null); // Frame 41 overlay for fade
     const overlayShownRef = useRef(false); // Track overlay state synchronously
     const atMaxFrameRef = useRef(false); // Track if we've reached max frame
 
@@ -101,13 +101,15 @@ export default function TeacherScrollSequence() {
 
     // Pin the section, scrub through frames, hold last frame for subtitle + iris wipe
     useLayoutEffect(() => {
-        if (isLoading || images.length === 0 || !containerRef.current || !outerRef.current || !irisWipeRef.current) return;
+        if (isLoading || images.length === 0 || !irisContainerRef.current || !outerRef.current) return;
 
         syncCanvasSize();
         renderFrame(0);
 
-        // Initialize iris wipe CSS variable
-        irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+        // Initialize iris wipe CSS variable on main container
+        if (irisContainerRef.current) {
+            irisContainerRef.current.style.setProperty("--hole-size", "0vw");
+        }
 
         // Shorter scroll distance on mobile for better UX
         const isMobile = window.innerWidth < 768;
@@ -180,7 +182,7 @@ export default function TeacherScrollSequence() {
                     }
                 }
 
-                // Phase 3: Iris wipe animation
+                // Phase 3: Iris wipe + Fade out animation
                 if (progress > subtitlePhaseEnd) {
                     // Hide subtitle during iris wipe
                     if (showSubtitle) {
@@ -195,13 +197,28 @@ export default function TeacherScrollSequence() {
                     const irisProgress = (progress - subtitlePhaseEnd) / (1 - subtitlePhaseEnd);
                     const holeSize = irisProgress * 150; // 0 to 150vw
 
-                    if (irisWipeRef.current) {
-                        irisWipeRef.current.style.setProperty("--hole-size", `${holeSize}vw`);
+                    // Apply iris wipe to full container (reveals ProductShowcase underneath)
+                    if (irisContainerRef.current) {
+                        irisContainerRef.current.style.setProperty("--hole-size", `${holeSize}vw`);
+                    }
+
+                    // Apply fade out to frame 41 starting at 40% of iris progress
+                    let frame41Opacity = 1;
+                    if (irisProgress > 0.4) {
+                        // Fade from 1 to 0 between 40% and 100% of iris progress
+                        frame41Opacity = 1 - ((irisProgress - 0.4) / 0.6);
+                        frame41Opacity = Math.max(0, Math.min(1, frame41Opacity));
+                    }
+                    if (frame41OverlayRef.current) {
+                        frame41OverlayRef.current.style.setProperty("--frame41-opacity", `${frame41Opacity}`);
                     }
                 } else {
-                    // Reset iris wipe when going back
-                    if (irisWipeRef.current) {
-                        irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+                    // Reset effects when going back
+                    if (irisContainerRef.current) {
+                        irisContainerRef.current.style.setProperty("--hole-size", "0vw");
+                    }
+                    if (frame41OverlayRef.current) {
+                        frame41OverlayRef.current.style.setProperty("--frame41-opacity", "1");
                     }
                 }
             },
@@ -219,13 +236,21 @@ export default function TeacherScrollSequence() {
                 setShowOverlay(false);
                 overlayShownRef.current = false;
                 atMaxFrameRef.current = false;
-                if (irisWipeRef.current) {
-                    irisWipeRef.current.style.setProperty("--hole-size", "0vw");
+                if (irisContainerRef.current) {
+                    irisContainerRef.current.style.setProperty("--hole-size", "0vw");
+                }
+                if (frame41OverlayRef.current) {
+                    frame41OverlayRef.current.style.setProperty("--frame41-opacity", "1");
                 }
             },
         });
 
         ScrollTrigger.refresh();
+
+        // Delayed refresh to ensure DOM is ready and next section is positioned correctly
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 100);
 
         const handleResize = () => {
             syncCanvasSize();
@@ -243,70 +268,71 @@ export default function TeacherScrollSequence() {
     }, [isLoading, images, showSubtitle, showOverlay]);
 
     return (
-        <div ref={outerRef}>
+        <div ref={outerRef} className="relative" style={{ overflow: 'visible', marginBottom: 1 }}>
+            {/* Main container with iris reveal effect - reveals ProductShowcase underneath */}
             <div
-                ref={irisWipeRef}
-                className="sticky top-0 w-full bg-transparent"
+                ref={irisContainerRef}
+                className="sticky top-0 w-full h-screen bg-transparent"
                 style={{
-                    height: "100vh",
                     zIndex: 20,
                     maskImage: 'radial-gradient(circle at center, transparent var(--hole-size), black var(--hole-size), black 100%)',
                     WebkitMaskImage: 'radial-gradient(circle at center, transparent var(--hole-size), black var(--hole-size), black 100%)',
                 }}
             >
-                <div
-                    ref={containerRef}
-                    className="w-full bg-transparent"
-                    style={{ height: "100vh" }}
-                >
-                    <div className="w-full h-screen overflow-hidden flex items-center justify-center">
-                        <canvas
-                            ref={canvasRef}
-                            className="w-full h-full object-cover"
-                            style={{
-                                maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
-                            }}
-                        />
-                        {showOverlay && (
-                            <canvas
-                                ref={canvasOverlayRef}
-                                className="w-full h-full absolute inset-0 z-10"
-                                style={{
-                                    maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                                    WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
-                                }}
-                            />
-                        )}
-                        {isLoading && (
-                            <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs sm:text-sm tracking-widest uppercase">
-                                Loading Sequence...
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="absolute inset-0 pointer-events-none">
-                        <div className="w-full h-screen bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                    </div>
-
-                    {showSubtitle && (
-                        <div
-                            ref={subtitleRef}
-                            className="absolute z-30 left-1/2 bottom-[10%] -translate-x-1/2 pointer-events-none w-full px-4"
-                            style={{ animation: 'subtitleFadeIn 600ms ease-out forwards' }}
-                        >
-                            <p
-                                className="text-white font-black tracking-widest uppercase text-center w-full drop-shadow-2xl"
-                                style={{
-                                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                                    fontSize: 'clamp(1.25rem, 4vw, 2rem)',
-                                }}
-                            >
-                                Building the greatest teacher ever.
-                            </p>
-                        </div>
-                    )}
+                {/* Frame 40 - base canvas (no mask) */}
+                <div className="absolute inset-0 w-full h-full">
+                    <canvas
+                        ref={canvasRef}
+                        className="w-full h-full object-cover"
+                    />
                 </div>
+
+                {/* Frame 41 overlay - applies fade out effect */}
+                {showOverlay && (
+                    <div
+                        ref={frame41OverlayRef}
+                        className="absolute inset-0 w-full h-full z-10"
+                        style={{
+                            opacity: 'var(--frame41-opacity, 1)',
+                        }}
+                    >
+                        <canvas
+                            ref={canvasOverlayRef}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                )}
+
+                {/* Loading indicator */}
+                {isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs sm:text-sm tracking-widest uppercase">
+                        Loading Sequence...
+                    </div>
+                )}
+
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="w-full h-full bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                </div>
+
+                {/* Subtitle */}
+                {showSubtitle && (
+                    <div
+                        ref={subtitleRef}
+                        className="absolute z-30 left-1/2 bottom-[10%] -translate-x-1 pointer-events-none w-full px-4"
+                        style={{ animation: 'subtitleFadeIn 600ms ease-out forwards' }}
+                    >
+                        <p
+                            className="text-white font-black tracking-widest uppercase text-center w-full drop-shadow-2xl"
+                            style={{
+                                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                                fontSize: 'clamp(2rem, 5vw, 4rem)',
+                            }}
+                        >
+                            Building the greatest teacher ever.
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

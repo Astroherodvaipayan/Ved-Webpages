@@ -1,18 +1,73 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import GradientButton from "../ui/GradientButton";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "@studio-freight/react-lenis";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface WaitlistData {
+    name: string;
+    email: string;
+    role: string;
+    imageUrl: string | null;
+}
 
 export default function JoinRevolution() {
     const sectionRef = useRef<HTMLElement>(null);
-    const [isClicked, setIsClicked] = useState(false);
+    const isSnapping = useRef(false);
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    // Scroll snap to next section (FooterCTA) at 90% progress
+    useEffect(() => {
+        if (!isMounted || !lenis) return;
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            ScrollTrigger.create({
+                trigger: sectionRef.current,
+                start: "top bottom",
+                end: "bottom bottom",
+                onUpdate: (self) => {
+                    if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
+                        if (!isSnapping.current && lenis) {
+                            isSnapping.current = true;
+                            const nextSection = document.getElementById('footer-cta');
+                            if (nextSection) {
+                                const rect = nextSection.getBoundingClientRect();
+                                const targetY = rect.top + window.scrollY;
+                                lenis.scrollTo(targetY, {
+                                    duration: 0.8,
+                                    force: true,
+                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
+                                    onComplete: () => {
+                                        isSnapping.current = false;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, [isMounted, lenis]);
 
     return (
         <section
             id="join-revolution"
             ref={sectionRef}
-            className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-transparent z-10"
+            className="relative w-full min-h-screen py-40 px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-transparent z-10"
         >
             {/* Text block */}
             <motion.div
@@ -35,38 +90,15 @@ export default function JoinRevolution() {
 
             {/* Central Button */}
             <div className="relative z-20 flex items-center justify-center">
-                <AnimatePresence mode="wait">
-                    {!isClicked ? (
-                        <motion.div
-                            key="button"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="relative"
-                        >
-                            <GradientButton label="Join Beta" onClick={() => setIsClicked(true)} />
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="coming-soon"
-                            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            transition={{ duration: 0.6, ease: "backOut" }}
-                            className="relative z-20 px-12 py-5 rounded-full overflow-hidden"
-                            style={{
-                                background: "rgba(10, 15, 46, 0.85)",
-                                backdropFilter: "blur(20px)",
-                                WebkitBackdropFilter: "blur(20px)",
-                                border: "1px solid rgba(255,255,255,0.15)",
-                                boxShadow: "0 8px 32px rgba(10, 15, 46, 0.25)",
-                            }}
-                        >
-                            <span className="relative text-white font-bold text-xl tracking-wide">
-                                Access unlocking soon 🚀
-                            </span>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <Link href="/waitlist" className="inline-block">
+                        <GradientButton label="Join Beta" />
+                    </Link>
+                </motion.div>
             </div>
         </section>
     );

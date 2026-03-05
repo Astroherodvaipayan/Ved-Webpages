@@ -73,6 +73,7 @@ export default function FeatureShowcase() {
     const shapeRefsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     const lenis = useLenis();
+    const isSnapping = useRef(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -100,6 +101,26 @@ export default function FeatureShowcase() {
                     end: "+=250%",
                     pin: true,
                     scrub: 1,
+                    onUpdate: (self) => {
+                        if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
+                            if (!isSnapping.current && lenis) {
+                                isSnapping.current = true;
+                                const nextSection = document.getElementById('moat');
+                                if (nextSection) {
+                                    const rect = nextSection.getBoundingClientRect();
+                                    const targetY = rect.top + window.scrollY;
+                                    lenis.scrollTo(targetY, {
+                                        duration: 0.8,
+                                        force: true,
+                                        easing: (t: number) => 1 - Math.pow(1 - t, 4),
+                                        onComplete: () => {
+                                            isSnapping.current = false;
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
             });
 
