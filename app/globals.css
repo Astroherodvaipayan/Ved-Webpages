@@ -110,10 +110,7 @@ img {
   box-sizing: border-box;
 }
 
-div, section, article, main, header, footer {
-  border: none !important;
-  outline: none !important;
-}
+/* Borders managed per-component — no global override */
 
 ::selection {
   background: var(--color-accent-primary);
@@ -180,6 +177,7 @@ h6 {
   0% {
     transform: translateX(0) scale(1);
   }
+
   100% {
     transform: translateX(-3%) scale(1.02);
   }
@@ -189,6 +187,7 @@ h6 {
   0% {
     transform: translateX(0) scale(1);
   }
+
   100% {
     transform: translateX(3%) scale(1.02);
   }
@@ -460,6 +459,7 @@ html.lenis {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -513,11 +513,9 @@ html.lenis {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(
-    circle at var(--pointer-x) var(--pointer-y),
-    var(--behind-glow-color) 0%,
-    transparent var(--behind-glow-size)
-  );
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y),
+      var(--behind-glow-color) 0%,
+      transparent var(--behind-glow-size));
   filter: blur(50px) saturate(1.1);
 }
 
@@ -538,11 +536,9 @@ html.lenis {
 
 .pc-inside {
   position: relative;
-  background: linear-gradient(
-    135deg,
-    hsla(0, 0%, 100%, 0.4) 0%,
-    hsla(0, 0%, 97%, 0.2) 100%
-  );
+  background: linear-gradient(135deg,
+      hsla(0, 0%, 100%, 0.4) 0%,
+      hsla(0, 0%, 97%, 0.2) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -552,12 +548,10 @@ html.lenis {
   position: absolute;
   inset: 0;
   opacity: var(--card-opacity);
-  background: radial-gradient(
-    circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 0%,
-    hsla(0, 0%, 100%, 0.65) 15%,
-    hsla(0, 0%, 100%, 0) 40%
-  );
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 100%, 0.8) 0%,
+      hsla(0, 0%, 100%, 0.65) 15%,
+      hsla(0, 0%, 100%, 0) 40%);
   transition: opacity 0.4s;
   pointer-events: none;
   mix-blend-mode: soft-light;
@@ -567,12 +561,10 @@ html.lenis {
   position: absolute;
   inset: 0;
   opacity: calc(var(--pointer-from-center) * var(--card-opacity) * 0.5);
-  background: radial-gradient(
-    circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 0%,
-    hsla(0, 0%, 100%, 0.65) 30%,
-    hsla(0, 0%, 100%, 0) 70%
-  );
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 100%, 0.8) 0%,
+      hsla(0, 0%, 100%, 0.65) 30%,
+      hsla(0, 0%, 100%, 0) 70%);
   transition: opacity 0.4s;
   pointer-events: none;
   mix-blend-mode: soft-light;

@@ -130,9 +130,8 @@ export default function Hero() {
     return (
         <section ref={heroRef} className="relative h-[200vh] w-full">
             {/* Sticky container with overflow visible so clouds extend into next section */}
-            <div className="sticky top-0 h-screen overflow-visible">
-
-                {/* L1: Background haze layers - using img tags with negative margin */}
+            <div className="sticky top-0 h-screen overflow-visible flex items-center justify-center">
+                {/* 
                 <div
                     ref={cloudBgLeftRef}
                     className="absolute left-0 w-full h-[60%] will-change-transform mix-blend-screen opacity-20"
@@ -164,10 +163,9 @@ export default function Hero() {
                     />
                 </div>
 
-                {/* L2: Foreground cloud panels - using img tags with negative margin */}
                 <div
                     ref={cloudLeftRef}
-                    className="absolute left-0 w-[55%] h-[50%] will-change-transform mix-blend-screen opacity-35"
+                    className="absolute left-0 w-[25%] md:w-[45%] h-[50%] will-change-transform mix-blend-screen opacity-25 md:opacity-35"
                     style={{
                         bottom: '5%',
                         transformOrigin: "left bottom",
@@ -182,7 +180,7 @@ export default function Hero() {
                 </div>
                 <div
                     ref={cloudRightRef}
-                    className="absolute right-0 w-[55%] h-[50%] will-change-transform mix-blend-screen opacity-35"
+                    className="absolute right-0 w-[25%] md:w-[45%] h-[50%] will-change-transform mix-blend-screen opacity-25 md:opacity-35"
                     style={{
                         bottom: '5%',
                         transformOrigin: "right bottom",
@@ -194,15 +192,13 @@ export default function Hero() {
                         className="w-full h-full object-contain block"
                         style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
                     />
-                </div>
+                </div> 
 
-                {/* Bottom gradient */}
                 <div
                     className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
                     style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))" }}
                 />
 
-                {/* Stretched inverted U-shaped haze effect */}
                 <div
                     className="absolute bottom-0 left-0 right-0 h-[60%] pointer-events-none"
                     style={{
@@ -211,7 +207,7 @@ export default function Hero() {
                     }}
                 />
 
-                {/* Logo watermark */}
+                */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center">
                     <div className="relative w-full max-w-[1200px] aspect-[16/9] md:aspect-square md:max-h-[90vh]">
                         <Image
@@ -223,20 +219,18 @@ export default function Hero() {
                         />
                     </div>
                 </div>
-
-                {/* Content - z-10 above cloud panels, centered */}
                 <div
                     ref={contentRef}
-                    className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4 sm:px-6"
+                    className="absolute inset-0 flex flex-col items-center justify-center z-10 px-3 sm:px-6 md:px-8"
                 >
-                    <div className="w-full max-w-6xl mx-auto">
+                    <div className="w-full max-w-4xl md:max-w-5xl mx-auto">
 
                         {/* Main Headline - centered */}
                         <motion.h1
-                            className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.05] font-black tracking-tighter text-[#0A0F2E] mb-8 w-full max-w-5xl overflow-hidden text-center"
+                            className="text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-[#0A0F2E] mb-4 md:mb-8 w-full overflow-hidden text-center"
                         >
                             <motion.span
-                                className="block mb-2 text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                                className="block mb-1 text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                                 initial={{ opacity: 0, y: "100%" }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -247,11 +241,11 @@ export default function Hero() {
                                 initial={{ opacity: 0, y: "100%" }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex items-baseline justify-center mb-2 gap-4"
+                                className="flex flex-col md:flex-row items-center justify-center mb-1 gap-1 md:gap-4"
                             >
                                 <motion.span
                                     layout
-                                    className="text-[#0A0F2E] text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                                    className="text-[#0A0F2E] text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                                 >
                                     WAY OF
                                 </motion.span>
@@ -259,11 +253,11 @@ export default function Hero() {
                                     words={["LEARNING", "THINKING", "GROWING"]}
                                     interval={2500}
                                     trigger={true}
-                                    className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                                    className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                                 />
                             </motion.span>
                             <motion.span
-                                className="block text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                                className="block text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                                 initial={{ opacity: 0, y: "100%" }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -277,9 +271,9 @@ export default function Hero() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.9, duration: 0.8 }}
-                            className="text-base sm:text-lg md:text-xl text-[#2D3A6B] max-w-xl mx-auto mb-12 font-light leading-relaxed text-center"
+                            className="text-base sm:text-lg md:text-xl text-[#2D3A6B] max-w-lg md:max-w-xl mx-auto mb-6 md:mb-12 font-light leading-relaxed text-center px-4"
                         >
-                            Learns how you learn, and teaches you to mastery. <br className="hidden sm:block" />
+                            Learns how you learn, and teaches you to mastery. <br className="hidden md:block" />
                             Enabling a billion geniuses through adaptive AI.
                         </motion.p>
 

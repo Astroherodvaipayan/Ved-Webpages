@@ -190,7 +190,7 @@ export default function Navigation() {
                     {/* ── Mobile: Full-width GlassSurface bar ── */}
                     <div className="md:hidden">
                         <GlassSurface
-                            width={200}
+                            width={600}
                             height={58}
                             className="md:hidden"
                             style={{ width: '100%' }}

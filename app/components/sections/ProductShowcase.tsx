@@ -1,9 +1,12 @@
+// app/components/sections/ProductShowcase.tsx
+
 "use client";
 
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
+import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,9 +15,22 @@ export default function ProductShowcase() {
     const windowRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLHeadingElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
     const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
     const lenis = useLenis();
     const [isMounted, setIsMounted] = useState(false);
+
+    // Configuration
+    const CONFIG = {
+        nextSectionId: 'problem-statement',
+        phase5Start: 0.70,
+        phase5Duration: 0.25,
+        triggerBufferPx: 10,
+        scrollDuration: 1.2,
+    };
+
+    const PHASE_5_END = CONFIG.phase5Start + CONFIG.phase5Duration; // 0.95
 
     useEffect(() => {
         setIsMounted(true);
@@ -25,6 +41,7 @@ export default function ProductShowcase() {
         if (!sectionRef.current || !windowRef.current || !textRef.current) return;
 
         const ctx = gsap.context(() => {
+            // Initial states
             gsap.set(windowRef.current, {
                 scale: 0.1,
                 opacity: 0
@@ -34,104 +51,118 @@ export default function ProductShowcase() {
                 opacity: 0
             });
 
+            // Create timeline
             const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top top",
-                    end: "+=250%",
-                    pin: true,
-                    pinSpacing: true,
-                    scrub: 0.5,
-                    onUpdate: (self) => {
-                        if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
-                            if (!isSnapping.current && lenis) {
-                                isSnapping.current = true;
-                                // Get the next section using getBoundingClientRect for accurate position
-                                const nextSection = document.getElementById('problem-statement');
-                                if (nextSection) {
-                                    const rect = nextSection.getBoundingClientRect();
-                                    const targetY = rect.top + window.scrollY;
-                                    lenis.scrollTo(targetY, {
-                                        duration: 0.8,
-                                        force: true,
-                                        easing: (t: number) => 1 - Math.pow(1 - t, 4),
-                                        onComplete: () => {
-                                            isSnapping.current = false;
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    },
-                    onEnter: () => {
-                        if (videoRef.current) {
-                            videoRef.current.currentTime = 0;
-                            videoRef.current.play();
-                        }
-                    },
-                    onEnterBack: () => {
-                        if (videoRef.current) {
-                            videoRef.current.play();
-                        }
-                    },
-                    onLeave: () => {
-                        if (videoRef.current) {
-                            videoRef.current.pause();
-                        }
-                    },
-                    onLeaveBack: () => {
-                        if (videoRef.current) {
-                            videoRef.current.pause();
-                        }
-                    }
-                }
+                paused: true,
+                defaults: { ease: "none" }
             });
 
-            // Phase 1 — Text dolly zoom in (0% → 35%)
+            // Phase 1 — Text dolly zoom in (0% → 25%)
             tl.to(textRef.current, {
                 scale: 1,
                 opacity: 1,
                 ease: "none",
-                duration: 0.35
+                duration: 0.25
             }, 0);
 
-            // Phase 2 — Text zooms past camera (35% → 55%)
+            // Phase 2 — Text zooms past camera (25% → 50%)
             tl.to(textRef.current, {
                 scale: 8,
                 opacity: 0,
                 ease: "power2.in",
-                duration: 0.20
-            }, 0.35);
+                duration: 0.25
+            }, 0.25);
 
-            // Phase 3 — Mac window appears from tiny (55% → 75%)
+            // Phase 3 — Mac window appears (50% → 70%)
             tl.to(windowRef.current, {
                 scale: 0.7,
                 opacity: 1,
                 ease: "power2.out",
                 duration: 0.20
-            }, 0.55);
+            }, 0.50);
 
-            // Phase 5 — Mac window fills screen
+            // Phase 5 — Mac window fills screen (70% → 95%)
             tl.to(windowRef.current, {
                 scale: 0.8,
                 ease: "power2.inOut",
-                duration: 0.25
-            }, 0.75);
+                duration: CONFIG.phase5Duration
+            }, CONFIG.phase5Start);
 
-            // ✅ FIX: setTimeout instead of double-RAF.
-            // FeatureShowcase also waits for lenis before registering its trigger,
-            // so both useEffects fire in the same microtask queue when lenis resolves.
-            // React processes child effects in tree order (ProductShowcase first, then
-            // FeatureShowcase), so by 300ms both are registered and the DOM has settled.
-            // This refresh recalculates all trigger positions with the correct page height.
-            setTimeout(() => {
+            // Create ScrollTrigger
+            scrollTriggerRef.current = ScrollTrigger.create({
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "+=250%",
+                pin: true,
+                pinSpacing: true,
+                scrub: 0.5,
+                animation: tl,
+
+                onUpdate: (self) => {
+                    if (shouldSnap(self, PHASE_5_END, CONFIG.triggerBufferPx, isSnapping, hasTriggered, 'product-showcase')) {
+                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
+                    }
+
+                    // Reset trigger flag when scrolling back up past phase 5
+                    if (self.progress < PHASE_5_END && self.direction === -1) {
+                        hasTriggered.current = false;
+                        isSnapping.current = false;
+                    }
+                },
+
+                onEnter: () => {
+                    playVideo();
+                },
+
+                onEnterBack: () => {
+                    playVideo();
+                },
+
+                onLeave: () => {
+                    pauseVideo();
+                },
+
+                onLeaveBack: () => {
+                    pauseVideo();
+                    hasTriggered.current = false;
+                }
+            });
+
+            // Refresh ScrollTrigger after DOM settles
+            const refreshTimer = setTimeout(() => {
                 ScrollTrigger.refresh();
             }, 300);
 
+            return () => {
+                clearTimeout(refreshTimer);
+            };
+
         }, sectionRef);
 
-        return () => ctx.revert();
+        return () => {
+            ctx.revert();
+            if (scrollTriggerRef.current) {
+                scrollTriggerRef.current.kill();
+            }
+        };
     }, [isMounted, lenis]);
+
+    // Helper: Play video
+    const playVideo = () => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.play().catch(() => {
+                // Ignore autoplay errors
+            });
+        }
+    };
+
+    // Helper: Pause video
+    const pauseVideo = () => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+        }
+    };
 
     return (
         <section
@@ -143,12 +174,16 @@ export default function ProductShowcase() {
             <h2
                 ref={textRef}
                 className="absolute z-30 text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-center text-[#0A0F2E] tracking-tighter w-full px-4"
-                style={{ opacity: 0, transform: 'scale(0.2)' }}
+                style={{
+                    opacity: 0,
+                    transform: 'scale(0.2)',
+                    willChange: 'transform, opacity'
+                }}
             >
                 THE FUTURE OF LEARNING<br />IS HERE
             </h2>
 
-            {/* Mac Window — animated via GSAP */}
+            {/* Mac Window */}
             <div
                 ref={windowRef}
                 className="absolute z-10 bg-[#0A0F2E] rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-[#B0B8D1]/20 flex flex-col"
@@ -158,6 +193,7 @@ export default function ProductShowcase() {
                     transformOrigin: 'center center',
                     opacity: 0,
                     transform: 'scale(0.1)',
+                    willChange: 'transform, opacity'
                 }}
             >
                 {/* Mac Title Bar */}

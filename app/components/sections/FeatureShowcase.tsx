@@ -1,3 +1,5 @@
+// app/components/sections/FeatureShowcase.tsx
+
 "use client";
 
 import { useEffect, useRef, useState, ReactNode } from "react";
@@ -5,6 +7,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
+import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,10 +55,20 @@ export default function FeatureShowcase() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const textRefsRef = useRef<(HTMLDivElement | null)[]>([]);
     const shapeRefsRef = useRef<(HTMLDivElement | null)[]>([]);
+    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
     const lenis = useLenis();
     const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
     const [isMounted, setIsMounted] = useState(false);
+
+    // Configuration
+    const CONFIG = {
+        nextSectionId: 'moat',
+        animationCompleteProgress: 0.90,
+        triggerBufferPx: 10,
+        scrollDuration: 1.2,
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -76,33 +89,8 @@ export default function FeatureShowcase() {
             });
 
             const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top top",
-                    end: "+=250%",
-                    pin: true,
-                    scrub: 1,
-                    onUpdate: (self) => {
-                        if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
-                            if (!isSnapping.current && lenis) {
-                                isSnapping.current = true;
-                                const nextSection = document.getElementById('moat');
-                                if (nextSection) {
-                                    const rect = nextSection.getBoundingClientRect();
-                                    const targetY = rect.top + window.scrollY;
-                                    lenis.scrollTo(targetY, {
-                                        duration: 0.8,
-                                        force: true,
-                                        easing: (t: number) => 1 - Math.pow(1 - t, 4),
-                                        onComplete: () => {
-                                            isSnapping.current = false;
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
+                paused: true,
+                defaults: { ease: "none" }
             });
 
             features.forEach((_, i) => {
@@ -147,9 +135,38 @@ export default function FeatureShowcase() {
 
             tl.to({}, { duration: 0.5 });
 
+            // Create ScrollTrigger
+            scrollTriggerRef.current = ScrollTrigger.create({
+                trigger: section,
+                start: "top top",
+                end: "+=250%",
+                pin: true,
+                scrub: 1,
+                animation: tl,
+                onUpdate: (self) => {
+                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered)) {
+                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
+                    }
+
+                    // Reset trigger flag when scrolling back up
+                    if (self.progress < CONFIG.animationCompleteProgress && self.direction === -1) {
+                        hasTriggered.current = false;
+                        isSnapping.current = false;
+                    }
+                },
+                onLeaveBack: () => {
+                    hasTriggered.current = false;
+                }
+            });
+
         }, section);
 
-        return () => ctx.revert();
+        return () => {
+            ctx.revert();
+            if (scrollTriggerRef.current) {
+                scrollTriggerRef.current.kill();
+            }
+        };
     }, [isMounted, lenis]);
 
     return (

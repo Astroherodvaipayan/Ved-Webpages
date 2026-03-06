@@ -1,3 +1,5 @@
+// app/components/sections/ProblemStatement.tsx
+
 "use client";
 
 import { useRef, useLayoutEffect, useState, useEffect } from "react";
@@ -6,6 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
 import CountUp from "react-countup";
+import { shouldSnap, snapToSection, recordSectionEntrance, hasEntranceDelayElapsed } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,10 +18,20 @@ export default function ProblemStatement() {
     const headlineRef = useRef<HTMLHeadingElement>(null);
     const subtitleRef = useRef<HTMLSpanElement>(null);
     const pathRef = useRef<SVGPathElement>(null);
+    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
     const [startCount, setStartCount] = useState(false);
     const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
     const lenis = useLenis();
     const [isMounted, setIsMounted] = useState(false);
+
+    // Configuration
+    const CONFIG = {
+        nextSectionId: 'feature-showcase',
+        animationCompleteProgress: 0.85,
+        triggerBufferPx: 10,
+        scrollDuration: 1.2,
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -96,60 +109,74 @@ export default function ProblemStatement() {
         return () => ctx.revert();
     }, [isHeadlineInView]);
 
-    // Scroll snap to next section at 90% progress
+    // Scroll snap to next section
+    // Around line 60-90, replace the entire useLayoutEffect that creates the ScrollTrigger
+
     useLayoutEffect(() => {
         if (!isMounted || !lenis) return;
         if (!containerRef.current) return;
 
+        const SECTION_ID = 'problem-statement'; // ✅ Add this
+
         const ctx = gsap.context(() => {
-            ScrollTrigger.create({
+            scrollTriggerRef.current = ScrollTrigger.create({
                 trigger: containerRef.current,
-                start: "top bottom",
-                end: "bottom bottom",
+                start: "top top",
+                end: "bottom top",
                 onUpdate: (self) => {
-                    if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
-                        if (!isSnapping.current && lenis) {
-                            isSnapping.current = true;
-                            const nextSection = document.getElementById('feature-showcase');
-                            if (nextSection) {
-                                const rect = nextSection.getBoundingClientRect();
-                                const targetY = rect.top + window.scrollY;
-                                lenis.scrollTo(targetY, {
-                                    duration: 0.8,
-                                    force: true,
-                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
-                                    onComplete: () => {
-                                        isSnapping.current = false;
-                                    }
-                                });
-                            }
-                        }
+                    if (shouldSnap(
+                        self,
+                        CONFIG.animationCompleteProgress,
+                        CONFIG.triggerBufferPx,
+                        isSnapping,
+                        hasTriggered,
+                        SECTION_ID
+                    )) {
+                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
                     }
+
+                    // Reset trigger flag when scrolling back up
+                    if (self.progress < CONFIG.animationCompleteProgress && self.direction === -1) {
+                        hasTriggered.current = false;
+                        isSnapping.current = false;
+                    }
+                },
+                onEnter: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                },
+                onLeaveBack: () => {
+                    hasTriggered.current = false;
                 }
             });
         }, containerRef);
 
-        return () => ctx.revert();
+        return () => {
+            ctx.revert();
+            if (scrollTriggerRef.current) {
+                scrollTriggerRef.current.kill();
+            }
+        };
     }, [isMounted, lenis]);
 
     return (
         <section
             id="problem-statement"
             ref={containerRef}
-            className="relative w-full py-40 px-6 overflow-hidden flex flex-col items-center justify-center text-center bg-transparent z-10"
-            style={{ minHeight: 'calc(100vh + 100px)' }}
+            className="relative w-full h-screen py-16 md:py-40 px-4 md:px-6 overflow-hidden flex flex-col items-center justify-center text-center bg-transparent z-10"
         >
             {/* Animated Background Elements */}
             <div className="absolute inset-0 pointer-events-none">
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-accent-primary/5 rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[1000px] md:h-[1000px] border border-accent-primary/5 rounded-full"
                 />
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-accent-primary/5 rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[800px] border border-accent-primary/5 rounded-full"
                 />
             </div>
 

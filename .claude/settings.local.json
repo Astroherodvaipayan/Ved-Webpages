@@ -9,7 +9,10 @@
       "WebFetch(domain:minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com)",
       "WebSearch",
       "Bash(npm install:*)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(npx skills:*)",
+      "WebFetch(domain:studio-freight.github.io)",
+      "WebFetch(domain:lenis.darkroom.engineering)"
     ]
   }
 }

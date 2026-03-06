@@ -8,7 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 41;
 const HOLD_DISTANCE = 600;
-const IRIS_WIPE_DISTANCE = 250;
+const IRIS_WIPE_DISTANCE = 1800;
 
 export default function TeacherScrollSequence() {
     const outerRef = useRef<HTMLDivElement>(null);
@@ -287,21 +287,6 @@ export default function TeacherScrollSequence() {
                     />
                 </div>
 
-                {/* Frame 41 overlay - applies fade out effect */}
-                {showOverlay && (
-                    <div
-                        ref={frame41OverlayRef}
-                        className="absolute inset-0 w-full h-full z-10"
-                        style={{
-                            opacity: 'var(--frame41-opacity, 1)',
-                        }}
-                    >
-                        <canvas
-                            ref={canvasOverlayRef}
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
 
                 {/* Loading indicator */}
                 {isLoading && (

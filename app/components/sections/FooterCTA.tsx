@@ -1,3 +1,5 @@
+// app/components/sections/FooterCTA.tsx
+
 "use client";
 
 import { motion } from "framer-motion";
@@ -9,7 +11,7 @@ export default function FooterCTA() {
                 {/* Left Column */}
                 <div className="flex flex-col space-y-4 text-sm text-[#8B9BB4]">
                     <div>
-                        <span className="text-white font-bold text-lg tracking-wide">Ved AI</span>
+                        <span className="text-white font-bold text-lg tracking-wide">Ved-AI</span>
                         <p className="text-xs text-[#5D6B82] mt-1">(Democratizing personalized education)</p>
                     </div>
                     <a href="mailto:contact@ved.ai" className="hover:text-white transition-colors">
@@ -29,7 +31,7 @@ export default function FooterCTA() {
             </div>
 
             {/* VED-AI Huge Text */}
-            <div className="relative z-0 mt-20 md:mt-auto flex justify-center w-full pointer-events-none select-none overflow-hidden left-20">
+            <div className="relative z-0 mt-20 md:mt-auto flex justify-left w-full pointer-events-none select-none overflow-hidden">
                 <span
                     className="font-black text-center tracking-tighter whitespace-nowrap"
                     style={{
@@ -41,7 +43,7 @@ export default function FooterCTA() {
                         transform: "translateY(12%)",
                     }}
                 >
-                    VED - AI
+                    VED-AI
                 </span>
             </div>
         </footer>

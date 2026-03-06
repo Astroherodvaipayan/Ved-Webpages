@@ -62,7 +62,7 @@ export default function Traction() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full py-40 px-6 text-center overflow-hidden">
+        <section ref={sectionRef} className="relative w-full py-16 md:py-40 px-4 md:px-6 text-center overflow-hidden">
             {/* Animated Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <motion.div
@@ -107,7 +107,7 @@ export default function Traction() {
                     <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-8">
                         <span className="text-gradient">Trusted by Schools</span>
                     </h2>
-                    <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                    <p className="text-lg md:text-xl text-[#6B7AA1] max-w-2xl mx-auto">
                         Partnering with institutions to transform education through AI-powered personalized learning.
                     </p>
                 </SlideInText>

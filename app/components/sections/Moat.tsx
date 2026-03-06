@@ -1,3 +1,5 @@
+// app/components/sections/Moat.tsx
+
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -6,19 +8,28 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
 import { SlideInText } from "../ui/TextAnimations";
+import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Moat() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const visualRef = useRef<HTMLDivElement>(null);
+    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
     const [orbitingUsers, setOrbitingUsers] = useState<any[]>([]);
 
-    // ✅ Same lenis-gate pattern — waits until ProductShowcase has injected
-    // its 250% spacer and called ScrollTrigger.refresh() before we register.
     const lenis = useLenis();
     const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
     const [isMounted, setIsMounted] = useState(false);
+
+    // Configuration
+    const CONFIG = {
+        nextSectionId: 'join-revolution',
+        animationCompleteProgress: 0.85,
+        triggerBufferPx: 10,
+        scrollDuration: 1.2,
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -44,7 +55,7 @@ export default function Moat() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [isMounted, lenis]); // ✅ Gated on lenis
+    }, [isMounted, lenis]);
 
     useEffect(() => {
         const users = [1, 2, 3, 4, 5, 6].map((i) => ({
@@ -56,40 +67,39 @@ export default function Moat() {
         setOrbitingUsers(users);
     }, []);
 
-    // Scroll snap to next section (JoinRevolution) at 90% progress
+    // Scroll snap to next section (JoinRevolution)
     useEffect(() => {
         if (!isMounted || !lenis) return;
         if (!sectionRef.current) return;
 
         const ctx = gsap.context(() => {
-            ScrollTrigger.create({
+            scrollTriggerRef.current = ScrollTrigger.create({
                 trigger: sectionRef.current,
                 start: "top bottom",
                 end: "bottom bottom",
                 onUpdate: (self) => {
-                    if (self.progress >= 0.90 && self.progress < 0.98 && self.direction === 1) {
-                        if (!isSnapping.current && lenis) {
-                            isSnapping.current = true;
-                            const nextSection = document.getElementById('join-revolution');
-                            if (nextSection) {
-                                const rect = nextSection.getBoundingClientRect();
-                                const targetY = rect.top + window.scrollY;
-                                lenis.scrollTo(targetY, {
-                                    duration: 0.8,
-                                    force: true,
-                                    easing: (t: number) => 1 - Math.pow(1 - t, 4),
-                                    onComplete: () => {
-                                        isSnapping.current = false;
-                                    }
-                                });
-                            }
-                        }
+                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered)) {
+                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
                     }
+
+                    // Reset trigger flag when scrolling back up
+                    if (self.progress < CONFIG.animationCompleteProgress && self.direction === -1) {
+                        hasTriggered.current = false;
+                        isSnapping.current = false;
+                    }
+                },
+                onLeaveBack: () => {
+                    hasTriggered.current = false;
                 }
             });
         }, sectionRef);
 
-        return () => ctx.revert();
+        return () => {
+            ctx.revert();
+            if (scrollTriggerRef.current) {
+                scrollTriggerRef.current.kill();
+            }
+        };
     }, [isMounted, lenis]);
 
     const points = [
@@ -99,13 +109,13 @@ export default function Moat() {
     ];
 
     return (
-        <section id="moat" ref={sectionRef} className="relative w-full py-40 px-6 overflow-hidden bg-transparent z-10">
+        <section id="moat" ref={sectionRef} className="relative w-full py-16 md:py-40 px-4 md:px-6 overflow-hidden bg-transparent z-10">
             {/* Background Orbital Animation */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10">
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="relative w-[800px] h-[800px] border border-accent-primary/5 rounded-full opacity-30"
+                    className="relative w-[300px] h-[300px] md:w-[800px] md:h-[800px] border border-accent-primary/5 rounded-full opacity-30"
                 >
                     <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
@@ -116,7 +126,7 @@ export default function Moat() {
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute w-[600px] h-[600px] border border-accent-primary/5 rounded-full opacity-30"
+                    className="absolute w-[200px] h-[200px] md:w-[600px] md:h-[600px] border border-accent-primary/5 rounded-full opacity-30"
                 >
                     <motion.div
                         animate={{ scale: [1, 1.3, 1] }}
@@ -127,7 +137,7 @@ export default function Moat() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute w-[400px] h-[400px] border border-accent-primary/5 rounded-full opacity-20"
+                    className="absolute w-[150px] h-[150px] md:w-[400px] md:h-[400px] border border-accent-primary/5 rounded-full opacity-20"
                 />
             </div>
 
@@ -164,7 +174,7 @@ export default function Moat() {
                 </div>
 
                 {/* Visual: Feedback Loop */}
-                <div ref={visualRef} className="relative flex items-center justify-center aspect-square md:aspect-auto h-[500px] opacity-0" style={{ perspective: "1000px" }}>
+                <div ref={visualRef} className="relative flex items-center justify-center aspect-square md:aspect-auto h-[300px] md:h-[500px] opacity-0" style={{ perspective: "1000px" }}>
                     {/* Central Node */}
                     <motion.div
                         animate={{

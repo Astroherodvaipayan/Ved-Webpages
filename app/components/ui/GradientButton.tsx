@@ -28,8 +28,12 @@ export default function GradientButton({ label = "Experience Sarvam", onClick, c
     const blueStop = `hsl(${220 - gradientPos.x * 0.3}, 55%, ${45 + gradientPos.y * 0.1}%)`;
     const orangeStop = `hsl(${25 + gradientPos.x * 0.2}, 75%, ${60 + gradientPos.y * 0.1}%)`;
 
+    // Gradient angle follows cursor: left → 225deg, right → 45deg
+    // Colours stay the same (cool blue → warm orange)
+    const angle = isHovered ? 225 - gradientPos.x * 1.8 : 135;
+
     const gradient = isHovered
-        ? `radial-gradient(ellipse at ${gradientPos.x}% ${gradientPos.y}%, ${orangeStop} 0%, ${blueStop} 100%)`
+        ? `linear-gradient(${angle}deg, ${blueStop} 0%, ${orangeStop} 100%)`
         : `linear-gradient(135deg, #2a4284 0%, #172346 100%)`;
 
     return (
@@ -47,10 +51,10 @@ export default function GradientButton({ label = "Experience Sarvam", onClick, c
                 border: "none",
                 outline: "none",
                 cursor: "pointer",
-                padding: "14px 32px",
+                padding: "20px 52px",
                 borderRadius: "999px",
                 color: "#ffffff",
-                fontSize: "15px",
+                fontSize: "18px",
                 fontWeight: 500,
                 letterSpacing: "0.01em",
                 fontFamily: "inherit",
