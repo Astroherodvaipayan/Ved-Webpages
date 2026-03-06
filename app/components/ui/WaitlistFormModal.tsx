@@ -13,6 +13,8 @@ interface WaitlistFormData {
     imageUrl: string | null;
 }
 
+type WaitlistFormErrors = Partial<Record<keyof WaitlistFormData, string>>;
+
 interface WaitlistFormModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -28,13 +30,13 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
         role: "student",
         imageUrl: null,
     });
-    const [errors, setErrors] = useState<Partial<WaitlistFormData>>({});
+    const [errors, setErrors] = useState<WaitlistFormErrors>({});
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<WaitlistFormData> = {};
+        const newErrors: WaitlistFormErrors = {};
 
         if (!formData.name.trim()) {
             newErrors.name = "Name is required";
