@@ -1,4 +1,5 @@
 # Ved AI - Meta-Learning Agent Landing Page
+thanks manohar
 
 <p align="center">
   <img src="app/icon.png" alt="Ved AI Logo" width="120" />
