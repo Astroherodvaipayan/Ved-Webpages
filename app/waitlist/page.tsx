@@ -15,6 +15,8 @@ interface WaitlistFormData {
     imageUrl: string | null;
 }
 
+type WaitlistFormErrors = Partial<Record<keyof WaitlistFormData, string>>;
+
 const DEFAULT_AVATAR = "https://api.dicebear.com/7.x/initials/svg?seed=User&backgroundColor=1E3A8A&textColor=ffffff";
 
 export default function WaitlistPage() {
@@ -25,14 +27,14 @@ export default function WaitlistPage() {
         role: "",
         imageUrl: null,
     });
-    const [errors, setErrors] = useState<Partial<WaitlistFormData>>({});
+    const [errors, setErrors] = useState<WaitlistFormErrors>({});
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<WaitlistFormData> = {};
+        const newErrors: WaitlistFormErrors = {};
 
         if (!formData.firstName.trim()) {
             newErrors.firstName = "Please complete this required field.";
