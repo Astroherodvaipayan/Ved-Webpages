@@ -6,7 +6,7 @@ import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
-import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
+import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +20,7 @@ export default function ProductShowcase() {
     const hasTriggered = useRef(false);
     const lenis = useLenis();
     const [isMounted, setIsMounted] = useState(false);
+    const SECTION_ID = 'product-showcase';
 
     // Configuration
     const CONFIG = {
@@ -99,7 +100,7 @@ export default function ProductShowcase() {
                 animation: tl,
 
                 onUpdate: (self) => {
-                    if (shouldSnap(self, PHASE_5_END, CONFIG.triggerBufferPx, isSnapping, hasTriggered, 'product-showcase')) {
+                    if (shouldSnap(self, PHASE_5_END, CONFIG.triggerBufferPx, isSnapping, hasTriggered, SECTION_ID)) {
                         snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
                     }
 
@@ -111,10 +112,16 @@ export default function ProductShowcase() {
                 },
 
                 onEnter: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
                     playVideo();
                 },
 
                 onEnterBack: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
                     playVideo();
                 },
 
@@ -229,3 +236,4 @@ export default function ProductShowcase() {
         </section>
     );
 }
+

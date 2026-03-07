@@ -3,40 +3,55 @@
 let globalSnapInProgress = false;
 let lastSnapTimestamp = 0;
 const sectionEntranceTimes = new Map<string, number>();
-let currentSnapTargetId: string | null = null; // Track which section we're snapping TO
-let isProgrammaticScrollActive = false; // Track if a programmatic scroll is in progress
+let currentSnapTargetId: string | null = null;
+let isProgrammaticScrollActive = false;
+
+// Section-specific locks: prevents a section from snapping immediately after being snapped TO
+const lockedSections = new Map<string, number>();
+const SECTION_LOCK_DURATION_MS = 1500; // How long a section is locked after being snapped to
 
 export const SNAP_COOLDOWN_MS = 1000;
-export const ENTRANCE_DELAY_MS = 3000; // Wait before allowing snap after entering section (increased to prevent recursive snapping)
+export const ENTRANCE_DELAY_MS = 800;
+export const MIN_SCROLL_DISTANCE_PX = 24;
 
-// Set the target section we're snapping to - blocks other sections from snapping during this window
 export function setSnapTarget(sectionId: string): void {
     currentSnapTargetId = sectionId;
 }
 
-// Clear the snap target after scroll completes
 export function clearSnapTarget(): void {
     currentSnapTargetId = null;
 }
 
-// Get current snap target (for debugging)
 export function getSnapTarget(): string | null {
     return currentSnapTargetId;
 }
 
-// Mark that a programmatic scroll has started
 export function startProgrammaticScroll(): void {
     isProgrammaticScrollActive = true;
 }
 
-// Mark that a programmatic scroll has completed
 export function endProgrammaticScroll(): void {
     isProgrammaticScrollActive = false;
 }
 
-// Check if a programmatic scroll is in progress
 export function isProgrammaticScrollInProgress(): boolean {
     return isProgrammaticScrollActive;
+}
+
+// Lock a section from snapping (called when we snap TO it)
+export function lockSection(sectionId: string): void {
+    lockedSections.set(sectionId, Date.now());
+}
+
+// Check if a section is currently locked
+export function isSectionLocked(sectionId: string): boolean {
+    const lockTime = lockedSections.get(sectionId);
+    if (!lockTime) return false;
+    if (Date.now() - lockTime > SECTION_LOCK_DURATION_MS) {
+        lockedSections.delete(sectionId);
+        return false;
+    }
+    return true;
 }
 
 export function isSnapAllowed(): boolean {
@@ -76,36 +91,28 @@ export function shouldSnap(
     sectionId?: string,
 ): boolean {
     const totalScrollDistance = self.end - self.start;
+    if (totalScrollDistance <= MIN_SCROLL_DISTANCE_PX) {
+        return false;
+    }
+
     const completePosition = self.start + totalScrollDistance * completeProgress;
     const currentScroll = typeof window !== "undefined" ? window.scrollY : 0;
     const triggerPosition = completePosition + bufferPx;
 
     const entranceDelayOk = sectionId ? hasEntranceDelayElapsed(sectionId) : true;
 
-    // If there's a current snap target and it's this section, we're the target of a programmatic scroll
-    // Don't snap until the scroll completes
-    const isTargetOfProgrammaticScroll = currentSnapTargetId === sectionId;
+    // Block ALL sections from snapping during any programmatic scroll
+    if (isProgrammaticScrollActive) {
+        return false;
+    }
 
-    // If we're the target of a programmatic scroll, block snapping until it completes
-    if (isProgrammaticScrollActive && isTargetOfProgrammaticScroll) {
-        console.log(`[shouldSnap] BLOCKED - ${sectionId}: programmatic scroll in progress to this section`);
+    // If this section is locked (was just snapped to), block it
+    if (sectionId && isSectionLocked(sectionId)) {
         return false;
     }
 
     // If there's a current snap target and it's NOT this section, don't snap
     const isIntendedTarget = !currentSnapTargetId || currentSnapTargetId === sectionId;
-
-    // Debug log
-    if (sectionId) {
-        const result = currentScroll >= triggerPosition &&
-            self.direction === 1 &&
-            !isSnapping.current &&
-            !hasTriggered.current &&
-            isSnapAllowed() &&
-            entranceDelayOk &&
-            isIntendedTarget;
-        console.log(`[shouldSnap] ${sectionId}: target=${currentSnapTargetId} active=${isProgrammaticScrollActive} scrollPos=${currentScroll.toFixed(0)} triggerPos=${triggerPosition.toFixed(0)} dir=${self.direction} isSnapping=${isSnapping.current} hasTriggered=${hasTriggered.current} snapAllowed=${isSnapAllowed()} entranceOk=${entranceDelayOk} isIntended=${isIntendedTarget} RESULT=${result}`);
-    }
 
     return (
         currentScroll >= triggerPosition &&
@@ -128,8 +135,6 @@ export function snapToSection(
 ): void {
     if (!lenis) return;
 
-    console.log(`[snapToSection] Starting snap to: ${nextSectionId}`);
-
     isSnapping.current = true;
     hasTriggered.current = true;
     lockSnap();
@@ -145,9 +150,12 @@ export function snapToSection(
 
     const targetY = nextSection.getBoundingClientRect().top + window.scrollY;
 
-    // Set target and mark scroll as active BEFORE scrolling to block other sections from snapping
+    // Set target and mark scroll as active BEFORE scrolling
     setSnapTarget(nextSectionId);
     startProgrammaticScroll();
+
+    // Lock the TARGET section so it doesn't immediately fire its own snap
+    lockSection(nextSectionId);
 
     lenis.scrollTo(targetY, {
         duration,
@@ -155,11 +163,11 @@ export function snapToSection(
         lock: true,
         easing: (t: number) => 1 - Math.pow(1 - t, 3),
         onComplete: () => {
-            // Mark scroll as complete
-            endProgrammaticScroll();
-            // Clear target AFTER scroll completes
-            clearSnapTarget();
+            recordSectionEntrance(nextSectionId);
+
             setTimeout(() => {
+                endProgrammaticScroll();
+                clearSnapTarget();
                 isSnapping.current = false;
                 unlockSnap();
             }, 500);

@@ -8,7 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
 import { SlideInText } from "../ui/TextAnimations";
-import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
+import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,6 +22,7 @@ export default function Moat() {
     const isSnapping = useRef(false);
     const hasTriggered = useRef(false);
     const [isMounted, setIsMounted] = useState(false);
+    const SECTION_ID = 'moat';
 
     // Configuration
     const CONFIG = {
@@ -78,7 +79,7 @@ export default function Moat() {
                 start: "top bottom",
                 end: "bottom bottom",
                 onUpdate: (self) => {
-                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered)) {
+                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered, SECTION_ID)) {
                         snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
                     }
 
@@ -87,6 +88,16 @@ export default function Moat() {
                         hasTriggered.current = false;
                         isSnapping.current = false;
                     }
+                },
+                onEnter: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                },
+                onEnterBack: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
                 },
                 onLeaveBack: () => {
                     hasTriggered.current = false;

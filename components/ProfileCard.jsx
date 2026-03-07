@@ -33,9 +33,8 @@ const ProfileCardComponent = ({
   title = 'Software Engineer',
   handle = 'javicodes',
   status = 'Online',
-  contactText = 'Contact',
+  waitlistNumber = 1,
   showUserInfo = true,
-  onContactClick = undefined,
 }) => {
   const wrapRef = useRef(null);
   const shellRef = useRef(null);
@@ -241,7 +240,6 @@ const ProfileCardComponent = ({
     ...(behindGlowSize && { '--behind-glow-size': behindGlowSize }),
   };
 
-  const handleContactClick = useCallback(() => onContactClick?.(), [onContactClick]);
 
   return (
     <div
@@ -284,14 +282,10 @@ const ProfileCardComponent = ({
                       <span className={styles.status}>{status}</span>
                     </div>
                   </div>
-                  <button
-                    className={styles.contactBtn}
-                    onClick={handleContactClick}
-                    type="button"
-                    aria-label={`Contact ${name}`}
-                  >
-                    {contactText}
-                  </button>
+                  <div className={styles.contactBtn} style={{ display: 'flex', alignItems: 'baseline', gap: '1px' }}>
+                    <sup style={{ fontSize: '9px', fontWeight: 600, opacity: 0.7, lineHeight: 1 }}>#</sup>
+                    <span style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1 }}>{waitlistNumber}</span>
+                  </div>
                 </div>
               )}
             </div>

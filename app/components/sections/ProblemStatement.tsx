@@ -8,7 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
 import CountUp from "react-countup";
-import { shouldSnap, snapToSection, recordSectionEntrance, hasEntranceDelayElapsed } from "@/app/utils/scrollSnap";
+import { snapToSection, recordSectionEntrance, isSnapAllowed, hasEntranceDelayElapsed, isSectionLocked, isProgrammaticScrollInProgress } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +18,7 @@ export default function ProblemStatement() {
     const headlineRef = useRef<HTMLHeadingElement>(null);
     const subtitleRef = useRef<HTMLSpanElement>(null);
     const pathRef = useRef<SVGPathElement>(null);
-    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+
     const [startCount, setStartCount] = useState(false);
     const isSnapping = useRef(false);
     const hasTriggered = useRef(false);
@@ -26,6 +26,8 @@ export default function ProblemStatement() {
     const [isMounted, setIsMounted] = useState(false);
 
     // Configuration
+    const SECTION_ID = 'problem-statement';
+
     const CONFIG = {
         nextSectionId: 'feature-showcase',
         animationCompleteProgress: 0.85,
@@ -109,54 +111,101 @@ export default function ProblemStatement() {
         return () => ctx.revert();
     }, [isHeadlineInView]);
 
-    // Scroll snap to next section
-    // Around line 60-90, replace the entire useLayoutEffect that creates the ScrollTrigger
+    // Snap to next section using wheel/touch events + IntersectionObserver
+    // This avoids GSAP ScrollTrigger timing conflicts with ProductShowcase's pinned snap
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (!isMounted || !lenis) return;
-        if (!containerRef.current) return;
+        const section = containerRef.current;
+        if (!section) return;
 
-        const SECTION_ID = 'problem-statement'; // ✅ Add this
+        let isVisible = false;
+        let wheelAccumulator = 0;
+        const WHEEL_THRESHOLD = 150; // cumulative deltaY needed to trigger snap
+        let resetTimer: ReturnType<typeof setTimeout> | null = null;
 
-        const ctx = gsap.context(() => {
-            scrollTriggerRef.current = ScrollTrigger.create({
-                trigger: containerRef.current,
-                start: "top top",
-                end: "bottom top",
-                onUpdate: (self) => {
-                    if (shouldSnap(
-                        self,
-                        CONFIG.animationCompleteProgress,
-                        CONFIG.triggerBufferPx,
-                        isSnapping,
-                        hasTriggered,
-                        SECTION_ID
-                    )) {
-                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
-                    }
-
-                    // Reset trigger flag when scrolling back up
-                    if (self.progress < CONFIG.animationCompleteProgress && self.direction === -1) {
-                        hasTriggered.current = false;
-                        isSnapping.current = false;
-                    }
-                },
-                onEnter: () => {
+        // Track visibility with IntersectionObserver
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                // Section is "visible" when at least 60% is in view
+                isVisible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
+                if (isVisible) {
                     recordSectionEntrance(SECTION_ID);
                     hasTriggered.current = false;
                     isSnapping.current = false;
-                },
-                onLeaveBack: () => {
-                    hasTriggered.current = false;
+                    wheelAccumulator = 0;
                 }
-            });
-        }, containerRef);
+            },
+            { threshold: [0, 0.3, 0.6, 0.9] }
+        );
+        observer.observe(section);
+
+        const trySnap = () => {
+            if (
+                !isVisible ||
+                isSnapping.current ||
+                hasTriggered.current ||
+                !isSnapAllowed() ||
+                !hasEntranceDelayElapsed(SECTION_ID) ||
+                isSectionLocked(SECTION_ID) ||
+                isProgrammaticScrollInProgress()
+            ) {
+                return;
+            }
+
+            // Check section position: only snap when section's bottom is near/above viewport bottom
+            const rect = section.getBoundingClientRect();
+            const sectionBottomNearViewport = rect.bottom <= window.innerHeight + 100;
+
+            if (sectionBottomNearViewport) {
+                snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
+            }
+        };
+
+        const onWheel = (e: WheelEvent) => {
+            if (!isVisible || e.deltaY <= 0) {
+                wheelAccumulator = 0;
+                return;
+            }
+
+            wheelAccumulator += e.deltaY;
+
+            // Reset accumulator after inactivity
+            if (resetTimer) clearTimeout(resetTimer);
+            resetTimer = setTimeout(() => { wheelAccumulator = 0; }, 300);
+
+            if (wheelAccumulator >= WHEEL_THRESHOLD) {
+                wheelAccumulator = 0;
+                trySnap();
+            }
+        };
+
+        // Touch handling
+        let touchStartY = 0;
+        const onTouchStart = (e: TouchEvent) => {
+            if (!isVisible) return;
+            touchStartY = e.touches[0].clientY;
+        };
+
+        const onTouchEnd = (e: TouchEvent) => {
+            if (!isVisible) return;
+            const deltaY = touchStartY - e.changedTouches[0].clientY;
+            if (deltaY > 50) { // swipe up (scroll down)
+                trySnap();
+            }
+        };
+
+        window.addEventListener('wheel', onWheel, { passive: true });
+        window.addEventListener('touchstart', onTouchStart, { passive: true });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
 
         return () => {
-            ctx.revert();
-            if (scrollTriggerRef.current) {
-                scrollTriggerRef.current.kill();
-            }
+            observer.disconnect();
+            window.removeEventListener('wheel', onWheel);
+            window.removeEventListener('touchstart', onTouchStart);
+            window.removeEventListener('touchend', onTouchEnd);
+            if (resetTimer) clearTimeout(resetTimer);
         };
     }, [isMounted, lenis]);
 

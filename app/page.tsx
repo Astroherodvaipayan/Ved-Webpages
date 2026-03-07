@@ -42,7 +42,6 @@ export default function Home() {
                     {/* Normal Document Flow Continues Here - padding-top for overlapping clouds */}
                     <div className="relative z-10 w-full bg-transparent pt-32">
                         <GlobalBackground />
-
                         <Mission />
                         <ProductShowcase />
                         <ProblemStatement />

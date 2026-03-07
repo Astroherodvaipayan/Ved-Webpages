@@ -9,7 +9,7 @@ import GradientButton from "../ui/GradientButton";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@studio-freight/react-lenis";
-import { shouldSnap, snapToSection } from "@/app/utils/scrollSnap";
+import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,6 +27,7 @@ export default function JoinRevolution() {
     const hasTriggered = useRef(false);
     const lenis = useLenis();
     const [isMounted, setIsMounted] = useState(false);
+    const SECTION_ID = 'join-revolution';
 
     // Configuration
     const CONFIG = {
@@ -51,7 +52,7 @@ export default function JoinRevolution() {
                 start: "top bottom",
                 end: "bottom bottom",
                 onUpdate: (self) => {
-                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered)) {
+                    if (shouldSnap(self, CONFIG.animationCompleteProgress, CONFIG.triggerBufferPx, isSnapping, hasTriggered, SECTION_ID)) {
                         snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
                     }
 
@@ -60,6 +61,16 @@ export default function JoinRevolution() {
                         hasTriggered.current = false;
                         isSnapping.current = false;
                     }
+                },
+                onEnter: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                },
+                onEnterBack: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
                 },
                 onLeaveBack: () => {
                     hasTriggered.current = false;
