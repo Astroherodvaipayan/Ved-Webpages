@@ -60,8 +60,8 @@
 
 /* ── Card ── */
 .card {
-    height: 80svh;
-    max-height: 540px;
+    height: 76svh;
+    max-height: 513px;
     display: grid;
     grid-template-rows: 1fr;
     grid-template-columns: 1fr;
@@ -254,9 +254,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.5em;
     background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.65) 0%,
-            rgba(0, 0, 0, 0.3) 60%,
+            rgba(0, 0, 0, 0.75) 0%,
+            rgba(0, 0, 0, 0.5) 40%,
+            rgba(0, 0, 0, 0.25) 70%,
             transparent 100%);
 }
 
@@ -275,7 +277,6 @@
 .details p {
     font-weight: 500;
     position: relative;
-    top: 4px;
     white-space: nowrap;
     font-size: 16px;
     margin: 0 auto;
@@ -289,6 +290,16 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     font-size: 13px;
+    margin-top: 0.25em;
+}
+
+/* Center name/title when no custom avatar is uploaded */
+.detailsCentered {
+    top: 50%;
+    transform: translateY(-50%);
+    padding-top: 0;
+    padding-bottom: 0;
+    background: none;
 }
 
 /* ── Keyframes ── */
@@ -305,13 +316,19 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+    .wrapper {
+        transform: translate3d(0, 0, 0.1px) scale(0.9);
+        transform-origin: top center;
+    }
+
     .card {
-        height: 70svh;
-        max-height: 450px;
+        height: 57svh;
+        max-height: 400px;
     }
 
     .details {
         top: 2em;
+        gap: 0.45em;
     }
 
     .details h3 {
@@ -353,13 +370,18 @@
 }
 
 @media (max-width: 480px) {
+    .wrapper {
+        transform: translate3d(0, 0, 0.1px) scale(0.8);
+    }
+
     .card {
-        height: 60svh;
-        max-height: 380px;
+        height: 52svh;
+        max-height: 361px;
     }
 
     .details {
         top: 1.5em;
+        gap: 0.4em;
     }
 
     .details h3 {

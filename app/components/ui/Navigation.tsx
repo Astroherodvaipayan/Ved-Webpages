@@ -83,20 +83,20 @@ export default function Navigation() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="fixed top-0 left-0 right-0 z-[100] flex justify-center"
-                style={{ padding: "18px 20px 0", pointerEvents: "none" }}
+                style={{ padding: "18px 16px 0", pointerEvents: "none" }}
             >
                 <div
                     className="mx-auto w-full max-w-[1220px]"
                     style={{ pointerEvents: "auto" }}
                 >
                     {/* ── Desktop: 3-Column Grid ── */}
-                    <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center gap-5">
+                    <div className="hidden md:flex items-center justify-between gap-3">
                         {/* Logo - left */}
                         <Link
                             href="#hero"
                             onClick={(e) => scrollToSection(e, "#hero")}
                             onKeyDown={(e) => e.key === "Enter" && scrollToSection(e, "#hero")}
-                            className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded"
+                            className="flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-cyan rounded flex-shrink-0"
                             style={{ textDecoration: "none" }}
                         >
                             <Image
@@ -122,10 +122,10 @@ export default function Navigation() {
 
                         {/* Center: GlassSurface navbar with nav links */}
                         <GlassSurface
-                            width={380}
-                            height={62}
+                            width={320}
+                            height={50}
                         >
-                            <div className="flex items-center justify-center gap-8 px-6">
+                            <div className="flex items-center justify-center gap-5 px-4">
                                 {navLinks.map((link) => (
                                     <a
                                         key={link.href}
@@ -135,24 +135,17 @@ export default function Navigation() {
                                         tabIndex={0}
                                         style={{
                                             position: "relative",
-                                            fontSize: "0.85rem",
+                                            fontSize: "0.8rem",
                                             fontWeight: 600,
-                                            letterSpacing: "0.08em",
+                                            letterSpacing: "0.06em",
                                             textTransform: "uppercase",
                                             textDecoration: "none",
-                                            color: activeSection === link.href.replace('#', '')
-                                                ? "#ffffff"
-                                                : "rgba(255,255,255,0.55)",
+                                            color: "#1E3A8A",
                                             transition: "color 0.3s ease",
                                             cursor: "pointer",
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                                        onMouseLeave={(e) =>
-                                        (e.currentTarget.style.color =
-                                            activeSection === link.href.replace('#', '')
-                                                ? "#ffffff"
-                                                : "rgba(255,255,255,0.55)")
-                                        }
+                                        onMouseEnter={(e) => (e.currentTarget.style.color = "#1E3A8A")}
+                                        onMouseLeave={(e) => (e.currentTarget.style.color = "#1E3A8A")}
                                     >
                                         {link.label}
                                         {activeSection === link.href.replace('#', '') && (
@@ -177,11 +170,11 @@ export default function Navigation() {
                         </GlassSurface>
 
                         {/* Right: Join Beta - using GradientButton */}
-                        <div className="flex justify-end">
+                        <div className="flex justify-end flex-shrink-0">
                             <Link href="/waitlist" className="inline-block">
                                 <GradientButton
                                     label="Join Beta"
-                                    style={{ padding: "10px 24px", fontSize: "0.85rem" }}
+                                    style={{ padding: "8px 20px", fontSize: "0.8rem" }}
                                 />
                             </Link>
                         </div>
@@ -190,8 +183,8 @@ export default function Navigation() {
                     {/* ── Mobile: Full-width GlassSurface bar ── */}
                     <div className="md:hidden">
                         <GlassSurface
-                            width={600}
-                            height={58}
+                            width={350}
+                            height={52}
                             className="md:hidden"
                             style={{ width: '100%' }}
                         >
@@ -291,7 +284,7 @@ export default function Navigation() {
                                         padding: "16px 24px",
                                         color:
                                             activeSection === link.href.replace('#', '')
-                                                ? "#ffffff"
+                                                ? "#1E3A8A"
                                                 : "rgba(255,255,255,0.6)",
                                         textDecoration: "none",
                                         fontSize: "1rem",

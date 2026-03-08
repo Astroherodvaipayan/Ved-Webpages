@@ -35,6 +35,7 @@ const ProfileCardComponent = ({
   status = 'Online',
   waitlistNumber = 1,
   showUserInfo = true,
+  isCustomAvatar = true,
 }) => {
   const wrapRef = useRef(null);
   const shellRef = useRef(null);
@@ -231,13 +232,18 @@ const ProfileCardComponent = ({
     handlePointerMove, handlePointerEnter, handlePointerLeave, handleDeviceOrientation,
   ]);
 
+  // Default gold-blue gradient for fallback when no avatar
+  const goldBlueGradient = "linear-gradient(135deg, #1E3A8A 0%, #D4AF37 100%)";
+
   // Per-instance CSS variable overrides (only set when prop is supplied)
   const wrapperStyle = {
     ...(iconUrl && { '--icon': `url(${iconUrl})` }),
     ...(grainUrl && { '--grain': `url(${grainUrl})` }),
     ...(innerGradient && { '--inner-gradient': innerGradient }),
+    ...(!innerGradient && !avatarUrl && { '--inner-gradient': goldBlueGradient }),
     ...(behindGlowColor && { '--behind-glow-color': behindGlowColor }),
     ...(behindGlowSize && { '--behind-glow-size': behindGlowSize }),
+    ...(!behindGlowColor && !avatarUrl && { '--behind-glow-color': 'rgba(212, 175, 55, 0.5)' }),
   };
 
 
@@ -292,7 +298,7 @@ const ProfileCardComponent = ({
 
             {/* Name / title layer */}
             <div className={styles.textContent}>
-              <div className={styles.details}>
+              <div className={`${styles.details} ${!isCustomAvatar ? styles.detailsCentered : ''}`}>
                 <h3>{name}</h3>
                 <p>{title}</p>
               </div>

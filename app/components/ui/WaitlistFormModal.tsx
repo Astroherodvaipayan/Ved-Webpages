@@ -356,6 +356,8 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                             status="Waitlist Confirmed"
                                             innerGradient="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
                                             behindGlowEnabled={false}
+                                            behindGlowColor="rgba(125, 190, 255, 0.67)"
+                                            behindGlowSize="50%"
                                             showUserInfo={false}
                                             className="mx-auto"
                                         />
