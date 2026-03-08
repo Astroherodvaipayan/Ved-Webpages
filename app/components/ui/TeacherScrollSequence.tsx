@@ -6,9 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FRAME_COUNT = 41;
-const HOLD_DISTANCE = 600;
-const IRIS_WIPE_DISTANCE = 1800;
+const FRAME_COUNT = 40;
+const HOLD_DISTANCE = 200;
+const IRIS_WIPE_DISTANCE = 1000;
 
 export default function TeacherScrollSequence() {
     const outerRef = useRef<HTMLDivElement>(null);
@@ -18,6 +18,8 @@ export default function TeacherScrollSequence() {
     const [isLoading, setIsLoading] = useState(true);
     const [showSubtitle, setShowSubtitle] = useState(false);
     const [showOverlay, setShowOverlay] = useState(false);
+    const showSubtitleRef = useRef(false);
+    const showOverlayRef = useRef(false);
     const currentFrame = useRef(0);
     const subtitleRef = useRef<HTMLDivElement>(null);
     const irisContainerRef = useRef<HTMLDivElement>(null); // Main container for iris reveal
@@ -25,33 +27,104 @@ export default function TeacherScrollSequence() {
     const overlayShownRef = useRef(false); // Track overlay state synchronously
     const atMaxFrameRef = useRef(false); // Track if we've reached max frame
 
-    // Preload images
+    // --- TO BE REMOVED: Old bulk preload ---
+    // useEffect(() => {
+    //     const loadImages = async () => {
+    //         const loadedImages: HTMLImageElement[] = [];
+    //         const promises = [];
+    //
+    //         for (let i = 1; i <= FRAME_COUNT; i++) {
+    //             const promise = new Promise<void>((resolve) => {
+    //                 const img = new Image();
+    //                 const paddedIndex = i.toString().padStart(3, '0');
+    //                 img.src = `/images/teacher-sequence/ezgif-frame-${paddedIndex}.png`;
+    //                 img.onload = () => resolve();
+    //                 img.onerror = () => {
+    //                     console.error(`Failed to load frame ${i}`);
+    //                     resolve();
+    //                 };
+    //                 loadedImages[i - 1] = img;
+    //             });
+    //             promises.push(promise);
+    //         }
+    //
+    //         await Promise.all(promises);
+    //         setImages(loadedImages);
+    //         setIsLoading(false);
+    //     };
+    //
+    //     loadImages();
+    // }, []);
+    // --- END TO BE REMOVED ---
+
+    // Progressive loading: load first batch eagerly, then remaining frames in background
+    const EAGER_FRAME_COUNT = 10; // First 10 frames load immediately
+
+    const loadSingleImage = (frameIndex: number): Promise<HTMLImageElement> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            const paddedIndex = (frameIndex + 1).toString().padStart(3, '0');
+            img.src = `/images/teacher-sequence/ezgif-frame-${paddedIndex}.png`;
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+                console.error(`Failed to load frame ${frameIndex + 1}`);
+                resolve(img); // Still resolve so we don't block
+            };
+        });
+    };
+
     useEffect(() => {
-        const loadImages = async () => {
-            const loadedImages: HTMLImageElement[] = [];
-            const promises = [];
+        let cancelled = false;
 
-            for (let i = 1; i <= FRAME_COUNT; i++) {
-                const promise = new Promise<void>((resolve) => {
-                    const img = new Image();
-                    const paddedIndex = i.toString().padStart(3, '0');
-                    img.src = `/images/teacher-sequence/ezgif-frame-${paddedIndex}.png`;
-                    img.onload = () => resolve();
-                    img.onerror = () => {
-                        console.error(`Failed to load frame ${i}`);
-                        resolve();
-                    };
-                    loadedImages[i - 1] = img;
-                });
-                promises.push(promise);
+        const loadProgressively = async () => {
+            const loadedImages: HTMLImageElement[] = new Array(FRAME_COUNT);
+
+            // Phase 1: Load first batch eagerly (parallel)
+            const eagerCount = Math.min(EAGER_FRAME_COUNT, FRAME_COUNT);
+            const eagerPromises = [];
+            for (let i = 0; i < eagerCount; i++) {
+                eagerPromises.push(
+                    loadSingleImage(i).then((img) => {
+                        loadedImages[i] = img;
+                    })
+                );
             }
+            await Promise.all(eagerPromises);
 
-            await Promise.all(promises);
-            setImages(loadedImages);
+            if (cancelled) return;
+
+            // Make component interactive as soon as the first batch is ready
+            setImages([...loadedImages]);
             setIsLoading(false);
+
+            // Phase 2: Load remaining frames in background (small batches to avoid network congestion)
+            const BACKGROUND_BATCH_SIZE = 5;
+            for (let i = eagerCount; i < FRAME_COUNT; i += BACKGROUND_BATCH_SIZE) {
+                if (cancelled) return;
+
+                const batchEnd = Math.min(i + BACKGROUND_BATCH_SIZE, FRAME_COUNT);
+                const batchPromises = [];
+                for (let j = i; j < batchEnd; j++) {
+                    batchPromises.push(
+                        loadSingleImage(j).then((img) => {
+                            loadedImages[j] = img;
+                        })
+                    );
+                }
+                await Promise.all(batchPromises);
+
+                if (cancelled) return;
+
+                // Update state with newly loaded frames
+                setImages([...loadedImages]);
+            }
         };
 
-        loadImages();
+        loadProgressively();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     // Render a specific frame onto the canvas
@@ -155,11 +228,13 @@ export default function TeacherScrollSequence() {
                     if (isAtMaxFrame) {
                         if (!overlayShownRef.current) {
                             overlayShownRef.current = true;
+                            showOverlayRef.current = true;
                             setShowOverlay(true);
                         }
                         renderFrame(FRAME_COUNT - 1, true); // Render frame 41 on overlay
                     } else if (overlayShownRef.current) {
                         overlayShownRef.current = false;
+                        showOverlayRef.current = false;
                         setShowOverlay(false);
                     }
                 }
@@ -169,6 +244,7 @@ export default function TeacherScrollSequence() {
                     // Keep both frames stacked - ensure frame 40 on base, frame 41 on overlay
                     if (!overlayShownRef.current) {
                         overlayShownRef.current = true;
+                        showOverlayRef.current = true;
                         setShowOverlay(true);
                         renderFrame(FRAME_COUNT - 2, false); // Ensure frame 40 on base canvas
                     }
@@ -177,7 +253,8 @@ export default function TeacherScrollSequence() {
                     renderFrame(FRAME_COUNT - 1, true);  // Frame 41 on overlay
 
                     // Show subtitle when entering hold phase
-                    if (!showSubtitle) {
+                    if (!showSubtitleRef.current) {
+                        showSubtitleRef.current = true;
                         setShowSubtitle(true);
                     }
                 }
@@ -185,7 +262,8 @@ export default function TeacherScrollSequence() {
                 // Phase 3: Iris wipe + Fade out animation
                 if (progress > subtitlePhaseEnd) {
                     // Hide subtitle during iris wipe
-                    if (showSubtitle) {
+                    if (showSubtitleRef.current) {
+                        showSubtitleRef.current = false;
                         setShowSubtitle(false);
                     }
 
@@ -232,6 +310,8 @@ export default function TeacherScrollSequence() {
                 }
             },
             onLeaveBack: () => {
+                showSubtitleRef.current = false;
+                showOverlayRef.current = false;
                 setShowSubtitle(false);
                 setShowOverlay(false);
                 overlayShownRef.current = false;
@@ -255,7 +335,7 @@ export default function TeacherScrollSequence() {
         const handleResize = () => {
             syncCanvasSize();
             renderFrame(currentFrame.current);
-            if (showOverlay) {
+            if (showOverlayRef.current) {
                 renderFrame(40, true);
             }
         };
@@ -265,7 +345,7 @@ export default function TeacherScrollSequence() {
             st.kill();
             window.removeEventListener("resize", handleResize);
         };
-    }, [isLoading, images, showSubtitle, showOverlay]);
+    }, [isLoading, images]);
 
     return (
         <div ref={outerRef} className="relative" style={{ overflow: 'visible', marginBottom: 1 }}>
