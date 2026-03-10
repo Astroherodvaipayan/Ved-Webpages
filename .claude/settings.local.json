@@ -12,7 +12,8 @@
       "Bash(npx prisma:*)",
       "Bash(npx skills:*)",
       "WebFetch(domain:studio-freight.github.io)",
-      "WebFetch(domain:lenis.darkroom.engineering)"
+      "WebFetch(domain:lenis.darkroom.engineering)",
+      "Bash(npx next:*)"
     ]
   }
 }

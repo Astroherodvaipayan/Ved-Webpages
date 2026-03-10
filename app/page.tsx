@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Hero from "./components/sections/Hero";
 import ProductShowcase from "./components/sections/ProductShowcase";
@@ -17,6 +17,20 @@ import GlobalBackground from "./components/ui/GlobalBackground";
 
 export default function Home() {
     const [showIntro, setShowIntro] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        // Check if user has seen intro before - only show on first visit
+        if (typeof window !== "undefined" && localStorage.getItem("hasSeenIntro") !== "true") {
+            setShowIntro(true);
+        }
+    }, []);
+
+    // Prevent hydration mismatch
+    if (!mounted) {
+        return null;
+    }
 
     return (
         <main className="relative">
