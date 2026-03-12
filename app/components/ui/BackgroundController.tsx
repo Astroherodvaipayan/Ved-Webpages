@@ -6,55 +6,79 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Section configuration with unique vibes
+// Section configuration — analogous near-shades, boosted for visibility
 const sectionConfigs = [
     {
         id: "hero",
         backgroundColor: "#FAFBFF",
-        gradientColors: ["rgba(30, 58, 138, 0.06)", "rgba(212, 175, 55, 0.04)"],
-        particleColor: "#1E3A8A",
+        gradientColors: [
+            "rgba(26, 53, 120, 0.15)",
+            "rgba(42, 74, 158, 0.10)",
+            "rgba(200, 168, 48, 0.08)",
+        ],
     },
     {
         id: "product-showcase",
         backgroundColor: "#F5F8FF",
-        gradientColors: ["rgba(30, 58, 138, 0.08)", "rgba(99, 102, 241, 0.05)"],
-        particleColor: "#6366F1",
+        gradientColors: [
+            "rgba(30, 58, 138, 0.18)",
+            "rgba(67, 56, 202, 0.10)",
+            "rgba(79, 70, 229, 0.08)",
+        ],
     },
     {
         id: "problem-statement",
         backgroundColor: "#FAFBFF",
-        gradientColors: ["rgba(220, 38, 38, 0.05)", "rgba(239, 68, 68, 0.03)"],
-        particleColor: "#EF4444",
+        gradientColors: [
+            "rgba(180, 40, 40, 0.12)",
+            "rgba(210, 60, 48, 0.07)",
+            "rgba(239, 100, 68, 0.05)",
+        ],
     },
     {
         id: "architecture",
         backgroundColor: "#F0F4FF",
-        gradientColors: ["rgba(30, 58, 138, 0.08)", "rgba(15, 31, 77, 0.05)"],
-        particleColor: "#1E3A8A",
+        gradientColors: [
+            "rgba(26, 53, 120, 0.18)",
+            "rgba(15, 31, 77, 0.12)",
+            "rgba(42, 74, 158, 0.08)",
+        ],
     },
     {
         id: "moat",
         backgroundColor: "#FAFBFF",
-        gradientColors: ["rgba(212, 175, 55, 0.08)", "rgba(180, 140, 20, 0.05)"],
-        particleColor: "#D4AF37",
+        gradientColors: [
+            "rgba(200, 168, 48, 0.16)",
+            "rgba(180, 145, 28, 0.10)",
+            "rgba(212, 175, 55, 0.07)",
+        ],
     },
     {
         id: "roadmap",
         backgroundColor: "#F5F8FF",
-        gradientColors: ["rgba(212, 175, 55, 0.10)", "rgba(245, 200, 80, 0.06)"],
-        particleColor: "#D4AF37",
+        gradientColors: [
+            "rgba(200, 168, 48, 0.18)",
+            "rgba(220, 190, 70, 0.10)",
+            "rgba(180, 145, 28, 0.08)",
+        ],
     },
     {
         id: "mission",
         backgroundColor: "#F0F4FF",
-        gradientColors: ["rgba(30, 58, 138, 0.07)", "rgba(212, 175, 55, 0.04)"],
-        particleColor: "#1E3A8A",
+        gradientColors: [
+            "rgba(26, 53, 120, 0.15)",
+            "rgba(200, 168, 48, 0.10)",
+            "rgba(42, 74, 158, 0.07)",
+        ],
     },
     {
         id: "footer-cta",
         backgroundColor: "#FAFBFF",
-        gradientColors: ["rgba(30, 58, 138, 0.04)", "rgba(212, 175, 55, 0.02)"],
-        particleColor: "#1E3A8A",
+        gradientColors: [
+            "rgba(26, 53, 120, 0.10)",
+            "rgba(200, 168, 48, 0.06)",
+            "rgba(42, 74, 158, 0.04)",
+        ],
     },
 ];
 
@@ -62,10 +86,11 @@ export default function BackgroundController() {
     const bgRef = useRef<HTMLDivElement>(null);
     const gradient1Ref = useRef<HTMLDivElement>(null);
     const gradient2Ref = useRef<HTMLDivElement>(null);
+    const gradient3Ref = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            sectionConfigs.forEach((config, index) => {
+            sectionConfigs.forEach((config) => {
                 const section = document.getElementById(config.id);
                 if (!section) return;
 
@@ -73,8 +98,8 @@ export default function BackgroundController() {
                     trigger: section,
                     start: "top 60%",
                     end: "bottom 40%",
-                    onEnter: () => animateBackground(config, index),
-                    onEnterBack: () => animateBackground(config, index),
+                    onEnter: () => animateBackground(config),
+                    onEnterBack: () => animateBackground(config),
                 });
             });
         });
@@ -82,7 +107,7 @@ export default function BackgroundController() {
         return () => ctx.revert();
     }, []);
 
-    const animateBackground = (config: typeof sectionConfigs[0], index: number) => {
+    const animateBackground = (config: typeof sectionConfigs[0]) => {
         // Animate main background color
         gsap.to(bgRef.current, {
             backgroundColor: config.backgroundColor,
@@ -90,22 +115,39 @@ export default function BackgroundController() {
             ease: "power2.inOut",
         });
 
-        // Animate gradient orbs
+        // Gradient orb 1 — top-left, scrim alpha falloff
         gsap.to(gradient1Ref.current, {
-            background: `radial-gradient(ellipse 80% 50% at 20% 30%, ${config.gradientColors[0]}, transparent 70%)`,
+            background: `radial-gradient(ellipse 70% 45% at 18% 28%,
+                ${config.gradientColors[0]} 0%,
+                ${config.gradientColors[0].replace(/[\d.]+\)$/, '0.3)')} 40%,
+                transparent 72%)`,
             duration: 1.5,
             ease: "power2.inOut",
         });
 
+        // Gradient orb 2 — bottom-right
         gsap.to(gradient2Ref.current, {
-            background: `radial-gradient(ellipse 60% 60% at 80% 70%, ${config.gradientColors[1]}, transparent 70%)`,
+            background: `radial-gradient(ellipse 55% 55% at 78% 68%,
+                ${config.gradientColors[1]} 0%,
+                ${config.gradientColors[1].replace(/[\d.]+\)$/, '0.25)')} 38%,
+                transparent 70%)`,
             duration: 1.5,
             ease: "power2.inOut",
         });
 
-        // Add subtle scale pulse on transition
-        gsap.fromTo([gradient1Ref.current, gradient2Ref.current],
-            { scale: 0.8, opacity: 0.3 },
+        // Gradient orb 3 — center-mid, prevents flat middle zone
+        gsap.to(gradient3Ref.current, {
+            background: `radial-gradient(ellipse 50% 40% at 50% 50%,
+                ${config.gradientColors[2]} 0%,
+                ${config.gradientColors[2].replace(/[\d.]+\)$/, '0.2)')} 35%,
+                transparent 65%)`,
+            duration: 1.8,
+            ease: "power2.inOut",
+        });
+
+        // Subtle scale pulse on transition
+        gsap.fromTo([gradient1Ref.current, gradient2Ref.current, gradient3Ref.current],
+            { scale: 0.85, opacity: 0.4 },
             { scale: 1, opacity: 1, duration: 1.8, ease: "power2.out" }
         );
     };
@@ -116,21 +158,30 @@ export default function BackgroundController() {
             className="fixed inset-0 -z-10 transition-colors duration-1000"
             style={{ backgroundColor: sectionConfigs[0].backgroundColor }}
         >
-            {/* Gradient Orb 1 - Top Left */}
+            {/* Gradient Orb 1 — Top Left */}
             <div
                 ref={gradient1Ref}
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                    background: `radial-gradient(ellipse 80% 50% at 20% 30%, ${sectionConfigs[0].gradientColors[0]}, transparent 70%)`,
+                    background: `radial-gradient(ellipse 70% 45% at 18% 28%, ${sectionConfigs[0].gradientColors[0]}, transparent 72%)`,
                 }}
             />
 
-            {/* Gradient Orb 2 - Bottom Right */}
+            {/* Gradient Orb 2 — Bottom Right */}
             <div
                 ref={gradient2Ref}
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                    background: `radial-gradient(ellipse 60% 60% at 80% 70%, ${sectionConfigs[0].gradientColors[1]}, transparent 70%)`,
+                    background: `radial-gradient(ellipse 55% 55% at 78% 68%, ${sectionConfigs[0].gradientColors[1]}, transparent 70%)`,
+                }}
+            />
+
+            {/* Gradient Orb 3 — Center Mid (prevents flat middle) */}
+            <div
+                ref={gradient3Ref}
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background: `radial-gradient(ellipse 50% 40% at 50% 50%, ${sectionConfigs[0].gradientColors[2]}, transparent 65%)`,
                 }}
             />
 
@@ -146,13 +197,28 @@ export default function BackgroundController() {
                 }}
             />
 
-            {/* Vignette Effect */}
+            {/* Noise texture — tactile grain overlay */}
+            <div
+                className="absolute inset-0 pointer-events-none opacity-[0.02] mix-blend-multiply"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`,
+                    backgroundSize: '200px 200px',
+                }}
+            />
+
+            {/* Scrim Vignette — 5-stop eased fade */}
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                    background: 'radial-gradient(ellipse at center, transparent 40%, rgba(250,251,255,0.3) 100%)',
+                    background: `radial-gradient(ellipse at center,
+                        transparent 0%,
+                        transparent 35%,
+                        rgba(250,251,255,0.08) 50%,
+                        rgba(250,251,255,0.18) 72%,
+                        rgba(250,251,255,0.30) 100%)`,
                 }}
             />
         </div>
     );
 }
+

@@ -34,13 +34,10 @@ export default function Home() {
             <div className={`transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
 
                 <div className="relative w-full">
-                    {/* Hero - wrapped in higher z-index to stay above backgrounds */}
-                    <div className="relative z-30">
-                        <Hero />
-                    </div>
+                    <Hero />
 
-                    {/* Normal Document Flow Continues Here - padding-top for overlapping clouds */}
-                    <div className="relative z-10 w-full bg-transparent pt-32">
+                    {/* Content flows after Hero — Mission scrolls up behind pinned Hero */}
+                    <div className="relative w-full bg-transparent">
                         <GlobalBackground />
                         <Mission />
                         <ProductShowcase />

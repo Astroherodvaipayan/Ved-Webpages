@@ -72,55 +72,60 @@ function SlotMachineText({
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
+    const irisRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const cloudLeftRef = useRef<HTMLDivElement>(null);
-    const cloudRightRef = useRef<HTMLDivElement>(null);
-    const cloudBgLeftRef = useRef<HTMLDivElement>(null);
-    const cloudBgRightRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!heroRef.current) return;
+        if (!heroRef.current || !irisRef.current) return;
+
+        // Initialize iris CSS variable
+        irisRef.current.style.setProperty("--hole-size", "0vw");
 
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1,
-                }
-            });
+            // GSAP pin with pinSpacing:false
+            // - Hero (h-screen) gets position:fixed by GSAP
+            // - No spacer added → Mission scrolls up naturally behind pinned Hero
+            // - At scroll 100vh, Mission covers the viewport behind Hero
+            // - Iris opens from 50%–100% of scroll (100vh–200vh), Mission is already in place
+            const tl = gsap.timeline();
 
-            // Phase 1: Content fades out (0% → 40% of scroll)
+            // Phase 1: Content fades out (0% → 25%)
             tl.to(contentRef.current, {
                 opacity: 0,
                 y: -40,
-                duration: 0.4,
+                duration: 0.25,
             }, 0);
 
-            // Phase 2: Cloud panels split apart (30% → 100%)
-            tl.to(cloudLeftRef.current, {
-                x: "-100%",
-                duration: 0.7,
-                ease: "power2.inOut",
-            }, 0.3);
+            // Phase 2: Hold (25% → 50%) – brief pause, Mission scrolling into place behind
 
-            tl.to(cloudRightRef.current, {
-                x: "100%",
-                duration: 0.7,
+            // Phase 3: Iris wipe (50% → 100%)
+            const irisProxy = { size: 0 };
+            tl.to(irisProxy, {
+                size: 150,
+                duration: 0.5,
                 ease: "power2.inOut",
-            }, 0.3);
-
-            // Phase 3: Background cloud layers fade (50% → 100%)
-            tl.to(cloudBgLeftRef.current, {
-                opacity: 0,
-                duration: 0.4,
+                onUpdate: () => {
+                    if (irisRef.current) {
+                        irisRef.current.style.setProperty("--hole-size", `${irisProxy.size}vw`);
+                    }
+                },
             }, 0.5);
 
-            tl.to(cloudBgRightRef.current, {
-                opacity: 0,
-                duration: 0.4,
-            }, 0.5);
+            ScrollTrigger.create({
+                trigger: heroRef.current,
+                start: "top top",
+                end: "+=200vh",
+                pin: true,
+                pinSpacing: false,
+                scrub: 1,
+                animation: tl,
+                onLeaveBack: () => {
+                    // Reset iris when scrolling back to top
+                    if (irisRef.current) {
+                        irisRef.current.style.setProperty("--hole-size", "0vw");
+                    }
+                },
+            });
 
         }, heroRef);
 
@@ -128,86 +133,18 @@ export default function Hero() {
     }, []);
 
     return (
-        <section ref={heroRef} className="relative h-[200vh] w-full">
-            {/* Sticky container with overflow visible so clouds extend into next section */}
-            <div className="sticky top-0 h-screen overflow-visible flex items-center justify-center">
-                {/* 
-                <div
-                    ref={cloudBgLeftRef}
-                    className="absolute left-0 w-full h-[60%] will-change-transform mix-blend-screen opacity-20"
-                    style={{
-                        bottom: '10%',
-                        animation: "cloudDriftLeft 20s ease-in-out infinite alternate",
-                    }}
-                >
-                    <img
-                        src="/images/cloud_left.png"
-                        alt=""
-                        className="w-full h-full object-cover block"
-                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
-                    />
-                </div>
-                <div
-                    ref={cloudBgRightRef}
-                    className="absolute right-0 w-full h-[60%] will-change-transform mix-blend-screen opacity-20"
-                    style={{
-                        bottom: '10%',
-                        animation: "cloudDriftRight 20s ease-in-out infinite alternate",
-                    }}
-                >
-                    <img
-                        src="/images/cloud_right.png"
-                        alt=""
-                        className="w-full h-full object-cover block"
-                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
-                    />
-                </div>
-
-                <div
-                    ref={cloudLeftRef}
-                    className="absolute left-0 w-[25%] md:w-[45%] h-[50%] will-change-transform mix-blend-screen opacity-25 md:opacity-35"
-                    style={{
-                        bottom: '5%',
-                        transformOrigin: "left bottom",
-                    }}
-                >
-                    <img
-                        src="/images/cloud_left.png"
-                        alt=""
-                        className="w-full h-full object-contain block"
-                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
-                    />
-                </div>
-                <div
-                    ref={cloudRightRef}
-                    className="absolute right-0 w-[25%] md:w-[45%] h-[50%] will-change-transform mix-blend-screen opacity-25 md:opacity-35"
-                    style={{
-                        bottom: '5%',
-                        transformOrigin: "right bottom",
-                    }}
-                >
-                    <img
-                        src="/images/cloud_right.png"
-                        alt=""
-                        className="w-full h-full object-contain block"
-                        style={{ display: 'block', verticalAlign: 'bottom', margin: 0, padding: 0, border: 'none' }}
-                    />
-                </div> 
-
-                <div
-                    className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-                    style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))" }}
-                />
-
-                <div
-                    className="absolute bottom-0 left-0 right-0 h-[60%] pointer-events-none"
-                    style={{
-                        background: "radial-gradient(ellipse 100% 40% at 50% 100%, #d1a964 0%, transparent 70%)",
-                        opacity: 0.5,
-                    }}
-                />
-
-                */}
+        <div ref={heroRef} className="relative w-full h-screen" style={{ zIndex: 30 }}>
+            {/* Iris mask layer — covers full viewport, mask reveals content behind */}
+            <div
+                ref={irisRef}
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                    backgroundColor: '#FAFBFF',
+                    maskImage: 'radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)',
+                }}
+            >
+                {/* Background logo watermark */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center">
                     <div className="relative w-full max-w-[1200px] aspect-[16/9] md:aspect-square md:max-h-[90vh]">
                         <Image
@@ -219,13 +156,13 @@ export default function Hero() {
                         />
                     </div>
                 </div>
+
+                {/* Hero text content */}
                 <div
                     ref={contentRef}
                     className="absolute inset-0 flex flex-col items-center justify-center z-10 px-3 sm:px-6 md:px-8"
                 >
                     <div className="w-full max-w-4xl md:max-w-5xl mx-auto">
-
-                        {/* Main Headline - centered */}
                         <motion.h1
                             className="text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-[#0A0F2E] mb-4 md:mb-8 w-full overflow-hidden text-center"
                         >
@@ -265,22 +202,9 @@ export default function Hero() {
                                 TO LIFE.
                             </motion.span>
                         </motion.h1>
-
-                        {/* Subheadline - centered */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.9, duration: 0.8 }}
-                            className="text-base sm:text-lg md:text-xl text-[#2D3A6B] max-w-lg md:max-w-xl mx-auto mb-6 md:mb-12 font-light leading-relaxed text-center px-4"
-                        >
-                            Learns how you learn, and teaches you to mastery. <br className="hidden md:block" />
-                            Enabling a billion geniuses through adaptive AI.
-                        </motion.p>
-
                     </div>
                 </div>
-
             </div>
-        </section>
+        </div>
     );
 }
