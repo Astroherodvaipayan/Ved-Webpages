@@ -87,6 +87,7 @@ export default function BackgroundController() {
     const gradient1Ref = useRef<HTMLDivElement>(null);
     const gradient2Ref = useRef<HTMLDivElement>(null);
     const gradient3Ref = useRef<HTMLDivElement>(null);
+    const borderGlowRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -150,6 +151,13 @@ export default function BackgroundController() {
             { scale: 0.85, opacity: 0.4 },
             { scale: 1, opacity: 1, duration: 1.8, ease: "power2.out" }
         );
+
+        // Border glow — golden with a hint of brand blue
+        gsap.to(borderGlowRef.current, {
+            opacity: 1,
+            duration: 1.2,
+            ease: "power2.out",
+        });
     };
 
     return (
@@ -158,6 +166,7 @@ export default function BackgroundController() {
             className="fixed inset-0 -z-10 transition-colors duration-1000"
             style={{ backgroundColor: sectionConfigs[0].backgroundColor }}
         >
+
             {/* Gradient Orb 1 — Top Left */}
             <div
                 ref={gradient1Ref}
@@ -218,7 +227,30 @@ export default function BackgroundController() {
                         rgba(250,251,255,0.30) 100%)`,
                 }}
             />
+
+            {/* Golden + blue bleed border vignette (kept above all other background layers) */}
+            <div
+                ref={borderGlowRef}
+                className="absolute inset-0 pointer-events-none z-[1]"
+                style={{
+                    opacity: 1,
+                    backgroundImage: `
+                        radial-gradient(circle at top left,
+                          rgba(212, 175, 55, 0.75) 0%,
+                          rgba(212, 175, 55, 0.0) 42%),
+                        radial-gradient(circle at top right,
+                          rgba(37, 99, 235, 0.40) 0%,
+                          rgba(37, 99, 235, 0.0) 40%),
+                        radial-gradient(circle at bottom left,
+                          rgba(30, 64, 175, 0.30) 0%,
+                          rgba(30, 64, 175, 0.0) 40%),
+                        radial-gradient(circle at bottom right,
+                          rgba(212, 175, 55, 0.75) 0%,
+                          rgba(212, 175, 55, 0.0) 45%)
+                    `,
+                    mixBlendMode: "screen",
+                }}
+            />
         </div>
     );
 }
-

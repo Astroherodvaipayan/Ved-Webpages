@@ -1,10 +1,12 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { gsap } from "gsap";
+import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "@studio-freight/react-lenis";
+import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/scrollSnap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -71,139 +73,144 @@ function SlotMachineText({
 }
 
 export default function Hero() {
-    const heroRef = useRef<HTMLDivElement>(null);
-    const irisRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+    const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
+    const SECTION_ID = 'hero';
+    
+    // Configuration
+    const CONFIG = {
+        nextSectionId: 'mission', // The ID of the Mission section which contains the TeacherScrollSequence
+        triggerBufferPx: 10,
+        scrollDuration: 1.2,
+        triggerRatio: 0.1, // trigger at 10% scroll of this section
+    };
 
     useEffect(() => {
-        if (!heroRef.current || !irisRef.current) return;
-
-        // Initialize iris CSS variable
-        irisRef.current.style.setProperty("--hole-size", "0vw");
-
-        const ctx = gsap.context(() => {
-            // GSAP pin with pinSpacing:false
-            // - Hero (h-screen) gets position:fixed by GSAP
-            // - No spacer added → Mission scrolls up naturally behind pinned Hero
-            // - At scroll 100vh, Mission covers the viewport behind Hero
-            // - Iris opens from 50%–100% of scroll (100vh–200vh), Mission is already in place
-            const tl = gsap.timeline();
-
-            // Phase 1: Content fades out (0% → 25%)
-            tl.to(contentRef.current, {
-                opacity: 0,
-                y: -40,
-                duration: 0.25,
-            }, 0);
-
-            // Phase 2: Hold (25% → 50%) – brief pause, Mission scrolling into place behind
-
-            // Phase 3: Iris wipe (50% → 100%)
-            const irisProxy = { size: 0 };
-            tl.to(irisProxy, {
-                size: 150,
-                duration: 0.5,
-                ease: "power2.inOut",
-                onUpdate: () => {
-                    if (irisRef.current) {
-                        irisRef.current.style.setProperty("--hole-size", `${irisProxy.size}vw`);
-                    }
-                },
-            }, 0.5);
-
-            ScrollTrigger.create({
-                trigger: heroRef.current,
-                start: "top top",
-                end: "+=200vh",
-                pin: true,
-                pinSpacing: false,
-                scrub: 1,
-                animation: tl,
-                onLeaveBack: () => {
-                    // Reset iris when scrolling back to top
-                    if (irisRef.current) {
-                        irisRef.current.style.setProperty("--hole-size", "0vw");
-                    }
-                },
-            });
-
-        }, heroRef);
-
-        return () => ctx.revert();
+        setIsMounted(true);
     }, []);
 
-    return (
-        <div ref={heroRef} className="relative w-full h-screen" style={{ zIndex: 30 }}>
-            {/* Iris mask layer — covers full viewport, mask reveals content behind */}
-            <div
-                ref={irisRef}
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                    backgroundColor: '#FAFBFF',
-                    maskImage: 'radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, transparent var(--hole-size, 0vw), black var(--hole-size, 0vw), black 100%)',
-                }}
-            >
-                {/* Background logo watermark */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center">
-                    <div className="relative w-full max-w-[1200px] aspect-[16/9] md:aspect-square md:max-h-[90vh]">
-                        <Image
-                            src="/logo-light.png"
-                            alt="Ved AI Background Logo"
-                            fill
-                            className="object-contain"
-                            unoptimized
-                        />
-                    </div>
-                </div>
+    useEffect(() => {
+        if (!isMounted || !lenis || !sectionRef.current) return;
 
-                {/* Hero text content */}
-                <div
-                    ref={contentRef}
-                    className="absolute inset-0 flex flex-col items-center justify-center z-10 px-3 sm:px-6 md:px-8"
-                >
-                    <div className="w-full max-w-4xl md:max-w-5xl mx-auto">
-                        <motion.h1
-                            className="text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-[#0A0F2E] mb-4 md:mb-8 w-full overflow-hidden text-center"
+        const ctx = gsap.context(() => {
+            scrollTriggerRef.current = ScrollTrigger.create({
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom+=50% top",
+                onUpdate: (self) => {
+                    if (shouldSnap(self, CONFIG.triggerRatio, CONFIG.triggerBufferPx, isSnapping, hasTriggered, SECTION_ID)) {
+                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
+                    }
+
+                    if (self.progress < CONFIG.triggerRatio && self.direction === -1) {
+                        hasTriggered.current = false;
+                        isSnapping.current = false;
+                    }
+                },
+                onEnter: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                },
+                onEnterBack: () => {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                }
+            });
+
+            const refreshTimer = setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 300);
+
+            return () => {
+                clearTimeout(refreshTimer);
+            };
+
+        }, sectionRef);
+
+        return () => {
+            ctx.revert();
+            if (scrollTriggerRef.current) {
+                scrollTriggerRef.current.kill();
+            }
+        };
+    }, [isMounted, lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, CONFIG.triggerBufferPx, CONFIG.triggerRatio]);
+
+    return (
+        <div id="hero" ref={sectionRef} className="relative w-full h-screen" style={{ zIndex: 30, backgroundColor: "#FAFBFF" }}>
+            {/* Background Image */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <Image
+                    src="/images/boy.png"
+                    alt="Ved AI Background"
+                    fill
+                    className="object-cover"
+                    quality={100}
+                    priority
+                />
+            </div>
+
+            {/* Dark Gradient Overlay for text readability */}
+            <div
+                className="absolute inset-0 pointer-events-none z-[1]"
+                style={{
+                    background: "linear-gradient(to right, rgba(10, 15, 46, 0.9) 0%, rgba(10, 15, 46, 0.6) 30%, rgba(10, 15, 46, 0.2) 60%, transparent 100%)"
+                }}
+            />
+
+            {/* Hero text content */}
+            <div className="absolute inset-0 flex flex-col items-start justify-center z-10 pl-[2%] pr-3 sm:pr-6 md:pr-8">
+                <div className="w-full max-w-4xl md:max-w-5xl">
+                    <motion.h1
+                        className="text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-white mb-4 md:mb-8 w-full overflow-hidden text-left"
+                    >
+                        <motion.span
+                            className="block mb-1 text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            BRING YOUR
+                        </motion.span>
+                        <motion.span
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            className="flex flex-col md:flex-row items-start md:items-center justify-start mb-1 gap-1 md:gap-4"
                         >
                             <motion.span
-                                className="block mb-1 text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
-                                initial={{ opacity: 0, y: "100%" }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                layout
+                                className="text-white text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
                             >
-                                BRING YOUR
+                                WAY OF
                             </motion.span>
-                            <motion.span
-                                initial={{ opacity: 0, y: "100%" }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex flex-col md:flex-row items-center justify-center mb-1 gap-1 md:gap-4"
-                            >
-                                <motion.span
-                                    layout
-                                    className="text-[#0A0F2E] text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
-                                >
-                                    WAY OF
-                                </motion.span>
-                                <SlotMachineText
-                                    words={["LEARNING", "THINKING", "GROWING"]}
-                                    interval={2500}
-                                    trigger={true}
-                                    className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
-                                />
-                            </motion.span>
-                            <motion.span
-                                className="block text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
-                                initial={{ opacity: 0, y: "100%" }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                            >
-                                TO LIFE.
-                            </motion.span>
-                        </motion.h1>
-                    </div>
+                            <SlotMachineText
+                                words={["LEARNING", "THINKING", "GROWING"]}
+                                interval={2500}
+                                trigger={true}
+                                className="text-transparent bg-clip-text bg-gradient-to-r from-accent-secondary to-accent-secondary text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            />
+                        </motion.span>
+                        <motion.span
+                            className="block text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            initial={{ opacity: 0, y: "100%" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            TO LIFE.
+                        </motion.span>
+                    </motion.h1>
                 </div>
+            </div>
+
+            {/* Orange haze overlay anchored to bottom of Hero */}
+            <div className="pointer-events-none absolute left-0 right-0 -bottom-[00px] h-[20vh] md:h-[38vh]">
+                <div className="absolute inset-0 hero-teacher-gradient" />
             </div>
         </div>
     );

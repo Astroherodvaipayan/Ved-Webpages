@@ -29,7 +29,8 @@ export default function ProblemStatement() {
     const SECTION_ID = 'problem-statement';
 
     const CONFIG = {
-        nextSectionId: 'feature-showcase',
+        // Snap directly to the first FeatureShowcase card instead of the section wrapper
+        nextSectionId: 'feature-card-0',
         animationCompleteProgress: 0.85,
         triggerBufferPx: 10,
         scrollDuration: 1.2,
