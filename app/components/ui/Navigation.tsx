@@ -16,7 +16,7 @@ const navLinks = [
 
 export default function Navigation() {
     const pathname = usePathname();
-    const isWaitlistPage = pathname === "/waitlist_refactored";
+    const isWaitlistPage = pathname === "/waitlist_refactored" || pathname === "/waitlist";
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("hero");
