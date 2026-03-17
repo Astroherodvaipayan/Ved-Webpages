@@ -1,5 +1,5 @@
-import WaitlistPage from "./components/WaitlistPage";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <WaitlistPage />;
+  redirect("/waitlist");
 }

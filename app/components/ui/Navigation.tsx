@@ -16,7 +16,7 @@ const navLinks = [
 
 export default function Navigation() {
     const pathname = usePathname();
-    const isWaitlistPage = pathname === "/waitlist_refactored" || pathname === "/waitlist";
+    const isWaitlistPage = pathname === "/waitlist" || pathname === "/waitlist_refactored";
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("hero");
@@ -171,7 +171,7 @@ export default function Navigation() {
 
                         {/* Right: Join Beta - using GradientButton */}
                         <div className="flex justify-end flex-shrink-0">
-                            <Link href="/waitlist_refactored" className="inline-block">
+                            <Link href="/waitlist" className="inline-block">
                                 <GradientButton
                                     label="Join Beta"
                                     style={{ padding: "10px 26px", fontSize: "1rem" }}
@@ -311,7 +311,7 @@ export default function Navigation() {
                                     margin: "12px 16px 16px",
                                 }}
                             >
-                                <Link href="/waitlist_refactored" className="w-full">
+                                <Link href="/waitlist" className="w-full">
                                     <GradientButton
                                         label="Join Beta"
                                         style={{ padding: "14px 24px", width: "100%" }}
