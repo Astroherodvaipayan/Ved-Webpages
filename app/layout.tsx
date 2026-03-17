@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Montserrat } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import AppWrapper from "./components/AppWrapper";
 
-const inter = Inter({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-montserrat",
-  weight: ["300", "700", "900"],
-  style: ["normal", "italic"],
+  variable: "--font-bricolage",
 });
 
 export const metadata: Metadata = {
@@ -53,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
+    <html lang="en" className={`${bricolage.variable}`}>
       <body className="antialiased">
         <AppWrapper>{children}</AppWrapper>
       </body>

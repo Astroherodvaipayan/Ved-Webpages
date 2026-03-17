@@ -265,3 +265,174 @@ The design follows responsive principles through Tailwind's utility classes:
 - Focus-visible states
 - Sufficient color contrast ratios
 - Reduced motion support via prefers-reduced-motion
+
+---
+
+# Referral Link System Implementation Plan
+
+## Overview
+Implement a full referral tracking system that generates unique referral links for each waitlist signup, tracks referrer/referral relationships, stores referral data in the database, and displays referral links after successful signup.
+
+## Current State Analysis
+
+**What already exists:**
+- Waitlist table in Supabase with fields: id, name, email, role, avatar_url, status, created_at, updated_at
+- Frontend referral link generation in WaitlistPage.tsx using email prefix as ref code
+- WaitlistSuccess component displaying referral link and share buttons
+- API route at `/api/waitlist` for form submission
+
+**What's missing:**
+- No unique referral codes stored in database
+- No referral tracking (referred_by field)
+- Client-side only referral link (not persistent/secure)
+- No referral statistics or analytics
+
+## Requirements
+
+1. Generate unique, secure referral codes (not email-based) for each user
+2. Store referrer information when a new user signs up via referral link
+3. Track referral counts per user for analytics/rewards
+4. Display unique referral links in WaitlistSuccess component
+5. Allow users to share via Twitter, WhatsApp, LinkedIn
+6. Prevent referral code manipulation (server-side validation)
+
+## Architecture Changes
+
+### Database Schema Changes
+- Add `referral_code` column to `waitlist` table (unique, indexed)
+- Add `referred_by` column to `waitlist` table (foreign key to waitlist.id, nullable)
+- Add `referral_count` column to `waitlist` table (default 0)
+
+### New Files
+- `app/api/waitlist/referrals/route.ts` - Get referral stats for a user
+- `lib/referral.ts` - Utility functions for generating/validating referral codes
+
+### Modified Files
+- `app/api/waitlist/route.ts` - Capture referral code on signup
+- `app/waitlist/components/WaitlistPage.tsx` - Capture ref param from URL and send to API
+
+## Implementation Steps
+
+### Phase 1: Database Schema
+
+1. **Add referral columns to waitlist table** (Supabase SQL)
+   ```sql
+   -- Add unique referral_code column
+   ALTER TABLE waitlist
+   ADD COLUMN IF NOT EXISTS referral_code VARCHAR(20) UNIQUE;
+
+   -- Add referred_by column (self-referential FK)
+   ALTER TABLE waitlist
+   ADD COLUMN IF NOT EXISTS referred_by UUID REFERENCES waitlist(id) ON DELETE SET NULL;
+
+   -- Add referral_count column
+   ALTER TABLE waitlist
+   ADD COLUMN IF NOT EXISTS referral_count INTEGER DEFAULT 0;
+
+   -- Create index for faster lookups
+   CREATE INDEX IF NOT EXISTS idx_waitlist_referral_code ON waitlist(referral_code);
+   CREATE INDEX IF NOT EXISTS idx_waitlist_referred_by ON waitlist(referred_by);
+   ```
+
+### Phase 2: Backend API Changes
+
+2. **Create referral code generator utility** (File: `lib/referral.ts`)
+   ```typescript
+   // lib/referral.ts
+   const REFERRAL_CODE_LENGTH = 12
+   const CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
+
+   export function generateReferralCode(): string {
+     const array = new Uint8Array(REFERRAL_CODE_LENGTH)
+     crypto.getRandomValues(array)
+     return Array.from(array, (byte) => CHARS[byte % CHARS.length]).join('')
+   }
+
+   export function buildReferralLink(referralCode: string, baseUrl: string): string {
+     return `${baseUrl}/waitlist?ref=${referralCode}`
+   }
+
+   export function parseReferralCode(url: string): string | null {
+     try {
+       const urlObj = new URL(url)
+       return urlObj.searchParams.get('ref')
+     } catch {
+       return null
+     }
+   }
+   ```
+
+3. **Update waitlist API route** (File: `app/api/waitlist/route.ts`)
+   - Import referral utilities
+   - Add `referralCode` optional field to input schema
+   - Look up referrer by code and set `referred_by`
+   - Generate unique code for new user
+   - Return referral link in response
+
+4. **Create referral stats API endpoint** (File: `app/api/waitlist/referrals/route.ts`)
+   - GET endpoint to fetch referral stats for a user
+   - Returns referralCode, referralCount, and list of referrals
+
+### Phase 3: Frontend Changes
+
+5. **Update WaitlistPage to capture and pass referral code**
+   - Add state for `referralSource` (captured from URL)
+   - On mount, parse `ref` query parameter
+   - Pass `referralCode` to API on submit
+
+6. **Update WaitlistSuccess to show referral stats**
+   - Accept new props: `referralCode`, `referralCount`
+   - Display referral count if available
+
+### Phase 4: URL Parameter Handling
+
+7. **Handle referral code validation gracefully**
+   - Show subtle indicator when user arrived via referral
+   - Optionally show "Invited by [name]" if referrer info available
+
+## Testing Strategy
+
+- **Unit tests**: Referral code generation, URL parsing utilities
+- **Integration tests**:
+  - Signup with valid referral code updates referrer count
+  - Signup with invalid referral code fails gracefully
+  - Referral stats endpoint returns correct data
+- **E2E tests**:
+  - User A shares referral link
+  - User B clicks link and signs up
+  - User A sees referral count increase
+
+## Risks & Mitigations
+
+- **Risk**: Referral code collision
+  - Mitigation: Use crypto.getRandomValues for sufficient entropy
+
+- **Risk**: Users manipulating referral codes
+  - Mitigation: All referral validation happens server-side
+
+- **Risk**: Race condition when updating referral count
+  - Mitigation: Use Supabase atomic increment
+
+- **Risk**: Broken referral links if user doesn't exist
+  - Mitigation: Validate referral code exists before allowing signup
+
+## Success Criteria
+
+- [ ] Each waitlist signup receives a unique 12-character referral code
+- [ ] Referral codes are stored in database and indexed
+- [ ] When User B signs up with User A's referral code, User A's referral_count increments
+- [ ] WaitlistSuccess displays unique referral link with share options
+- [ ] Referral stats can be retrieved via API endpoint
+- [ ] Frontend captures ref parameter from URL and sends to backend
+- [ ] Invalid referral codes are handled gracefully
+
+## Summary of File Changes
+
+| File | Action |
+|------|--------|
+| `lib/referral.ts` | New - Referral utility functions |
+| `app/api/waitlist/route.ts` | Modify - Add referral tracking on signup |
+| `app/api/waitlist/referrals/route.ts` | New - Referral stats endpoint |
+| `app/waitlist/components/WaitlistPage.tsx` | Modify - Capture ref param, pass to API |
+| `app/waitlist/components/WaitlistSuccess.tsx` | Modify - Accept and display referral stats |
+| Supabase Database | Migration - Add referral columns |

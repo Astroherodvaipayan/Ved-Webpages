@@ -130,7 +130,7 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                     <h3
                                         className="text-xl font-bold"
                                         style={{
-                                            fontFamily: "var(--font-montserrat)",
+                                            fontFamily: "var(--font-bricolage), sans-serif",
                                             color: "#0A0F2E",
                                         }}
                                     >
@@ -157,9 +157,12 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                             id="name"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-2.5 rounded-lg border transition-all outline-none focus:ring-2"
+                                            className="w-full px-0 py-2.5 rounded-none border-b transition-all outline-none"
                                             style={{
-                                                background: "#FAFBFF",
+                                                background: "transparent",
+                                                borderTop: "none",
+                                                borderRight: "none",
+                                                borderLeft: "none",
                                                 borderColor: errors.name ? "#ef4444" : "rgba(30, 58, 138, 0.2)",
                                                 color: "#0A0F2E",
                                             }}
@@ -184,9 +187,12 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                             id="email"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full px-4 py-2.5 rounded-lg border transition-all outline-none focus:ring-2"
+                                            className="w-full px-0 py-2.5 rounded-none border-b transition-all outline-none"
                                             style={{
-                                                background: "#FAFBFF",
+                                                background: "transparent",
+                                                borderTop: "none",
+                                                borderRight: "none",
+                                                borderLeft: "none",
                                                 borderColor: errors.email ? "#ef4444" : "rgba(30, 58, 138, 0.2)",
                                                 color: "#0A0F2E",
                                             }}
@@ -210,9 +216,12 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                             id="role"
                                             value={formData.role}
                                             onChange={(e) => setFormData({ ...formData, role: e.target.value as WaitlistFormData["role"] })}
-                                            className="w-full px-4 py-2.5 rounded-lg border transition-all outline-none focus:ring-2"
+                                            className="w-full px-0 py-2.5 rounded-none border-b transition-all outline-none cursor-pointer"
                                             style={{
-                                                background: "#FAFBFF",
+                                                background: "transparent",
+                                                borderTop: "none",
+                                                borderRight: "none",
+                                                borderLeft: "none",
                                                 borderColor: "rgba(30, 58, 138, 0.2)",
                                                 color: "#0A0F2E",
                                             }}
@@ -338,7 +347,7 @@ export default function WaitlistFormModal({ isOpen, onClose, onSubmit }: Waitlis
                                         <h3
                                             className="text-2xl font-bold mb-2"
                                             style={{
-                                                fontFamily: "var(--font-montserrat)",
+                                                fontFamily: "var(--font-bricolage), sans-serif",
                                                 color: "#0A0F2E",
                                             }}
                                         >

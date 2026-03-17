@@ -140,12 +140,12 @@ export default function Navigation() {
                                             letterSpacing: "0.06em",
                                             textTransform: "uppercase",
                                             textDecoration: "none",
-                                            color: "#1E3A8A",
+                                            color: activeSection === "hero" ? "#ffffff" : "#1E3A8A",
                                             transition: "color 0.3s ease",
                                             cursor: "pointer",
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.color = "#1E3A8A")}
-                                        onMouseLeave={(e) => (e.currentTarget.style.color = "#1E3A8A")}
+                                        onMouseEnter={(e) => (e.currentTarget.style.color = activeSection === "hero" ? "rgba(255,255,255,0.8)" : "#0F1F4D")}
+                                        onMouseLeave={(e) => (e.currentTarget.style.color = activeSection === "hero" ? "#ffffff" : "#1E3A8A")}
                                     >
                                         {link.label}
                                         {activeSection === link.href.replace('#', '') && (
@@ -174,7 +174,7 @@ export default function Navigation() {
                             <Link href="/waitlist" className="inline-block">
                                 <GradientButton
                                     label="Join Beta"
-                                    style={{ padding: "8px 20px", fontSize: "0.8rem" }}
+                                    style={{ padding: "10px 26px", fontSize: "1rem" }}
                                 />
                             </Link>
                         </div>
@@ -284,7 +284,7 @@ export default function Navigation() {
                                         padding: "16px 24px",
                                         color:
                                             activeSection === link.href.replace('#', '')
-                                                ? "#1E3A8A"
+                                                ? "#ffffff"
                                                 : "rgba(255,255,255,0.6)",
                                         textDecoration: "none",
                                         fontSize: "1rem",

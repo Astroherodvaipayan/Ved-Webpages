@@ -14,7 +14,7 @@ export default function RightPanel({ children }: RightPanelProps) {
             <Link href="/" className={styles.backLink}>
                 <span className={styles.backArrow}>
                     <svg width="10" height="10" fill="none" viewBox="0 0 10 10">
-                        <path d="M6.5 2L3.5 5l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7 3.5L3 5L7 6.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                     </svg>
                 </span>
                 Back

@@ -70,18 +70,18 @@ export default function GlobalBackground({ containerRef }: { containerRef?: Reac
                 </motion.div>
                 <motion.div
                     style={{ y: glowY2, x: springY }}
-                    className="absolute bottom-[-20%] right-[5%] w-[60vw] h-[60vw] max-w-[850px] max-h-[850px] rounded-full"
+                    className="absolute bottom-[-20%] right-[5%] w-[60vw] h-[60vw] max-w-[850px] max-h-[850px] rounded-full mix-blend-normal opacity-100"
                 >
                     <div
                         className="w-full h-full rounded-full"
                         style={{
                             background: `radial-gradient(circle at center,
-                                rgba(200, 168, 48, 0.22) 0%,
-                                rgba(212, 175, 55, 0.15) 18%,
-                                rgba(212, 175, 55, 0.08) 38%,
-                                rgba(212, 175, 55, 0.03) 58%,
+                                rgba(212, 175, 55, 0.6) 0%,
+                                rgba(212, 175, 55, 0.4) 18%,
+                                rgba(212, 175, 55, 0.2) 38%,
+                                rgba(212, 175, 55, 0.05) 58%,
                                 transparent 78%)`,
-                            filter: 'blur(80px)',
+                            filter: 'blur(70px)',
                         }}
                     />
                 </motion.div>

@@ -161,96 +161,77 @@ export default function BackgroundController() {
     };
 
     return (
-        <div
-            ref={bgRef}
-            className="fixed inset-0 -z-10 transition-colors duration-1000"
-            style={{ backgroundColor: sectionConfigs[0].backgroundColor }}
-        >
-
-            {/* Gradient Orb 1 — Top Left */}
+        <>
             <div
-                ref={gradient1Ref}
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `radial-gradient(ellipse 70% 45% at 18% 28%, ${sectionConfigs[0].gradientColors[0]}, transparent 72%)`,
-                }}
-            />
+                ref={bgRef}
+                className="fixed inset-0 -z-10 transition-colors duration-1000"
+                style={{ backgroundColor: sectionConfigs[0].backgroundColor }}
+            >
 
-            {/* Gradient Orb 2 — Bottom Right */}
-            <div
-                ref={gradient2Ref}
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `radial-gradient(ellipse 55% 55% at 78% 68%, ${sectionConfigs[0].gradientColors[1]}, transparent 70%)`,
-                }}
-            />
+                {/* Gradient Orb 1 — Top Left */}
+                <div
+                    ref={gradient1Ref}
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: `radial-gradient(ellipse 70% 45% at 18% 28%, ${sectionConfigs[0].gradientColors[0]}, transparent 72%)`,
+                    }}
+                />
 
-            {/* Gradient Orb 3 — Center Mid (prevents flat middle) */}
-            <div
-                ref={gradient3Ref}
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `radial-gradient(ellipse 50% 40% at 50% 50%, ${sectionConfigs[0].gradientColors[2]}, transparent 65%)`,
-                }}
-            />
+                {/* Gradient Orb 2 — Bottom Right */}
+                <div
+                    ref={gradient2Ref}
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: `radial-gradient(ellipse 55% 55% at 78% 68%, ${sectionConfigs[0].gradientColors[1]}, transparent 70%)`,
+                    }}
+                />
 
-            {/* Subtle Grid Overlay */}
-            <div
-                className="absolute inset-0 pointer-events-none opacity-[0.015]"
-                style={{
-                    backgroundImage: `
+                {/* Gradient Orb 3 — Center Mid (prevents flat middle) */}
+                <div
+                    ref={gradient3Ref}
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: `radial-gradient(ellipse 50% 40% at 50% 50%, ${sectionConfigs[0].gradientColors[2]}, transparent 65%)`,
+                    }}
+                />
+
+                {/* Subtle Grid Overlay */}
+                <div
+                    className="absolute inset-0 pointer-events-none opacity-[0.015]"
+                    style={{
+                        backgroundImage: `
                         linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px)
                     `,
-                    backgroundSize: '80px 80px',
-                }}
-            />
+                        backgroundSize: '80px 80px',
+                    }}
+                />
 
-            {/* Noise texture — tactile grain overlay */}
-            <div
-                className="absolute inset-0 pointer-events-none opacity-[0.02] mix-blend-multiply"
-                style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`,
-                    backgroundSize: '200px 200px',
-                }}
-            />
+                {/* Noise texture — tactile grain overlay */}
+                <div
+                    className="absolute inset-0 pointer-events-none opacity-[0.02] mix-blend-multiply"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`,
+                        backgroundSize: '200px 200px',
+                    }}
+                />
 
-            {/* Scrim Vignette — 5-stop eased fade */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: `radial-gradient(ellipse at center,
+                {/* Scrim Vignette — 5-stop eased fade */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: `radial-gradient(ellipse at center,
                         transparent 0%,
                         transparent 35%,
                         rgba(250,251,255,0.08) 50%,
                         rgba(250,251,255,0.18) 72%,
                         rgba(250,251,255,0.30) 100%)`,
-                }}
-            />
+                    }}
+                />
+            </div>
 
-            {/* Golden + blue bleed border vignette (kept above all other background layers) */}
-            <div
-                ref={borderGlowRef}
-                className="absolute inset-0 pointer-events-none z-[1]"
-                style={{
-                    opacity: 1,
-                    backgroundImage: `
-                        radial-gradient(circle at top left,
-                          rgba(212, 175, 55, 0.75) 0%,
-                          rgba(212, 175, 55, 0.0) 42%),
-                        radial-gradient(circle at top right,
-                          rgba(37, 99, 235, 0.40) 0%,
-                          rgba(37, 99, 235, 0.0) 40%),
-                        radial-gradient(circle at bottom left,
-                          rgba(30, 64, 175, 0.30) 0%,
-                          rgba(30, 64, 175, 0.0) 40%),
-                        radial-gradient(circle at bottom right,
-                          rgba(212, 175, 55, 0.75) 0%,
-                          rgba(212, 175, 55, 0.0) 45%)
-                    `,
-                    mixBlendMode: "screen",
-                }}
-            />
-        </div>
+            {/* Golden bleed border vignette - MUST be outside bgRef context */}
+
+        </>
     );
 }

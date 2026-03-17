@@ -281,6 +281,11 @@
 .formContainer {
     width: 100%;
     max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
+    padding: 1rem 0;
 }
 
 .formTitle {
@@ -333,16 +338,18 @@
 
 .fieldInput {
     width: 100%;
-    background: rgba(10, 15, 46, 0.02);
-    border: 1.5px solid rgba(176, 184, 209, 0.4);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid rgba(176, 184, 209, 0.4);
+    border-radius: 0;
+    padding: 0.75rem 0;
     font-size: 1rem;
     font-family: 'DM Sans', sans-serif;
     color: var(--navy);
     outline: none;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .fieldInput::placeholder {
@@ -351,13 +358,10 @@
 
 .fieldInput:focus {
     border-color: var(--navy-mid);
-    background: rgba(30, 58, 138, 0.02);
-    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
 }
 
 .fieldInput.error {
     border-color: var(--error);
-    box-shadow: 0 0 0 3px rgba(224, 82, 82, 0.08);
 }
 
 .fieldInput.valid {

@@ -6,16 +6,14 @@ import ProgressIndicator from "./ProgressIndicator";
 import styles from "./Waitlist.module.css";
 
 interface WaitlistFormData {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     role: "student" | "teacher" | "institution" | "";
     imageUrl: string | null;
 }
 
 interface FormErrors {
-    firstName?: string;
-    lastName?: string;
+    name?: string;
     email?: string;
     role?: string;
     imageUrl?: string;
@@ -62,21 +60,21 @@ export default function WaitlistForm({
         switch (currentStep) {
             case 1:
                 return (
-                    <div className={styles.fieldRow}>
+                    <>
                         <div className={styles.field}>
                             <label className={styles.fieldLabel}>
-                                First Name <span className={styles.req}>*</span>
+                                Name <span className={styles.req}>*</span>
                             </label>
                             <div className={styles.fieldInputWrap}>
                                 <input
                                     type="text"
-                                    className={`${styles.fieldInput} ${errors.firstName ? styles.error : ""} ${formData.firstName.trim() ? styles.valid : ""}`}
-                                    placeholder="Arjun"
-                                    value={formData.firstName}
-                                    onChange={(e) => onFieldChange("firstName", e.target.value)}
+                                    className={`${styles.fieldInput} ${errors.name ? styles.error : ""} ${formData.name.trim() ? styles.valid : ""}`}
+                                    placeholder="Your Name"
+                                    value={formData.name}
+                                    onChange={(e) => onFieldChange("name", e.target.value)}
                                     onKeyDown={onKeyPress}
                                 />
-                                {formData.firstName.trim() && (
+                                {formData.name.trim() && (
                                     <span className={styles.fieldCheck}>
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                             <path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -84,27 +82,16 @@ export default function WaitlistForm({
                                     </span>
                                 )}
                             </div>
-                            {errors.firstName && (
+                            {errors.name && (
                                 <div className={styles.fieldError}>
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                         <path d="M6 4V6.5M6 8H6.01M10.5 6C10.5 8.76142 8.26142 11 5.5 11C2.73858 11 0.5 8.76142 0.5 6C0.5 3.23858 2.73858 1 5.5 1C8.26142 1 10.5 3.23858 10.5 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
-                                    {errors.firstName}
+                                    {errors.name}
                                 </div>
                             )}
                         </div>
-                        <div className={styles.field}>
-                            <label className={styles.fieldLabel}>Last Name</label>
-                            <input
-                                type="text"
-                                className={styles.fieldInput}
-                                placeholder="Kumar"
-                                value={formData.lastName}
-                                onChange={(e) => onFieldChange("lastName", e.target.value)}
-                                onKeyDown={onKeyPress}
-                            />
-                        </div>
-                    </div>
+                    </>
                 );
             case 2:
                 return (
@@ -200,7 +187,7 @@ export default function WaitlistForm({
 
     const getStepTitle = () => {
         switch (currentStep) {
-            case 1: return "Let's get started";
+            case 1: return "What's your Name?";
             case 2: return "Where should we send your invite?";
             case 3: return "What's your role?";
             case 4: return "Almost there!";
@@ -230,6 +217,9 @@ export default function WaitlistForm({
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                 >
+                    <p style={{ fontSize: "0.9rem", color: "#6B7AA1", marginBottom: "1.25rem", marginTop: "-0.5rem", fontWeight: 400 }}>
+                        Will take less than half a minute
+                    </p>
                     <h3 className={styles.formTitle}>{getStepTitle()}</h3>
                     <p className={styles.formSubtitle}>{getStepSubtitle()}</p>
 
@@ -258,7 +248,7 @@ export default function WaitlistForm({
                                 <span className={styles.submitSpinner} />
                             ) : currentStep < 4 ? (
                                 <>
-                                    Continue
+                                    Next
                                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                                         <path d="M3.5 8L6.5 5l-3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>

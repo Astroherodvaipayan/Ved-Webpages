@@ -31,8 +31,7 @@
   --color-text-dim: #B0B8D1;
 
   /* Fonts */
-  --font-montserrat: var(--font-montserrat);
-  --font-inter: var(--font-inter);
+  --font-bricolage: var(--font-bricolage);
 }
 
 :root {
@@ -93,7 +92,7 @@ html {
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-bricolage), sans-serif;
   overflow-x: hidden;
   width: 100%;
   -webkit-font-smoothing: antialiased;
@@ -134,7 +133,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-bricolage), sans-serif;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -148,7 +147,7 @@ h6 {
 }
 
 .eyebrow {
-  font-family: var(--font-montserrat);
+  font-family: var(--font-bricolage), sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.25em;
@@ -220,7 +219,7 @@ h6 {
   overflow: hidden;
   background: var(--color-accent-primary);
   color: #ffffff;
-  font-family: var(--font-montserrat);
+  font-family: var(--font-bricolage), sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -380,10 +379,10 @@ html.lenis {
 /* Golden haze band — strong at bottom (≈80%), fades to 0 at top */
 .hero-teacher-gradient {
   background: linear-gradient(to top,
-      rgba(205, 147, 47, 0.8) 0%,
-      rgba(205, 147, 47, 0.6) 35%,
-      rgba(205, 147, 47, 0.35) 70%,
-      rgba(205, 147, 47, 0.15) 90%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0.6) 35%,
+      rgba(255, 255, 255, 0.35) 70%,
+      rgba(255, 255, 255, 0.15) 90%,
       transparent 100%);
 }
 

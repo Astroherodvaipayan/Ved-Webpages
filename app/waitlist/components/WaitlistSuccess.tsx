@@ -6,14 +6,14 @@ import styles from "./Waitlist.module.css";
 
 interface WaitlistSuccessProps {
     formData: {
-        firstName: string;
-        lastName: string;
+        name: string;
         email: string;
         role: string;
         imageUrl: string | null;
     };
     imagePreview: string | null;
     referralLink: string;
+    referralCount?: number;
     copied: boolean;
     onCopyLink: () => void;
     onShareTwitter: () => void;
@@ -27,6 +27,7 @@ export default function WaitlistSuccess({
     formData,
     imagePreview,
     referralLink,
+    referralCount = 0,
     copied,
     onCopyLink,
     onShareTwitter,
@@ -43,7 +44,7 @@ export default function WaitlistSuccess({
     };
 
     const displayImage = imagePreview || DEFAULT_AVATAR;
-    const fullName = [formData.firstName, formData.lastName].filter(Boolean).join(" ") || "New Member";
+    const fullName = formData.name || "New Member";
     const roleTitle = getRoleTitle(formData.role);
     const handle = formData.email ? formData.email.split('@')[0].toLowerCase() : 'vedmember';
 
@@ -56,7 +57,10 @@ export default function WaitlistSuccess({
         >
             <h3 className={styles.successTitle}>You're on the list!</h3>
             <p className={styles.successSub}>
-                Spot #1 secured. We'll notify you when it's your turn.
+                {referralCount > 0
+                    ? `You were referred by ${referralCount} person${referralCount > 1 ? 's' : ''}! Share your link to climb the queue.`
+                    : "Spot #1 secured. We'll notify you when it's your turn."
+                }
             </p>
 
             <div className={styles.cardWrap} style={{ width: '85%', margin: '0 auto' }}>

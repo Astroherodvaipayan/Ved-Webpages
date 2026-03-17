@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { generateReferralCode, buildReferralLink } from '@/lib/referral'
 
 const waitlistSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().optional(),
+  first_name: z.string().min(1, 'Name is required'),
+  last_name: z.string().optional(),
   email: z.string().email('Invalid email address'),
   role: z.enum(['student', 'teacher', 'institution']),
   avatarUrl: z.string().optional().nullable(),
+  referralCode: z.string().optional().nullable(),
 })
 
 // Flag to enable/disable API calls - set to false to skip DB calls (for testing)
@@ -25,13 +27,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { firstName, lastName, email, role, avatarUrl } = validationResult.data
+    const { first_name, last_name, email, role, avatarUrl, referralCode } = validationResult.data
 
     // Skip DB call if flag is false (for testing/demo purposes)
     if (!ENABLE_API_CALLS) {
       console.log('API call disabled - skipping database write')
+      const demoReferralCode = generateReferralCode()
       return NextResponse.json(
-        { success: true, data: { id: 'demo-id', email, firstName, role }, mock: true },
+        {
+          success: true,
+          data: {
+            id: 'demo-id',
+            email,
+            name: first_name,
+            role,
+            referral_code: demoReferralCode,
+            referral_link: buildReferralLink(demoReferralCode, 'https://vedai.com')
+          },
+          mock: true
+        },
         { status: 201 }
       )
     }
@@ -49,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Check if email already exists
     const { data: existingUser } = await supabase
       .from('waitlist')
-      .select('email')
+      .select('email, id')
       .eq('email', email)
       .single()
 
@@ -60,16 +74,54 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Handle referral - look up referrer by code
+    let referredById: string | null = null
+    if (referralCode) {
+      const { data: referrer } = await supabase
+        .from('waitlist')
+        .select('id')
+        .eq('referral_code', referralCode)
+        .single()
+
+      if (referrer) {
+        referredById = referrer.id
+
+        // Increment referrer's referral count atomically
+        await supabase.rpc('increment_referral_count', { row_id: referrer.id })
+      }
+    }
+
+    // Generate unique referral code for new user
+    let newReferralCode = generateReferralCode()
+    let codeExists = true
+
+    // Ensure uniqueness
+    while (codeExists) {
+      const { data: existing } = await supabase
+        .from('waitlist')
+        .select('id')
+        .eq('referral_code', newReferralCode)
+        .single()
+
+      if (!existing) {
+        codeExists = false
+      } else {
+        newReferralCode = generateReferralCode()
+      }
+    }
+
     // Insert new waitlist entry
     const { data, error } = await supabase
       .from('waitlist')
       .insert({
-        first_name: firstName,
-        last_name: lastName || null,
+        name: first_name,
         email,
-        role: role.toUpperCase(),
+        role: role,
         avatar_url: avatarUrl || null,
         status: 'CONFIRMED',
+        referral_code: newReferralCode,
+        referred_by: referredById,
+        referral_count: 0,
       })
       .select()
       .single()
@@ -82,8 +134,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Build referral link for the new user
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://vedai.com'
+    const referralLink = buildReferralLink(newReferralCode, baseUrl)
+
     return NextResponse.json(
-      { success: true, data },
+      {
+        success: true,
+        data,
+        referral_code: newReferralCode,
+        referral_link: referralLink
+      },
       { status: 201 }
     )
   } catch (error) {

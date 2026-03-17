@@ -21,16 +21,14 @@ const validateEmail = (email: string): { valid: boolean; error?: string } => {
 };
 
 interface WaitlistFormData {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     role: "student" | "teacher" | "institution" | "";
     imageUrl: string | null;
 }
 
 interface FormErrors {
-    firstName?: string;
-    lastName?: string;
+    name?: string;
     email?: string;
     role?: string;
     imageUrl?: string;
@@ -41,8 +39,7 @@ const TOTAL_STEPS = 4;
 export default function WaitlistPage() {
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState<WaitlistFormData>({
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
         role: "",
         imageUrl: null,
@@ -54,12 +51,25 @@ export default function WaitlistPage() {
     const [copied, setCopied] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mounted, setMounted] = useState(false);
+    const [referralCode, setReferralCode] = useState<string | null>(null);
+    const [serverReferralLink, setServerReferralLink] = useState<string | null>(null);
+    const [referralCount, setReferralCount] = useState(0);
 
-    useEffect(() => setMounted(true), []);
+    useEffect(() => {
+        setMounted(true);
 
-    const referralLink = mounted && formData.email
+        // Capture referral code from URL
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if (ref) {
+            setReferralCode(ref);
+        }
+    }, []);
+
+    // Use server-generated referral link when available, fallback to client-side
+    const referralLink = serverReferralLink || (mounted && formData.email
         ? `${window.location.origin}/waitlist?ref=${formData.email.split('@')[0].toLowerCase()}`
-        : mounted ? `${window.location.origin}/waitlist` : '/waitlist';
+        : mounted ? `${window.location.origin}/waitlist` : '/waitlist');
 
     const shareToTwitter = () => {
         const text = `I just secured spot #1 on the @VedAI waitlist!\n\nPersonalized AI tutoring for everyone — 98% better learning outcomes.\n\nJoin me: ${referralLink}\n\n#EdTech #AILearning #FutureOfEducation`;
@@ -103,7 +113,7 @@ export default function WaitlistPage() {
 
         switch (currentStep) {
             case 1:
-                if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+                if (!formData.name.trim()) newErrors.name = "Name is required";
                 break;
             case 2:
                 if (!formData.email.trim()) newErrors.email = "Email is required";
@@ -154,11 +164,39 @@ export default function WaitlistPage() {
             const response = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, avatarUrl: imagePreview }),
+                body: JSON.stringify({
+                    first_name: formData.name,
+                    last_name: "",
+                    email: formData.email,
+                    role: formData.role,
+                    avatarUrl: imagePreview,
+                    referralCode: referralCode
+                }),
             });
-            if (response.ok) setIsSubmitted(true);
-            else {
-                const data = await response.json();
+            const data = await response.json();
+            if (response.ok) {
+                // Store server-generated referral link
+                if (data.referral_link) {
+                    setServerReferralLink(data.referral_link);
+                }
+                if (data.referral_code) {
+                    setReferralCode(data.referral_code);
+                }
+                setIsSubmitted(true);
+
+                // Fetch referral stats to get count (in case user was referred)
+                try {
+                    const statsResponse = await fetch(`/api/waitlist/referrals?email=${encodeURIComponent(formData.email)}`);
+                    if (statsResponse.ok) {
+                        const statsData = await statsResponse.json();
+                        if (statsData.referralCount !== undefined) {
+                            setReferralCount(statsData.referralCount);
+                        }
+                    }
+                } catch {
+                    // Silently fail - referral stats are not critical
+                }
+            } else {
                 setErrors({ email: data.error || 'Something went wrong' });
             }
         } catch {
@@ -201,6 +239,7 @@ export default function WaitlistPage() {
                         formData={formData}
                         imagePreview={imagePreview}
                         referralLink={referralLink}
+                        referralCount={referralCount}
                         copied={copied}
                         onCopyLink={copyReferralLink}
                         onShareTwitter={shareToTwitter}

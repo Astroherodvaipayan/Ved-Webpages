@@ -155,11 +155,6 @@ export default function JoinRevolution() {
                     To enable <br className="hidden sm:block" />
                     <span className="text-gradient">A BILLION GENIUSES</span>.
                 </h2>
-
-                <p className="text-xl text-[#2D3A6B] leading-relaxed max-w-2xl mx-auto mb-16">
-                    We believe intelligence is evenly distributed, but opportunity is not.
-                    Ved AI democratizes elite-level personalized education for everyone on Earth.
-                </p>
             </motion.div>
 
             {/* Central Button */}

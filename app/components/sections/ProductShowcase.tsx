@@ -4,170 +4,177 @@
 
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLenis } from "@studio-freight/react-lenis";
-import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/scrollSnap";
 
-gsap.registerPlugin(ScrollTrigger);
+const VIDEO_OPTIONS = [
+    { id: 1, label: "Live Classes", icon: "play" },
+    { id: 2, label: "Practice Sessions", icon: "document" },
+    { id: 3, label: "Doubt Solving", icon: "chat" },
+    { id: 4, label: "Mock Tests", icon: "check" },
+];
 
 export default function ProductShowcase() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const windowRef = useRef<HTMLDivElement>(null);
-    const textRef = useRef<HTMLHeadingElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
-    const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
-    const isSnapping = useRef(false);
-    const hasTriggered = useRef(false);
-    const lenis = useLenis();
+    const optionsRef = useRef<HTMLDivElement>(null);
     const [isMounted, setIsMounted] = useState(false);
-    const SECTION_ID = 'product-showcase';
-
-    // Configuration
-    const CONFIG = {
-        nextSectionId: 'problem-statement',
-        phase5Start: 0.70,
-        phase5Duration: 0.25,
-        triggerBufferPx: 10,
-        scrollDuration: 1.2,
-    };
-
-    const PHASE_5_END = CONFIG.phase5Start + CONFIG.phase5Duration; // 0.95
+    const [selectedVideo, setSelectedVideo] = useState(1);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [hasEntered, setHasEntered] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
+    // Entrance animation using IntersectionObserver (no scroll pinning)
     useEffect(() => {
-        if (!isMounted || !lenis) return;
-        if (!sectionRef.current || !windowRef.current || !textRef.current) return;
+        if (!isMounted || !sectionRef.current || !windowRef.current || !optionsRef.current) return;
 
         const ctx = gsap.context(() => {
-            // Initial states
+            // Initial state - window starts small and invisible
             gsap.set(windowRef.current, {
                 scale: 0.1,
                 opacity: 0
             });
-            gsap.set(textRef.current, {
-                scale: 0.2,
-                opacity: 0
-            });
 
-            // Create timeline
-            const tl = gsap.timeline({
-                paused: true,
-                defaults: { ease: "none" }
-            });
-
-            // Phase 1 — Text dolly zoom in (0% → 25%)
-            tl.to(textRef.current, {
-                scale: 1,
-                opacity: 1,
-                ease: "none",
-                duration: 0.25
-            }, 0);
-
-            // Phase 2 — Text zooms past camera (25% → 50%)
-            tl.to(textRef.current, {
-                scale: 8,
+            // Options start hidden and below
+            gsap.set(optionsRef.current, {
                 opacity: 0,
-                ease: "power2.in",
-                duration: 0.25
-            }, 0.25);
-
-            // Phase 3 — Mac window appears (50% → 70%)
-            tl.to(windowRef.current, {
-                scale: 0.7,
-                opacity: 1,
-                ease: "power2.out",
-                duration: 0.20
-            }, 0.50);
-
-            // Phase 5 — Mac window fills screen (70% → 95%)
-            tl.to(windowRef.current, {
-                scale: 0.8,
-                ease: "power2.inOut",
-                duration: CONFIG.phase5Duration
-            }, CONFIG.phase5Start);
-
-            // Create ScrollTrigger
-            scrollTriggerRef.current = ScrollTrigger.create({
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "+=250%",
-                pin: true,
-                pinSpacing: true,
-                scrub: 0.5,
-                animation: tl,
-
-                onUpdate: (self) => {
-                    if (shouldSnap(self, PHASE_5_END, CONFIG.triggerBufferPx, isSnapping, hasTriggered, SECTION_ID)) {
-                        snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
-                    }
-
-                    // Reset trigger flag when scrolling back up past phase 5
-                    if (self.progress < PHASE_5_END && self.direction === -1) {
-                        hasTriggered.current = false;
-                        isSnapping.current = false;
-                    }
-                },
-
-                onEnter: () => {
-                    recordSectionEntrance(SECTION_ID);
-                    hasTriggered.current = false;
-                    isSnapping.current = false;
-                    playVideo();
-                },
-
-                onEnterBack: () => {
-                    recordSectionEntrance(SECTION_ID);
-                    hasTriggered.current = false;
-                    isSnapping.current = false;
-                    playVideo();
-                },
-
-                onLeave: () => {
-                    pauseVideo();
-                },
-
-                onLeaveBack: () => {
-                    pauseVideo();
-                    hasTriggered.current = false;
-                }
+                y: 30
             });
 
-            // Refresh ScrollTrigger after DOM settles
-            const refreshTimer = setTimeout(() => {
-                ScrollTrigger.refresh();
-            }, 300);
+            // Check if already in view
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && !hasEntered) {
+                            setHasEntered(true);
+                            playEntranceAnimation();
+                            observer.disconnect();
+                        }
+                    });
+                },
+                { threshold: 0.3 }
+            );
+
+            if (sectionRef.current) {
+                observer.observe(sectionRef.current);
+            }
 
             return () => {
-                clearTimeout(refreshTimer);
+                observer.disconnect();
             };
-
         }, sectionRef);
 
         return () => {
             ctx.revert();
-            if (scrollTriggerRef.current) {
-                scrollTriggerRef.current.kill();
-            }
         };
-    }, [isMounted, lenis]);
+    }, [isMounted, hasEntered]);
 
-    // Helper: Play video
-    const playVideo = () => {
-        if (videoRef.current) {
-            videoRef.current.currentTime = 0;
-            videoRef.current.play().catch(() => {
-                // Ignore autoplay errors
-            });
-        }
+    // Separate effect for playing animation once hasEntered is true
+    useEffect(() => {
+        if (!isMounted || !hasEntered || !windowRef.current || !optionsRef.current) return;
+
+        playEntranceAnimation();
+    }, [hasEntered]);
+
+    const playEntranceAnimation = () => {
+        if (!windowRef.current || !optionsRef.current) return;
+
+        // Window appears and scales up
+        gsap.to(windowRef.current, {
+            scale: 0.8,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out"
+        });
+
+        // Options fade in after window
+        gsap.to(optionsRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+            delay: 0.4
+        });
     };
 
-    // Helper: Pause video
-    const pauseVideo = () => {
+    // Auto-play video when section is in view
+    useEffect(() => {
+        if (!videoRef.current || !sectionRef.current) return;
+
+        const playVideo = () => {
+            if (videoRef.current) {
+                videoRef.current.currentTime = 0;
+                videoRef.current.play().catch(() => {});
+            }
+        };
+
+        const pauseVideo = () => {
+            if (videoRef.current) {
+                videoRef.current.pause();
+            }
+        };
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        playVideo();
+                    } else {
+                        pauseVideo();
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    const handleOptionClick = (id: number) => {
+        if (id === selectedVideo || isAnimating) return;
+
+        // Determine slide direction based on selection
+        const direction = id > selectedVideo ? 'right' : 'left';
+        setIsAnimating(true);
+
+        // Animate out
+        if (windowRef.current) {
+            gsap.to(windowRef.current, {
+                x: direction === 'right' ? '-100%' : '100%',
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => {
+                    setSelectedVideo(id);
+                    // Reset position for entrance animation
+                    gsap.set(windowRef.current, {
+                        x: direction === 'right' ? '100%' : '-100%'
+                    });
+                    // Animate in
+                    gsap.to(windowRef.current, {
+                        x: 0,
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: 'power2.out',
+                        onComplete: () => {
+                            setIsAnimating(false);
+                        }
+                    });
+                }
+            });
+        }
+
         if (videoRef.current) {
-            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+            videoRef.current.play().catch(() => {});
         }
     };
 
@@ -175,25 +182,12 @@ export default function ProductShowcase() {
         <section
             id="product-showcase"
             ref={sectionRef}
-            className="relative w-full h-screen overflow-hidden flex items-center justify-center z-10 bg-transparent"
+            className="relative w-full min-h-screen flex flex-col items-center justify-center py-20 z-10"
         >
-            {/* Punchline Text */}
-            <h2
-                ref={textRef}
-                className="absolute z-30 text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-center text-[#0A0F2E] tracking-tighter w-full px-4"
-                style={{
-                    opacity: 0,
-                    transform: 'scale(0.2)',
-                    willChange: 'transform, opacity'
-                }}
-            >
-                THE FUTURE OF LEARNING<br />IS HERE
-            </h2>
-
             {/* Mac Window */}
             <div
                 ref={windowRef}
-                className="absolute z-10 bg-[#0A0F2E] rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-[#B0B8D1]/20 flex flex-col"
+                className="relative z-10 bg-[#0A0F2E] rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-[#B0B8D1]/20 flex flex-col"
                 style={{
                     width: '92vw',
                     maxWidth: '1200px',
@@ -233,7 +227,55 @@ export default function ProductShowcase() {
                     />
                 </div>
             </div>
+
+            {/* Video Options */}
+            <div
+                ref={optionsRef}
+                className="relative z-20 flex flex-wrap justify-center gap-4 sm:gap-6 px-4 mt-8 sm:mt-12"
+                style={{
+                    willChange: 'transform, opacity'
+                }}
+            >
+                {VIDEO_OPTIONS.map((option) => (
+                    <button
+                        key={option.id}
+                        onClick={() => handleOptionClick(option.id)}
+                        className={`flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
+                            selectedVideo === option.id
+                                ? "bg-white text-[#0A0F2E] shadow-lg scale-110"
+                                : "bg-white/10 text-white hover:bg-white/20 border border-white/30"
+                        }`}
+                    >
+                        {/* Icon */}
+                        <div className="mb-1">
+                            {option.icon === 'play' && (
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            )}
+                            {option.icon === 'document' && (
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                </svg>
+                            )}
+                            {option.icon === 'chat' && (
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            )}
+                            {option.icon === 'check' && (
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            )}
+                        </div>
+                        <span className="text-[10px] sm:text-xs leading-tight text-center">{option.label}</span>
+                    </button>
+                ))}
+            </div>
         </section>
     );
 }
-

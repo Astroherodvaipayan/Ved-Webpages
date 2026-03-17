@@ -4,10 +4,9 @@
 -- Create waitlist table
 CREATE TABLE IF NOT EXISTS public.waitlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  first_name TEXT NOT NULL,
-  last_name TEXT,
+  name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('STUDENT', 'TEACHER', 'INSTITUTION')),
+  role TEXT NOT NULL CHECK (role IN ('student', 'teacher', 'institution')),
   avatar_url TEXT,
   status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -34,3 +33,6 @@ CREATE INDEX IF NOT EXISTS idx_waitlist_email ON public.waitlist(email);
 
 -- Create index on created_at for sorting
 CREATE INDEX IF NOT EXISTS idx_waitlist_created_at ON public.waitlist(created_at DESC);
+
+-- Create index on role for filtering by role type
+CREATE INDEX IF NOT EXISTS idx_waitlist_role ON public.waitlist(role);

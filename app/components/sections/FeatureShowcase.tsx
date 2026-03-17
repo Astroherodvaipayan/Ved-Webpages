@@ -160,7 +160,7 @@ function FeatureCard({ feature, reversed, cardRef }: FeatureCardProps) {
             <span
                 className="block mb-3"
                 style={{
-                    fontFamily: "var(--font-inter), Inter, sans-serif",
+                    fontFamily: "var(--font-bricolage), Bricolage Grotesque, sans-serif",
                     fontSize: "12px",
                     letterSpacing: "0.1em",
                     color: "#1E3A8A",
@@ -173,7 +173,7 @@ function FeatureCard({ feature, reversed, cardRef }: FeatureCardProps) {
             <h3
                 className="mb-4"
                 style={{
-                    fontFamily: "var(--font-montserrat), Montserrat, sans-serif",
+                    fontFamily: "var(--font-bricolage), Bricolage Grotesque, sans-serif",
                     fontSize: "clamp(1.4rem, 2.5vw, 2.5rem)",
                     fontWeight: 700,
                     color: "#0A0F2E",
@@ -184,7 +184,7 @@ function FeatureCard({ feature, reversed, cardRef }: FeatureCardProps) {
             </h3>
             <p
                 style={{
-                    fontFamily: "var(--font-inter), Inter, sans-serif",
+                    fontFamily: "var(--font-bricolage), Bricolage Grotesque, sans-serif",
                     fontSize: "clamp(0.9rem, 1.5vw, 1.15rem)",
                     color: "#2D3A6B",
                     lineHeight: 1.7,
