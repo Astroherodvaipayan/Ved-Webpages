@@ -1,11 +1,138 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLenis } from "@studio-freight/react-lenis";
+import {
+    snapToSection,
+    recordSectionEntrance,
+    isSnapAllowed,
+    hasEntranceDelayElapsed,
+    isSectionLocked,
+    isProgrammaticScrollInProgress,
+} from "@/app/utils/scrollSnap";
 
 export default function Hero() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const isSnapping = useRef(false);
+    const hasTriggered = useRef(false);
+    const lenis = useLenis();
+    const [isMounted, setIsMounted] = useState(false);
+    const SECTION_ID = "hero";
+
+    // Configuration - snap when user scrolls past 90% of this section
+    const CONFIG = {
+        nextSectionId: "problem-statement",
+        snapTriggerProgress: 0.9, // Snap when 90% of hero is scrolled
+        scrollDuration: 1.2,
+    };
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted || !lenis || !sectionRef.current) return;
+
+        const section = sectionRef.current;
+
+        // FIXED: Calculate threshold as a ratio (0-1) not pixels
+        // We want to know: "has user scrolled 90% through this section?"
+
+        let isVisible = false;
+        let lastScrollY = window.scrollY;
+        let scrollDirection: 'up' | 'down' = 'down';
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                // FIXED: Simplified visibility check
+                isVisible = entry.isIntersecting;
+
+                if (isVisible) {
+                    recordSectionEntrance(SECTION_ID);
+                    hasTriggered.current = false;
+                    isSnapping.current = false;
+                    lastScrollY = window.scrollY;
+                }
+            },
+            {
+                threshold: [0, 0.1, 0.5, 0.9, 1], // More granular thresholds
+                rootMargin: "0px"
+            }
+        );
+
+        observer.observe(section);
+
+        const trySnap = () => {
+            // Guard clauses
+            if (
+                !isVisible ||
+                isSnapping.current ||
+                hasTriggered.current ||
+                !isSnapAllowed() ||
+                !hasEntranceDelayElapsed(SECTION_ID) ||
+                isSectionLocked(SECTION_ID) ||
+                isProgrammaticScrollInProgress()
+            ) {
+                return false;
+            }
+
+            // FIXED: Proper progress calculation
+            const rect = section.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Calculate how much of the section has been scrolled
+            // rect.top is 0 when section top hits viewport top
+            // rect.top is negative as we scroll down
+            // section height is rect.height
+
+            // Progress: 0 = top of section at viewport top
+            // Progress: 1 = bottom of section at viewport top (fully scrolled)
+            const scrolledAmount = Math.abs(Math.min(0, rect.top));
+            const progress = scrolledAmount / rect.height;
+
+            // Only snap if:
+            // 1. Scrolling DOWN
+            // 2. Past 90% progress
+            // 3. Section is still in view (rect.bottom > 0)
+            if (
+                scrollDirection === 'down' &&
+                progress >= CONFIG.snapTriggerProgress &&
+                rect.bottom > 0 // Section still visible
+            ) {
+                console.log(`[Hero] Snapping at progress: ${progress.toFixed(2)}`);
+                snapToSection(lenis, CONFIG.nextSectionId, CONFIG.scrollDuration, isSnapping, hasTriggered);
+                return true;
+            }
+
+            return false;
+        };
+
+        const onScroll = () => {
+            if (!isVisible) return;
+
+            // Determine scroll direction
+            const currentScrollY = window.scrollY;
+            scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+            lastScrollY = currentScrollY;
+
+            // Use requestAnimationFrame for smooth checking
+            requestAnimationFrame(trySnap);
+        };
+
+        // FIXED: Removed separate wheel listener - scroll event is sufficient with Lenis
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("scroll", onScroll);
+        };
+    }, [isMounted, lenis]);
+
     return (
-        <section id="hero" className="relative w-full h-screen" style={{ backgroundColor: "#f1ede3" }}>
-            {/* Video Background */}
+        <section ref={sectionRef} id="hero" className="relative w-full h-screen" style={{ backgroundColor: "#f1ede3" }}>
+            {/* ... rest of your JSX unchanged ... */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 <video
                     src="/boy1.mp4"
@@ -18,7 +145,6 @@ export default function Hero() {
                 />
             </div>
 
-            {/* Dark Gradient Overlay for text readability */}
             <div
                 className="absolute inset-0 pointer-events-none z-[1]"
                 style={{
@@ -26,7 +152,6 @@ export default function Hero() {
                 }}
             />
 
-            {/* Hero text content */}
             <div className="absolute inset-0 flex flex-col items-start justify-center z-10 pl-[2%] pr-3 sm:pr-6 md:pr-8">
                 <div className="w-full max-w-4xl md:max-w-5xl">
                     <motion.h1
@@ -66,7 +191,6 @@ export default function Hero() {
                 </div>
             </div>
 
-            {/* Orange haze overlay anchored to bottom of Hero */}
             <div className="pointer-events-none absolute left-0 right-0 -bottom-[00px] h-[40vh] md:h-[38vh]">
                 <div className="absolute inset-0 hero-teacher-gradient" />
             </div>

@@ -39,9 +39,9 @@ export default function Home() {
                     {/* Content flows after Hero — Mission scrolls up behind pinned Hero */}
                     <div className="relative w-full bg-transparent">
                         <GlobalBackground />
+                        <ProductShowcase />
                         <ProblemStatement />
                         <Mission />
-                        <ProductShowcase />
                         <FeatureShowcase />
                         <Moat />
                         <JoinRevolution />

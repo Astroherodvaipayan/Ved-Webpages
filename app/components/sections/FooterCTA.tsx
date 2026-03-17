@@ -31,7 +31,7 @@ export default function FooterCTA() {
             </div>
 
             {/* VED-AI Huge Text */}
-            <div className="relative z-0 mt-20 md:mt-auto flex justify-left w-full pointer-events-none select-none overflow-hidden">
+            <div className="relative z-0 mt-20 md:mt-auto flex justify-center w-full pointer-events-none select-none overflow-hidden">
                 <span
                     className="font-black text-center tracking-tighter whitespace-nowrap"
                     style={{

@@ -23,17 +23,16 @@ export default function GradientButton({ label = "Experience Sarvam", onClick, c
     }, []);
 
     // Gradient colors shift based on cursor x position:
-    // Left  → cool blue/purple
-    // Right → warm orange/peach
-    const blueStop = `hsl(${220 - gradientPos.x * 0.3}, 55%, ${45 + gradientPos.y * 0.1}%)`;
-    const orangeStop = `hsl(${25 + gradientPos.x * 0.2}, 75%, ${60 + gradientPos.y * 0.1}%)`;
+    // Left  → dark blue
+    // Right → gold (#D4AF37 - accent-secondary)
+    const darkBlueStop = `hsl(${220 - gradientPos.x * 0.1}, 60%, ${30 + gradientPos.y * 0.15}%)`;
+    const goldenStop = "#D4AF37";
 
     // Gradient angle follows cursor: left → 225deg, right → 45deg
-    // Colours stay the same (cool blue → warm orange)
     const angle = isHovered ? 225 - gradientPos.x * 1.8 : 135;
 
     const gradient = isHovered
-        ? `linear-gradient(${angle}deg, ${blueStop} 0%, ${orangeStop} 100%)`
+        ? `linear-gradient(${angle}deg, ${darkBlueStop} 0%, ${goldenStop} 100%)`
         : `linear-gradient(135deg, #2a4284 0%, #172346 100%)`;
 
     return (
