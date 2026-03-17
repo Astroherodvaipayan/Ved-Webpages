@@ -5,7 +5,6 @@ import LeftPanel from "./LeftPanel";
 import RightPanel from "./RightPanel";
 import WaitlistForm from "./WaitlistForm";
 import WaitlistSuccess from "./WaitlistSuccess";
-import BackgroundController from "@/components/ui/BackgroundController";
 import styles from "./Waitlist.module.css";
 import "@/components/ProfileCard.module.css";
 import disposableDomains from "disposable-email-domains";
@@ -35,10 +34,10 @@ interface FormErrors {
     imageUrl?: string;
 }
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 export default function WaitlistPage() {
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState<WaitlistFormData>({
         name: "",
         email: "",
@@ -113,6 +112,9 @@ export default function WaitlistPage() {
         const newErrors: FormErrors = {};
 
         switch (currentStep) {
+            case 0:
+                // Intro step - no validation needed
+                break;
             case 1:
                 if (!formData.name.trim()) newErrors.name = "Name is required";
                 break;
@@ -145,7 +147,7 @@ export default function WaitlistPage() {
     };
 
     const handleBack = () => {
-        if (currentStep > 1) {
+        if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
             setErrors({});
         }

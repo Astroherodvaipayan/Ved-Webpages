@@ -58,6 +58,18 @@ export default function WaitlistForm({
 
     const renderStepContent = () => {
         switch (currentStep) {
+            case 0:
+                return (
+                    <div className={styles.introContent}>
+                        <button
+                            type="button"
+                            className={styles.startButton}
+                            onClick={onNext}
+                        >
+                            Start
+                        </button>
+                    </div>
+                );
             case 1:
                 return (
                     <>
@@ -187,6 +199,7 @@ export default function WaitlistForm({
 
     const getStepTitle = () => {
         switch (currentStep) {
+            case 0: return "Experience Personalized Learning First Hand";
             case 1: return "What's your Name?";
             case 2: return "Where should we send your invite?";
             case 3: return "What's your role?";
@@ -197,6 +210,7 @@ export default function WaitlistForm({
 
     const getStepSubtitle = () => {
         switch (currentStep) {
+            case 0: return "Will take less than a minute";
             case 1: return "We'll personalize your experience based on this.";
             case 2: return "We'll send your unique waitlist link here.";
             case 3: return "Help us tailor the platform for you.";
@@ -207,7 +221,7 @@ export default function WaitlistForm({
 
     return (
         <div className={styles.formContainer}>
-            <ProgressIndicator currentStep={currentStep} totalSteps={4} />
+            {currentStep > 0 && <ProgressIndicator currentStep={currentStep} totalSteps={5} />}
 
             <AnimatePresence mode="wait">
                 <motion.div
@@ -217,47 +231,51 @@ export default function WaitlistForm({
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <p style={{ fontSize: "0.9rem", color: "#6B7AA1", marginBottom: "1.25rem", marginTop: "-0.5rem", fontWeight: 400 }}>
-                        Will take less than half a minute
-                    </p>
+                    {currentStep > 0 && (
+                        <p style={{ fontSize: "0.9rem", color: "#6B7AA1", marginBottom: "1.25rem", marginTop: "-0.5rem", fontWeight: 400 }}>
+                            Will take less than half a minute
+                        </p>
+                    )}
                     <h3 className={styles.formTitle}>{getStepTitle()}</h3>
-                    <p className={styles.formSubtitle}>{getStepSubtitle()}</p>
+                    {currentStep > 0 && <p className={styles.formSubtitle}>{getStepSubtitle()}</p>}
 
                     {renderStepContent()}
 
-                    <div className={styles.navButtons}>
-                        {currentStep > 1 && (
+                    {currentStep > 0 && (
+                        <div className={styles.navButtons}>
+                            {currentStep > 1 && (
+                                <button
+                                    type="button"
+                                    className={`${styles.navBtn} ${styles.navBtnBack}`}
+                                    onClick={onBack}
+                                >
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                        <path d="M3.5 2L6.5 5l-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                    Back
+                                </button>
+                            )}
                             <button
                                 type="button"
-                                className={`${styles.navBtn} ${styles.navBtnBack}`}
-                                onClick={onBack}
+                                className={`${styles.navBtn} ${styles.navBtnNext}`}
+                                onClick={currentStep < 4 ? onNext : onSubmit}
+                                disabled={isSubmitting}
                             >
-                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                    <path d="M3.5 2L6.5 5l-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                Back
+                                {isSubmitting ? (
+                                    <span className={styles.submitSpinner} />
+                                ) : currentStep < 4 ? (
+                                    <>
+                                        Next
+                                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                            <path d="M3.5 8L6.5 5l-3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </>
+                                ) : (
+                                    "Join Waitlist"
+                                )}
                             </button>
-                        )}
-                        <button
-                            type="button"
-                            className={`${styles.navBtn} ${styles.navBtnNext}`}
-                            onClick={currentStep < 4 ? onNext : onSubmit}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <span className={styles.submitSpinner} />
-                            ) : currentStep < 4 ? (
-                                <>
-                                    Next
-                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                        <path d="M3.5 8L6.5 5l-3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </>
-                            ) : (
-                                "Join Waitlist"
-                            )}
-                        </button>
-                    </div>
+                        </div>
+                    )}
                 </motion.div>
             </AnimatePresence>
         </div>
