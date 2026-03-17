@@ -120,7 +120,7 @@ export default function TeacherScrollSequence() {
         const MAX_SCALE = 10;
         const scale = MAX_SCALE - (MAX_SCALE - 1) * revealProgress; // 10 → 1
 
-        const baseFontSize = Math.min(W * 0.13, 160);
+        const baseFontSize = Math.min(W * 0.08, 140);
         const lineHeight = baseFontSize * 1.15;
         const totalTextH = HEADLINE_LINES.length * lineHeight;
         const startY = H / 2 - totalTextH / 2 + lineHeight / 2;
@@ -162,7 +162,7 @@ export default function TeacherScrollSequence() {
             ctx.font = fontString;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = "#254391";
+            ctx.fillStyle = "#0a0f2e";
             HEADLINE_LINES.forEach((line, i) => {
                 ctx.fillText(line, W / 2, startY + i * lineHeight);
             });
