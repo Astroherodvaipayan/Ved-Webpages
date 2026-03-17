@@ -1,0 +1,743 @@
+/* ── TYPEFORM-STYLE WAITLIST — LIGHT THEME ── */
+/* Font: Times New Roman | Background: Light gradient via BackgroundController */
+
+.waitlistRoot *,
+.waitlistRoot *::before,
+.waitlistRoot *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── ROOT ── */
+.waitlistRoot {
+  --navy: #0A0F2E;
+  --navy-mid: #1E3A8A;
+  --navy-deep: #0F1F4D;
+  --gold: #D4AF37;
+  --gold-light: #e8c84e;
+  --white: #ffffff;
+  --slate: #6B7AA1;
+  --mist: rgba(107, 122, 161, 0.6);
+  --error: #c0392b;
+  --success: #16a34a;
+
+  font-family: 'Times New Roman', Times, serif;
+  min-height: 100vh;
+  background: transparent;
+  /* BackgroundController owns the bg */
+  color: var(--white);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── PROGRESS BAR (top of screen) ── */
+.progressTrack {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(30, 58, 138, 0.1);
+  z-index: 200;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* ── TOP BAR ── */
+.topBar {
+  position: fixed;
+  top: 12px;
+  left: 0;
+  right: 0;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.brandLogoRing {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brandName {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.05rem;
+  color: var(--navy);
+  letter-spacing: 0.01em;
+  font-weight: normal;
+}
+
+.stepCounter {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: var(--slate);
+  letter-spacing: 0.08em;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ── FULL-SCREEN QUESTION LAYOUT ── */
+.questionScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 2rem 5rem;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .questionScreen {
+    padding: 6rem 4rem 5rem;
+  }
+}
+
+/* ── QUESTION NUMBER ── */
+.qNumber {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.88rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-style: italic;
+}
+
+.qNumberArrow {
+  display: inline-block;
+  font-style: normal;
+  font-size: 0.9rem;
+}
+
+/* ── QUESTION TITLE ── */
+.qTitle {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--navy);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+  font-weight: normal;
+}
+
+.qTitle em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.qSubtitle {
+  font-family: 'Times New Roman', serif;
+  font-size: 1rem;
+  color: var(--mist);
+  margin-bottom: 2.75rem;
+  line-height: 1.6;
+  font-style: italic;
+  font-weight: normal;
+}
+
+/* ── UNDERLINED INPUT (Typeform style) ── */
+.tfInputWrap {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+}
+
+.tfInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(30, 58, 138, 0.22);
+  outline: none;
+  color: var(--navy-deep);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(1.35rem, 3.5vw, 1.9rem);
+  padding: 0.5rem 2.5rem 0.5rem 0;
+  transition: border-color 0.25s ease;
+  caret-color: var(--gold);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tfInput::placeholder {
+  color: rgba(30, 58, 138, 0.2);
+  font-style: italic;
+}
+
+.tfInput:focus {
+  border-color: var(--gold);
+}
+
+.tfInput.tfError {
+  border-color: var(--error);
+}
+
+.tfInput.tfValid {
+  border-color: rgba(22, 163, 74, 0.55);
+}
+
+.tfValidIcon {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+}
+
+.tfErrorMsg {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.82rem;
+  color: var(--error);
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-style: italic;
+}
+
+/* ── OK BUTTON + ENTER HINT ── */
+.tfActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+}
+
+/* Matches the deep navy button in screenshot 2 */
+.okBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--navy-mid);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.6rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 18px rgba(30, 58, 138, 0.3);
+}
+
+.okBtn:hover {
+  background: var(--navy-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(30, 58, 138, 0.38);
+}
+
+.okBtn:active {
+  transform: translateY(0);
+}
+
+.okBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.okBtnSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.enterHint {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: var(--slate);
+  font-style: italic;
+  opacity: 0.55;
+  user-select: none;
+}
+
+.enterKey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 58, 138, 0.06);
+  border: 1px solid rgba(30, 58, 138, 0.18);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0.1rem 0.45rem 0.15rem;
+  font-size: 0.72rem;
+  color: var(--slate);
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+
+/* ── ROLE CARDS ── */
+.roleCards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 0.5rem;
+}
+
+.roleCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1.5px solid rgba(30, 58, 138, 0.15);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.roleCard:hover {
+  border-color: rgba(76, 55, 212, 0.5);
+  background: rgba(55, 157, 212, 0.06);
+}
+
+.roleCard.roleSelected {
+  border-color: var(--navy-mid);
+  background: rgba(55, 157, 212, 0.1);
+}
+
+.roleKey {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(30, 58, 138, 0.22);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: var(--slate);
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.roleCard.roleSelected .roleKey {
+  border-color: var(--navy-deep);
+  color: var(--navy-deep);
+}
+
+.roleCardText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.roleCardLabel {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.05rem;
+  color: var(--navy);
+  font-weight: normal;
+}
+
+.roleCardDesc {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.78rem;
+  color: var(--navy-deep);
+  font-style: italic;
+}
+
+/* ── PHOTO UPLOAD ── */
+.photoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.photoAvatarWrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid rgba(30, 58, 138, 0.18);
+  overflow: hidden;
+  background: rgba(30, 58, 138, 0.04);
+  flex-shrink: 0;
+}
+
+.photoAvatarWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoUploadBtn {
+  background: rgba(30, 58, 138, 0.07);
+  color: var(--navy);
+  border: 1.5px solid rgba(30, 58, 138, 0.22);
+  border-radius: 3px;
+  padding: 0.65rem 1.4rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-style: italic;
+}
+
+.photoUploadBtn:hover {
+  background: rgba(30, 58, 138, 0.12);
+  border-color: rgba(30, 58, 138, 0.35);
+}
+
+.photoHelper {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: var(--slate);
+  font-style: italic;
+  opacity: 0.55;
+  margin-top: -0.75rem;
+}
+
+/* ── BACK BUTTON (fixed bottom-left) ── */
+.backBtn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2.5rem;
+  background: rgba(30, 58, 138, 0.06);
+  border: 1px solid rgba(30, 58, 138, 0.14);
+  border-radius: 3px;
+  padding: 0.45rem 0.9rem;
+  color: var(--slate);
+  font-family: 'Times New Roman', serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+  z-index: 50;
+  font-style: italic;
+}
+
+.backBtn:hover {
+  background: rgba(30, 58, 138, 0.11);
+  color: var(--navy);
+  border-color: rgba(30, 58, 138, 0.28);
+}
+
+/* ── INTRO SCREEN ── */
+.introScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.introEyebrow {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.82rem;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.introTitle {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  color: var(--navy-deep);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  font-weight: normal;
+}
+
+.introTitle em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.introSub {
+  font-family: 'Times New Roman', serif;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--mist);
+  line-height: 1.75;
+  max-width: 38ch;
+  margin: 0 auto 3.5rem;
+  font-style: italic;
+}
+
+/* Gold CTA — matches screenshot 1 */
+.startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--navy-deep);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 1.1rem 2.75rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(212, 175, 55, 0.3);
+}
+
+.startBtn:hover {
+  background: var(--navy-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+}
+
+.startBtn:active {
+  transform: translateY(0);
+}
+
+.introNote {
+  margin-top: 1.25rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  color: var(--navy);
+  font-style: italic;
+  opacity: 0.5;
+}
+
+/* ── SUCCESS SCREEN ── */
+.successScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 2rem 5rem;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .successScreen {
+    padding: 6rem 4rem 5rem;
+  }
+}
+
+.successEyebrow {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.82rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.successTitle {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--navy);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  font-weight: normal;
+}
+
+.successSub {
+  font-family: 'Times New Roman', serif;
+  font-size: 1rem;
+  color: var(--slate);
+  font-style: italic;
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
+  max-width: 38ch;
+}
+
+.cardWrap {
+  margin-bottom: 2rem;
+}
+
+.shareBox {
+  border: 1px solid rgba(30, 58, 138, 0.1);
+  border-radius: 8px;
+  padding: 1.75rem;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.shareTitle {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 0.35rem;
+  font-weight: normal;
+  letter-spacing: -0.01em;
+}
+
+.shareSub {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.85rem;
+  color: var(--slate);
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.shareSub strong {
+  color: var(--navy-mid);
+  font-style: normal;
+}
+
+.referralBox {
+  display: flex;
+  background: rgba(30, 58, 138, 0.04);
+  border: 1px solid rgba(30, 58, 138, 0.13);
+  border-radius: 4px;
+  padding: 0.7rem 0.85rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.referralUrl {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--slate);
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(to right, black 55%, transparent);
+}
+
+.copyBtn {
+  background: var(--navy-mid);
+  color: var(--white);
+  border: none;
+  border-radius: 3px;
+  padding: 0.45rem 0.9rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.copyBtn:hover {
+  background: var(--navy-deep);
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.socialBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(30, 58, 138, 0.12);
+  border-radius: 6px;
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+
+.socialBtn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(30, 58, 138, 0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.1);
+}
+
+.socialIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.socialName {
+  font-family: 'Times New Roman', serif;
+  font-size: 0.7rem;
+  color: var(--slate);
+  font-style: italic;
+}
+
+.shareFooter {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-family: 'Times New Roman', serif;
+  font-size: 0.72rem;
+  color: var(--slate);
+  font-style: italic;
+  opacity: 0.5;
+}
+
+.shareFooter strong {
+  opacity: 0.75;
+  font-style: normal;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

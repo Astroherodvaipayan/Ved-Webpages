@@ -164,7 +164,7 @@ export default function JoinRevolution() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="relative"
                 >
-                    <Link href="/waitlist" className="inline-block">
+                    <Link href="/waitlist_refactored" className="inline-block">
                         <GradientButton label="Join Beta" />
                     </Link>
                 </motion.div>
