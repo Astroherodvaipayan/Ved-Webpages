@@ -5,6 +5,7 @@ import LeftPanel from "./LeftPanel";
 import RightPanel from "./RightPanel";
 import WaitlistForm from "./WaitlistForm";
 import WaitlistSuccess from "./WaitlistSuccess";
+import BackgroundController from "@/components/ui/BackgroundController";
 import styles from "./Waitlist.module.css";
 import "@/components/ProfileCard.module.css";
 import disposableDomains from "disposable-email-domains";

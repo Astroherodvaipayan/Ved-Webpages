@@ -122,22 +122,18 @@ export default function TeacherScrollSequence() {
         const H = canvas.height;
         const [dw, dh, ox, oy] = getDrawParams(img, W, H);
 
-        const scale = 5 - 4 * progress;
-        const drawX = ox - (dw * (scale - 1)) / 2;
-        const drawY = oy - (dh * (scale - 1)) / 2;
-        const drawW = dw * scale;
-        const drawH = dh * scale;
+        const scale = 10 - 9 * progress;
 
-        const fontSize = Math.min(W * 0.13, 160);
-        const lineHeight = fontSize * 1.15;
+        const baseFontSize = Math.min(W * 0.13, 160);
+        const lineHeight = baseFontSize * 1.15;
         const totalTextH = HEADLINE_LINES.length * lineHeight;
         const startY = H / 2 - totalTextH / 2 + lineHeight / 2;
 
-        // ── Black base on main canvas ──
-        ctx.fillStyle = "#000";
-        ctx.fillRect(0, 0, W, H);
+        // ── Layer 1: image always fullscreen on MAIN canvas ──
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(img, ox, oy, dw, dh);
 
-        // ── Set up offscreen ──
+        // ── Offscreen: black overlay with text holes punched out ──
         if (!offscreenRef.current) {
             offscreenRef.current = document.createElement("canvas");
         }
@@ -147,27 +143,35 @@ export default function TeacherScrollSequence() {
             off.height = H;
         }
         const offCtx = off.getContext("2d")!;
-        offCtx.clearRect(0, 0, W, H);
 
-        // ── Step 1: draw text first (the mask shape) ──
+        // Step 1: solid black fills everything
         offCtx.globalCompositeOperation = "source-over";
+        offCtx.fillStyle = "#000";
+        offCtx.fillRect(0, 0, W, H);
+
+        // Step 2: punch text-shaped holes using destination-out
+        // At scale=10 holes fill entire canvas → pure image visible
+        // At scale=1 normal text size → black everywhere except letters
+        offCtx.globalCompositeOperation = "destination-out";
+        offCtx.save();
+        offCtx.translate(W / 2, H / 2);
+        offCtx.scale(scale, scale);
+        offCtx.translate(-W / 2, -H / 2);
+
         offCtx.fillStyle = "white";
         offCtx.shadowColor = "white";
-        offCtx.shadowBlur = 10;
-        offCtx.font = `900 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+        offCtx.shadowBlur = 20;
+        offCtx.font = `900 ${baseFontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
         offCtx.textAlign = "center";
         offCtx.textBaseline = "middle";
         HEADLINE_LINES.forEach((line, i) => {
             offCtx.fillText(line, W / 2, startY + i * lineHeight);
         });
         offCtx.shadowBlur = 0;
-
-        // ── Step 2: clip image INTO the text shape ──
-        offCtx.globalCompositeOperation = "source-in";
-        offCtx.drawImage(img, drawX, drawY, drawW, drawH);
-
-        // ── Step 3: reset and composite onto main ──
+        offCtx.restore();
         offCtx.globalCompositeOperation = "source-over";
+
+        // Step 3: composite black-with-holes on top of image
         ctx.drawImage(off, 0, 0);
     };
 
