@@ -120,7 +120,7 @@ export default function TeacherScrollSequence() {
         const MAX_SCALE = 10;
         const scale = MAX_SCALE - (MAX_SCALE - 1) * revealProgress; // 10 → 1
 
-        const baseFontSize = Math.min(W * 0.08, 140);
+        const baseFontSize = Math.min(W * 0.12, 140);
         const lineHeight = baseFontSize * 1.15;
         const totalTextH = HEADLINE_LINES.length * lineHeight;
         const startY = H / 2 - totalTextH / 2 + lineHeight / 2;

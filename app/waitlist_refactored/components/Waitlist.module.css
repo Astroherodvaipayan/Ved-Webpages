@@ -560,6 +560,12 @@
   }
 }
 
+@media (max-width: 480px) {
+  .successScreen {
+    padding: 4rem 1.25rem 200px;
+  }
+}
+
 .successEyebrow {
   font-family: 'Times New Roman', serif;
   font-size: 0.82rem;
@@ -601,6 +607,112 @@
   padding: 1.75rem;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(8px);
+}
+
+.shareNotification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.15);
+}
+
+@media (max-width: 480px) {
+  .shareNotification {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+    padding: 1rem;
+  }
+
+  .shareTitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .shareSub {
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .referralBox {
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .referralUrl {
+    font-size: 0.65rem;
+  }
+
+  .copyBtn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .socialGrid {
+    gap: 0.4rem;
+  }
+}
+
+/* Close button for share notification */
+.shareCloseBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30, 58, 138, 0.08);
+  color: var(--navy-mid);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.shareCloseBtn:hover {
+  background: rgba(30, 58, 138, 0.15);
+  transform: scale(1.05);
+}
+
+/* Toggle button when share is collapsed */
+.shareToggleBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--navy-mid);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.25);
+  z-index: 1000;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.shareToggleBtn:hover {
+  background: var(--navy-deep);
+  transform: scale(1.05);
+}
+
+@media (max-width: 480px) {
+  .shareToggleBtn {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .shareTitle {
