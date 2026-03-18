@@ -141,7 +141,7 @@ export default function Hero() {
                     muted
                     playsInline
                     controls={false}
-                    className="object-cover w-full h-full"
+                    className="object-cover object-[70%_center] md:object-[40%_center] w-full h-full"
                 />
             </div>
 
@@ -152,13 +152,13 @@ export default function Hero() {
                 }}
             />
 
-            <div className="absolute inset-0 flex flex-col items-start justify-center z-10 pl-[2%] pr-3 sm:pr-6 md:pr-8">
+            <div className="absolute inset-0 flex flex-col items-start justify-start z-10 pl-[2%] pr-3 sm:pr-6 md:pr-8 top-[55%]">
                 <div className="w-full max-w-4xl md:max-w-5xl">
                     <motion.h1
-                        className="text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-white mb-4 md:mb-8 w-full overflow-hidden text-left"
+                        className="text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-white mb-4 md:mb-8 w-full overflow-hidden text-left"
                     >
                         <motion.span
-                            className="block mb-1 text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            className="block mb-1 text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.9]"
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -173,14 +173,14 @@ export default function Hero() {
                         >
                             <motion.span
                                 layout
-                                className="text-white text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                                className="text-white text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.9]"
                             >
                                 WAY OF
                             </motion.span>
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-secondary to-accent-secondary">LEARNING</span>
                         </motion.span>
                         <motion.span
-                            className="block text-[clamp(2.2rem,9vw,4.5rem)] md:text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9]"
+                            className="block text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.9]"
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
