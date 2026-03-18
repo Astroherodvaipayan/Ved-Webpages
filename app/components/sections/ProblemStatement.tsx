@@ -102,7 +102,7 @@ export default function ProblemStatement() {
         <section
             id="problem-statement"
             ref={containerRef}
-            className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center text-center bg-transparent z-10"
+            className="relative w-full h-[100dvh] overflow-hidden flex flex-col items-center justify-center text-center bg-transparent z-10"
         >
             {/* Animated Background Elements */}
             <div className="absolute inset-0 pointer-events-none">

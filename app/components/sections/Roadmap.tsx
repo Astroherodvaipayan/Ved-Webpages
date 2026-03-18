@@ -53,7 +53,7 @@ export default function Roadmap() {
             ref={containerRef}
             className="relative w-full h-[400vh] bg-black"
         >
-            <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+            <div className="sticky top-0 w-full h-[100dvh] overflow-hidden flex flex-col items-center justify-center">
 
                 {/* Background Ambient Neon Effects */}
                 <BackgroundNeonLines />

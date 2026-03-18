@@ -131,7 +131,7 @@ export default function Hero() {
     }, [isMounted, lenis]);
 
     return (
-        <section ref={sectionRef} id="hero" className="relative w-full h-screen" style={{ backgroundColor: "#f1ede3" }}>
+        <section ref={sectionRef} id="hero" className="relative w-full h-[100dvh]" style={{ backgroundColor: "#f1ede3" }}>
             {/* ... rest of your JSX unchanged ... */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 <video

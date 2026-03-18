@@ -141,7 +141,7 @@ export default function JoinRevolution() {
         <section
             id="join-revolution"
             ref={sectionRef}
-            className="relative w-full min-h-screen py-16 md:py-40 px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-transparent z-10"
+            className="relative w-full min-h-[100dvh] py-16 md:py-40 px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-transparent z-10"
         >
             {/* Text block */}
             <motion.div

@@ -180,7 +180,7 @@ export default function ProductShowcase() {
         <section
             id="product-showcase"
             ref={sectionRef}
-            className="relative w-full min-h-screen flex flex-col items-center justify-center py-20 z-10"
+            className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 z-10"
         >
             {/* Mac Window */}
             <div
