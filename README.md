@@ -13,7 +13,7 @@
 
 ## About
 
-Ved AI is a high-tech landing page for an AI-powered meta-learning platform. The website showcases the product's features, architecture, roadmap, and vision through an immersive, animation-rich experience.
+Ved AI is a high-tech landing page for an AI-powered meta-learning platform. The website showcases the product's features, architecture, roadmap, and vision through an immersive, animation-rich experience.1
 
 ## Tech Stack
 
