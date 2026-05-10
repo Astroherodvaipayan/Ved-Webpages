@@ -191,9 +191,6 @@ export default function Hero() {
                 </div>
             </div>
 
-            <div className="pointer-events-none absolute left-0 right-0 -bottom-[00px] h-[40vh] md:h-[38vh]">
-                <div className="absolute inset-0 hero-teacher-gradient" />
-            </div>
         </section>
     );
 }
