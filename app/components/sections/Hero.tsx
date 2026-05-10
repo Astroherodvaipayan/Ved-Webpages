@@ -135,7 +135,7 @@ export default function Hero() {
             {/* ... rest of your JSX unchanged ... */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 <video
-                    src="/boy1.mp4"
+                    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_074625_a81f018a-956b-43fb-9aee-4d1508e30e6a.mp4"
                     autoPlay
                     loop
                     muted
