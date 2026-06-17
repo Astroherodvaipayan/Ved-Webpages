@@ -152,10 +152,10 @@ export default function Hero() {
                 }}
             />
 
-            <div className="absolute inset-0 flex flex-col items-start justify-start z-10 pl-[2%] pr-3 sm:pr-6 md:pr-8 top-[55%]">
-                <div className="w-full max-w-4xl md:max-w-5xl">
+            <div className="absolute inset-0 flex flex-col items-center justify-start z-10 px-4 top-[55%]">
+                <div className="w-full">
                     <motion.h1
-                        className="text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-white mb-4 md:mb-8 w-full overflow-hidden text-left"
+                        className="text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.92] md:leading-[1.05] font-black tracking-tight text-white mb-4 md:mb-8 w-full overflow-hidden text-center"
                     >
                         <motion.span
                             className="block mb-1 text-[clamp(2.7rem,11vw,5.5rem)] md:text-[clamp(3rem,10vw,6.5rem)] leading-[0.9]"
@@ -169,7 +169,7 @@ export default function Hero() {
                             initial={{ opacity: 0, y: "100%" }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                            className="flex flex-col md:flex-row items-start md:items-center justify-start mb-1 gap-1 md:gap-4"
+                            className="flex flex-row items-center justify-center mb-1 gap-4"
                         >
                             <motion.span
                                 layout
