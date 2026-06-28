@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,32 +12,32 @@ import { shouldSnap, snapToSection, recordSectionEntrance } from "@/app/utils/sc
 
 gsap.registerPlugin(ScrollTrigger);
 
+const orbitingUsers = [1, 2, 3, 4, 5, 6].map((i) => ({
+    id: i,
+    left: `calc(50% - 24px + ${Math.cos((i * 60) * Math.PI / 180) * 180}px)`,
+    top: `calc(50% - 24px + ${Math.sin((i * 60) * Math.PI / 180) * 180}px)`,
+    duration: 30 + i * 5
+}));
+
+const CONFIG = {
+    nextSectionId: 'future-experience',
+    animationCompleteProgress: 0.85,
+    triggerBufferPx: 10,
+    scrollDuration: 1.2,
+};
+
 export default function Moat() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const visualRef = useRef<HTMLDivElement>(null);
     const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
-    const [orbitingUsers, setOrbitingUsers] = useState<any[]>([]);
 
     const lenis = useLenis();
     const isSnapping = useRef(false);
     const hasTriggered = useRef(false);
-    const [isMounted, setIsMounted] = useState(false);
     const SECTION_ID = 'moat';
 
-    // Configuration
-    const CONFIG = {
-        nextSectionId: 'join-revolution',
-        animationCompleteProgress: 0.85,
-        triggerBufferPx: 10,
-        scrollDuration: 1.2,
-    };
-
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!isMounted || !lenis) return;
+        if (!lenis) return;
 
         const ctx = gsap.context(() => {
             gsap.fromTo(visualRef.current,
@@ -56,21 +56,11 @@ export default function Moat() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [isMounted, lenis]);
-
-    useEffect(() => {
-        const users = [1, 2, 3, 4, 5, 6].map((i) => ({
-            id: i,
-            left: `calc(50% - 24px + ${Math.cos((i * 60) * Math.PI / 180) * 180}px)`,
-            top: `calc(50% - 24px + ${Math.sin((i * 60) * Math.PI / 180) * 180}px)`,
-            duration: 30 + i * 5
-        }));
-        setOrbitingUsers(users);
-    }, []);
+    }, [lenis]);
 
     // Scroll snap to next section (JoinRevolution)
     useEffect(() => {
-        if (!isMounted || !lenis) return;
+        if (!lenis) return;
         if (!sectionRef.current) return;
 
         const ctx = gsap.context(() => {
@@ -111,7 +101,7 @@ export default function Moat() {
                 scrollTriggerRef.current.kill();
             }
         };
-    }, [isMounted, lenis]);
+    }, [lenis]);
 
     const points = [
         "Every interaction builds a detailed learner profile.",

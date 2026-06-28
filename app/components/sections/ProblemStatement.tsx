@@ -148,6 +148,7 @@ export default function ProblemStatement() {
                 <h2
                     ref={headlineRef}
                     className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-[#0A0F2E]"
+                    style={{ fontFamily: "var(--font-instrument-serif), Instrument Serif, serif" }}
                 >
                     Personal tutoring improves learning outcomes by{" "}
                     <span ref={statRef} className="text-gradient inline-block">
@@ -161,6 +162,7 @@ export default function ProblemStatement() {
                 <span
                     ref={subtitleRef}
                     className="text-[#6B7AA1] block mt-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
+                    style={{ fontFamily: "var(--font-instrument-serif), Instrument Serif, serif" }}
                 >
                     But having 8 billion teachers is impossible.
                 </span>

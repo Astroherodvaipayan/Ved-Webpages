@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import GradientButton from "../ui/GradientButton";
@@ -16,36 +16,23 @@ import {
     isProgrammaticScrollInProgress,
 } from "@/app/utils/scrollSnap";
 
-interface WaitlistData {
-    name: string;
-    email: string;
-    role: string;
-    imageUrl: string | null;
-}
+const CONFIG = {
+    nextSectionId: 'footer-cta',
+    animationCompleteProgress: 0.85,
+    triggerBufferPx: 10,
+    scrollDuration: 1.2,
+};
 
 export default function JoinRevolution() {
     const sectionRef = useRef<HTMLElement>(null);
     const isSnapping = useRef(false);
     const hasTriggered = useRef(false);
     const lenis = useLenis();
-    const [isMounted, setIsMounted] = useState(false);
     const SECTION_ID = 'join-revolution';
-
-    // Configuration
-    const CONFIG = {
-        nextSectionId: 'footer-cta',
-        animationCompleteProgress: 0.85,
-        triggerBufferPx: 10,
-        scrollDuration: 1.2,
-    };
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     // Scroll snap to next section (FooterCTA) using shared scrollSnap helpers
     useEffect(() => {
-        if (!isMounted || !lenis) return;
+        if (!lenis) return;
         const section = sectionRef.current;
         if (!section) return;
 
@@ -135,7 +122,7 @@ export default function JoinRevolution() {
             window.removeEventListener("touchend", onTouchEnd);
             if (resetTimer) clearTimeout(resetTimer);
         };
-    }, [isMounted, lenis]);
+    }, [lenis]);
 
     return (
         <section
@@ -143,20 +130,6 @@ export default function JoinRevolution() {
             ref={sectionRef}
             className="relative w-full min-h-[100dvh] py-16 md:py-40 px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-transparent z-10"
         >
-            {/* Text block */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1 }}
-                className="relative z-10 max-w-4xl mx-auto px-6 mb-8"
-            >
-                <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-tight mb-12 text-[#0A0F2E]">
-                    To enable <br className="hidden sm:block" />
-                    <span className="text-gradient">A BILLION GENIUSES</span>.
-                </h2>
-            </motion.div>
-
             {/* Central Button */}
             <div className="relative z-20 flex items-center justify-center">
                 <motion.div

@@ -3,12 +3,15 @@
 import { useState } from "react";
 
 import Hero from "./components/sections/Hero";
-import ProductShowcase from "./components/sections/ProductShowcase";
+import EducationShift from "./components/sections/EducationShift";
+import RhythmCards from "./components/sections/RhythmCards";
 import ProblemStatement from "./components/sections/ProblemStatement";
-import Architecture from "./components/sections/Architecture";
 import FeatureShowcase from "./components/sections/FeatureShowcase";
 import Moat from "./components/sections/Moat";
+import FutureExperience from "./components/sections/FutureExperience";
+import BillionGeniuses from "./components/sections/BillionGeniuses";
 import Mission from "./components/sections/Mission";
+import TogetherLeap from "./components/sections/TogetherLeap";
 import JoinRevolution from "./components/sections/JoinRevolution";
 import FooterCTA from "./components/sections/FooterCTA";
 import CinematicIntro from "./components/CinematicIntro";
@@ -36,14 +39,18 @@ export default function Home() {
                 <div className="relative w-full">
                     <Hero />
 
-                    {/* Content flows after Hero — Mission scrolls up behind pinned Hero */}
+                    {/* Content flows after the hero morph completes */}
                     <div className="relative w-full bg-transparent">
                         <GlobalBackground />
-                        <ProductShowcase />
+                        <EducationShift />
+                        <RhythmCards />
                         <ProblemStatement />
                         <Mission />
+                        <TogetherLeap />
                         <FeatureShowcase />
                         <Moat />
+                        <FutureExperience />
+                        <BillionGeniuses />
                         <JoinRevolution />
                         <FooterCTA />
                     </div>

@@ -18,12 +18,12 @@ const sectionConfigs = [
         ],
     },
     {
-        id: "product-showcase",
-        backgroundColor: "#F5F8FF",
+        id: "education-shift",
+        backgroundColor: "#FFFEFB",
         gradientColors: [
-            "rgba(30, 58, 138, 0.18)",
-            "rgba(67, 56, 202, 0.10)",
-            "rgba(79, 70, 229, 0.08)",
+            "rgba(255, 255, 255, 0)",
+            "rgba(255, 255, 255, 0)",
+            "rgba(255, 255, 255, 0)",
         ],
     },
     {
@@ -89,26 +89,7 @@ export default function BackgroundController() {
     const gradient3Ref = useRef<HTMLDivElement>(null);
     const borderGlowRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
-        const ctx = gsap.context(() => {
-            sectionConfigs.forEach((config) => {
-                const section = document.getElementById(config.id);
-                if (!section) return;
-
-                ScrollTrigger.create({
-                    trigger: section,
-                    start: "top 60%",
-                    end: "bottom 40%",
-                    onEnter: () => animateBackground(config),
-                    onEnterBack: () => animateBackground(config),
-                });
-            });
-        });
-
-        return () => ctx.revert();
-    }, []);
-
-    const animateBackground = (config: typeof sectionConfigs[0]) => {
+    function animateBackground(config: typeof sectionConfigs[0]) {
         // Animate main background color
         gsap.to(bgRef.current, {
             backgroundColor: config.backgroundColor,
@@ -158,7 +139,26 @@ export default function BackgroundController() {
             duration: 1.2,
             ease: "power2.out",
         });
-    };
+    }
+
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            sectionConfigs.forEach((config) => {
+                const section = document.getElementById(config.id);
+                if (!section) return;
+
+                ScrollTrigger.create({
+                    trigger: section,
+                    start: "top 60%",
+                    end: "bottom 40%",
+                    onEnter: () => animateBackground(config),
+                    onEnterBack: () => animateBackground(config),
+                });
+            });
+        });
+
+        return () => ctx.revert();
+    }, []);
 
     return (
         <>

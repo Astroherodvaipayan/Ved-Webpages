@@ -8,8 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Cloud transition configurations for each section boundary
 const transitionConfigs = [
-    { triggerId: "hero", nextId: "product-showcase", color: "rgba(30, 58, 138, 0.15)" },
-    { triggerId: "product-showcase", nextId: "problem-statement", color: "rgba(99, 102, 241, 0.12)" },
+    { triggerId: "hero", nextId: "problem-statement", color: "rgba(30, 58, 138, 0.15)" },
     { triggerId: "problem-statement", nextId: "architecture", color: "rgba(220, 38, 38, 0.10)" },
     { triggerId: "architecture", nextId: "moat", color: "rgba(30, 58, 138, 0.12)" },
     { triggerId: "moat", nextId: "roadmap", color: "rgba(212, 175, 55, 0.15)" },

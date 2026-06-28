@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -10,15 +10,8 @@ export default function ImageTransition() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLHeadingElement>(null);
     const imageContainerRef = useRef<HTMLDivElement>(null);
-    const [isMounted, setIsMounted] = useState(false);
-
-    // Ensure component is mounted before running GSAP
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     useEffect(() => {
-        if (!isMounted) return;
         if (!sectionRef.current || !textRef.current || !imageContainerRef.current) return;
 
         const ctx = gsap.context(() => {
@@ -68,7 +61,7 @@ export default function ImageTransition() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, [isMounted]);
+    }, []);
 
     return (
         <section
@@ -79,10 +72,12 @@ export default function ImageTransition() {
             {/* The Text */}
             <h2
                 ref={textRef}
-                className="absolute z-20 text-4xl md:text-6xl lg:text-7xl font-bold text-center text-white tracking-tight leading-tight max-w-4xl px-6"
+                className="absolute z-20 text-4xl md:text-6xl lg:text-7xl text-center text-white leading-tight max-w-4xl px-6"
                 style={{ opacity: 0 }}
             >
-                Building the <span className="text-blue-400">greatest teacher</span> ever.
+                <span style={{ fontFamily: "var(--font-instrument-serif)" }}>
+                    Building the companion that understands you.
+                </span>
             </h2>
 
             {/* The Divine Image Container */}

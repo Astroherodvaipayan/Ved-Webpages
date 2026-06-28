@@ -35,17 +35,17 @@ export default function GlobalBackground({ containerRef }: { containerRef?: Reac
 
     return (
         <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-[#FAFBFF]">
-            {/* Diagonal multi-stop gradient — richer analogous stops for visible depth */}
+            {/* Diagonal multi-stop gradient kept pale so section transitions stay clean. */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
                     background: `linear-gradient(135deg,
-                        #E3ECFF 0%,
-                        #EBF0FF 20%,
-                        #F5F7FF 42%,
-                        #FBF8F0 65%,
-                        #F0EFFF 85%,
-                        #E5EDFF 100%)`,
+                        #F1F5FF 0%,
+                        #F6F8FF 24%,
+                        #FFFFFF 48%,
+                        #FFFFFF 68%,
+                        #F9FAFF 86%,
+                        #F2F6FF 100%)`,
                 }}
             />
 
@@ -59,10 +59,10 @@ export default function GlobalBackground({ containerRef }: { containerRef?: Reac
                         className="w-full h-full rounded-full"
                         style={{
                             background: `radial-gradient(circle at center,
-                                rgba(26, 53, 120, 0.28) 0%,
-                                rgba(30, 58, 138, 0.20) 18%,
-                                rgba(42, 74, 158, 0.13) 36%,
-                                rgba(42, 74, 158, 0.06) 55%,
+                                rgba(26, 53, 120, 0.10) 0%,
+                                rgba(30, 58, 138, 0.07) 18%,
+                                rgba(42, 74, 158, 0.045) 36%,
+                                rgba(42, 74, 158, 0.02) 55%,
                                 transparent 75%)`,
                             filter: 'blur(80px)',
                         }}
@@ -76,10 +76,10 @@ export default function GlobalBackground({ containerRef }: { containerRef?: Reac
                         className="w-full h-full rounded-full"
                         style={{
                             background: `radial-gradient(circle at center,
-                                rgba(212, 175, 55, 0.6) 0%,
-                                rgba(212, 175, 55, 0.4) 18%,
-                                rgba(212, 175, 55, 0.2) 38%,
-                                rgba(212, 175, 55, 0.05) 58%,
+                                rgba(255, 255, 255, 0) 0%,
+                                rgba(255, 255, 255, 0) 18%,
+                                rgba(255, 255, 255, 0) 38%,
+                                rgba(255, 255, 255, 0) 58%,
                                 transparent 78%)`,
                             filter: 'blur(70px)',
                         }}

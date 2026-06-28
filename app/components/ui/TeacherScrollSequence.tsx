@@ -7,7 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 40;
-const HEADLINE_LINES = ["Building the", "greatest teacher", "ever"];
+const FRAME_BASE_PATH = "/images/upscaled-2x";
+const HEADLINE_LINES = ["Building the", "companion that", "understands you"];
 const EAGER_FRAME_COUNT = 10;
 
 export default function TeacherScrollSequence() {
@@ -25,7 +26,7 @@ export default function TeacherScrollSequence() {
         new Promise((resolve) => {
             const img = new Image();
             const padded = (frameIndex + 1).toString().padStart(3, "0");
-            img.src = `/images/ezgif-frame-${padded}.png`;
+            img.src = `${FRAME_BASE_PATH}/ezgif-frame-${padded}.png`;
             img.onload = () => resolve(img);
             img.onerror = () => resolve(img); // resolve even on error so Promise.all doesn't hang
         });
@@ -120,11 +121,11 @@ export default function TeacherScrollSequence() {
         const MAX_SCALE = 10;
         const scale = MAX_SCALE - (MAX_SCALE - 1) * revealProgress; // 10 → 1
 
-        const baseFontSize = Math.min(W * 0.12, 140);
+        const baseFontSize = Math.min(W * 0.11, 132);
         const lineHeight = baseFontSize * 1.15;
         const totalTextH = HEADLINE_LINES.length * lineHeight;
         const startY = H / 2 - totalTextH / 2 + lineHeight / 2;
-        const fontString = `900 ${baseFontSize}px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif`;
+        const fontString = `400 ${baseFontSize}px "Instrument Serif", Georgia, serif`;
 
         // ── Step A: build offscreen stencil (text = opaque, rest = transparent) ──
         if (!offscreenRef.current) offscreenRef.current = document.createElement("canvas");

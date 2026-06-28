@@ -17,27 +17,39 @@ const navLinks = [
 export default function Navigation() {
     const pathname = usePathname();
     const isWaitlistPage = pathname === "/waitlist" || pathname === "/waitlist_refactored";
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("hero");
+    const [immersiveNavReveal, setImmersiveNavReveal] = useState(0);
 
-    const lenis = useLenis(({ scroll }: { scroll: number }) => {
-        // Scroll tracking if needed
-    });
+    const lenis = useLenis();
 
     // Handle Scroll Spy
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-
             // Simple Scroll Spy
             const mission = document.getElementById("join-revolution");
+            const hero = document.getElementById("hero");
             const scrollPos = window.scrollY + 300;
 
             if (mission && scrollPos >= mission.offsetTop) setActiveSection("join-revolution");
             else setActiveSection("hero");
+
+            if (hero) {
+                const rect = hero.getBoundingClientRect();
+                const scrollDistance = Math.max(1, hero.offsetHeight - window.innerHeight);
+                const progress = Math.max(0, Math.min(1, -rect.top / scrollDistance));
+                const isInsideImmersiveHero = rect.top <= 0 && rect.bottom >= window.innerHeight * 0.35;
+                const reveal = isInsideImmersiveHero
+                    ? Math.max(0, Math.min(1, (progress - 0.48) / 0.22))
+                    : 1;
+
+                setImmersiveNavReveal(reveal);
+            } else {
+                setImmersiveNavReveal(1);
+            }
         };
         window.addEventListener("scroll", handleScroll);
+        handleScroll();
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
@@ -75,6 +87,11 @@ export default function Navigation() {
         return null;
     }
 
+    const navOnLight = immersiveNavReveal > 0.35;
+    const brandTextColor = navOnLight ? "#1E3A8A" : "#ffffff";
+    const linkColor = navOnLight ? "#1E3A8A" : "#ffffff";
+    const linkHoverColor = navOnLight ? "#0F1F4D" : "rgba(255,255,255,0.8)";
+
     return (
         <>
             {/* ═══ Floating Pill Navbar ═══ */}
@@ -87,7 +104,12 @@ export default function Navigation() {
             >
                 <div
                     className="mx-auto w-full max-w-[1220px]"
-                    style={{ pointerEvents: "auto" }}
+                    style={{
+                        opacity: immersiveNavReveal,
+                        pointerEvents: immersiveNavReveal > 0.85 ? "auto" : "none",
+                        transform: `translateY(${(1 - immersiveNavReveal) * -18}px)`,
+                        transition: "opacity 220ms ease, transform 220ms ease",
+                    }}
                 >
                     {/* ── Desktop: 3-Column Grid ── */}
                     <div className="hidden md:flex items-center justify-between gap-3">
@@ -100,7 +122,7 @@ export default function Navigation() {
                             style={{ textDecoration: "none" }}
                         >
                             <Image
-                                src="/logo.png"
+                                src="/ved-lotus-logo.png"
                                 alt="Ved AI Labs"
                                 width={36}
                                 height={36}
@@ -108,15 +130,16 @@ export default function Navigation() {
                             />
                             <span
                                 style={{
-                                    fontSize: "1.05rem",
-                                    fontWeight: 800,
-                                    color: "#ffffff",
-                                    letterSpacing: "0.12em",
-                                    textTransform: "uppercase",
+                                    fontFamily: "var(--font-instrument-serif)",
+                                    fontSize: "1.45rem",
+                                    fontWeight: 400,
+                                    color: brandTextColor,
+                                    letterSpacing: "0.025em",
                                     textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                                    lineHeight: 1,
                                 }}
                             >
-                                Ved AI
+                                Ved
                             </span>
                         </Link>
 
@@ -140,12 +163,12 @@ export default function Navigation() {
                                             letterSpacing: "0.06em",
                                             textTransform: "uppercase",
                                             textDecoration: "none",
-                                            color: activeSection === "hero" ? "#ffffff" : "#1E3A8A",
+                                            color: linkColor,
                                             transition: "color 0.3s ease",
                                             cursor: "pointer",
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.color = activeSection === "hero" ? "rgba(255,255,255,0.8)" : "#0F1F4D")}
-                                        onMouseLeave={(e) => (e.currentTarget.style.color = activeSection === "hero" ? "#ffffff" : "#1E3A8A")}
+                                        onMouseEnter={(e) => (e.currentTarget.style.color = linkHoverColor)}
+                                        onMouseLeave={(e) => (e.currentTarget.style.color = linkColor)}
                                     >
                                         {link.label}
                                         {activeSection === link.href.replace('#', '') && (
@@ -200,7 +223,7 @@ export default function Navigation() {
                                     style={{ textDecoration: "none" }}
                                 >
                                     <Image
-                                        src="/logo.png"
+                                        src="/ved-lotus-logo.png"
                                         alt="Ved AI Labs"
                                         width={28}
                                         height={28}
@@ -208,14 +231,15 @@ export default function Navigation() {
                                     />
                                     <span
                                         style={{
-                                            fontSize: "0.9rem",
-                                            fontWeight: 800,
-                                            color: "#ffffff",
-                                            letterSpacing: "0.1em",
-                                            textTransform: "uppercase",
+                                            fontFamily: "var(--font-instrument-serif)",
+                                            fontSize: "1.2rem",
+                                            fontWeight: 400,
+                                            color: brandTextColor,
+                                            letterSpacing: "0.025em",
+                                            lineHeight: 1,
                                         }}
                                     >
-                                        Ved AI
+                                        Ved
                                     </span>
                                 </Link>
 
@@ -229,17 +253,20 @@ export default function Navigation() {
                                     <motion.span
                                         animate={{ rotate: isMobileMenuOpen ? 45 : 0, y: isMobileMenuOpen ? 6 : 0 }}
                                         transition={{ duration: 0.25 }}
-                                        className="w-6 h-0.5 bg-white block"
+                                        className="w-6 h-0.5 block"
+                                        style={{ backgroundColor: brandTextColor }}
                                     />
                                     <motion.span
                                         animate={{ opacity: isMobileMenuOpen ? 0 : 1 }}
                                         transition={{ duration: 0.2 }}
-                                        className="w-6 h-0.5 bg-white block"
+                                        className="w-6 h-0.5 block"
+                                        style={{ backgroundColor: brandTextColor }}
                                     />
                                     <motion.span
                                         animate={{ rotate: isMobileMenuOpen ? -45 : 0, y: isMobileMenuOpen ? -6 : 0 }}
                                         transition={{ duration: 0.25 }}
-                                        className="w-6 h-0.5 bg-white block"
+                                        className="w-6 h-0.5 block"
+                                        style={{ backgroundColor: brandTextColor }}
                                     />
                                 </button>
                             </div>

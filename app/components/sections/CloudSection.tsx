@@ -1,6 +1,6 @@
 "use client";
 
-// Dedicated section for cloud transition - creates space between Hero and ProductShowcase
+// Dedicated section for cloud transition - creates space after Hero
 export default function CloudSection() {
     return (
         <section

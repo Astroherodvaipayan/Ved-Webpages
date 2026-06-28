@@ -55,14 +55,21 @@ export default function Header() {
                     onClick={() => scrollTo("home")}
                 >
                     <Image
-                        src="/logo.png"
+                        src="/ved-lotus-logo.png"
                         alt="Ved AI Labs"
                         width={48}
                         height={48}
                         className="drop-shadow-lg"
                     />
-                    <span className="text-xl font-bold tracking-[0.2em] text-white uppercase drop-shadow-lg ml-2">
-                        Ved AI
+                    <span
+                        className="text-[1.65rem] text-white drop-shadow-lg ml-2"
+                        style={{
+                            fontFamily: "var(--font-instrument-serif)",
+                            letterSpacing: "0.025em",
+                            lineHeight: 1,
+                        }}
+                    >
+                        Ved
                     </span>
                 </a>
 
